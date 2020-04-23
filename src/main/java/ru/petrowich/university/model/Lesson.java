@@ -4,8 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class Class {
+public class Lesson {
     private Long id;
     private Course course;
     private Lecturer lecturer;
@@ -20,7 +21,7 @@ public class Class {
         return id;
     }
 
-    public Class setId(Long id) {
+    public Lesson setId(Long id) {
         this.id = id;
         return this;
     }
@@ -29,7 +30,7 @@ public class Class {
         return course;
     }
 
-    public Class setCourse(Course course) {
+    public Lesson setCourse(Course course) {
         this.course = course;
         return this;
     }
@@ -38,7 +39,7 @@ public class Class {
         return lecturer;
     }
 
-    public Class setLecturer(Lecturer lecturer) {
+    public Lesson setLecturer(Lecturer lecturer) {
         this.lecturer = lecturer;
         return this;
     }
@@ -47,7 +48,7 @@ public class Class {
         return date;
     }
 
-    public Class setDate(LocalDate date) {
+    public Lesson setDate(LocalDate date) {
         this.date = date;
         return this;
     }
@@ -56,7 +57,7 @@ public class Class {
         return timeSlot;
     }
 
-    public Class setTimeSlot(TimeSlot timeSlot) {
+    public Lesson setTimeSlot(TimeSlot timeSlot) {
         this.timeSlot = timeSlot;
         return this;
     }
@@ -65,7 +66,7 @@ public class Class {
         return startTime;
     }
 
-    public Class setStartTime(LocalTime startTime) {
+    public Lesson setStartTime(LocalTime startTime) {
         this.startTime = startTime;
         return this;
     }
@@ -74,7 +75,7 @@ public class Class {
         return endTime;
     }
 
-    public Class setEndTime(LocalTime endTime) {
+    public Lesson setEndTime(LocalTime endTime) {
         this.endTime = endTime;
         return this;
     }
@@ -83,7 +84,7 @@ public class Class {
         return groups;
     }
 
-    public Class setGroups(List<Group> groups) {
+    public Lesson setGroups(List<Group> groups) {
         this.groups = groups;
         return this;
     }
@@ -92,8 +93,28 @@ public class Class {
         return new ArrayList<>(students);
     }
 
-    public Class setStudents(List<Student> students) {
+    public Lesson setStudents(List<Student> students) {
         this.students = students;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        Lesson lesson = (Lesson) object;
+
+        return Objects.equals(id, lesson.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

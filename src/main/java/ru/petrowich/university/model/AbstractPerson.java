@@ -1,5 +1,7 @@
 package ru.petrowich.university.model;
 
+import java.util.Objects;
+
 public abstract class AbstractPerson {
     private Long id;
     private String firstName;
@@ -54,5 +56,10 @@ public abstract class AbstractPerson {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

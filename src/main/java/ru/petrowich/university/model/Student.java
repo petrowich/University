@@ -2,11 +2,12 @@ package ru.petrowich.university.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Student extends AbstractPerson {
     private Group group;
     private List<Course> courses = new ArrayList<>();
-    private List<Class> classes = new ArrayList<>();
+    private List<Lesson> lessons = new ArrayList<>();
 
     public Group getGroup() {
         return group;
@@ -25,12 +26,27 @@ public class Student extends AbstractPerson {
         return this;
     }
 
-    public List<Class> getClasses() {
-        return new ArrayList<>(classes);
+    public List<Lesson> getLessons() {
+        return new ArrayList<>(lessons);
     }
 
-    public Student setClasses(List<Class> classes) {
-        this.classes = classes;
+    public Student setLessons(List<Lesson> lessons) {
+        this.lessons = lessons;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        Student student = (Student) object;
+
+        return Objects.equals(this.getId(), student.getId());
     }
 }
