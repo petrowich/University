@@ -3,59 +3,65 @@ package ru.petrowich.university.model;
 import java.util.Objects;
 
 public abstract class AbstractPerson {
-    private Long id;
+    private Integer id;
     private String firstName;
     private String lastName;
     private String email;
     private String comment;
     private boolean active;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public AbstractPerson setId(Integer id) {
         this.id = id;
+        return this;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public AbstractPerson setFirstName(String firstName) {
         this.firstName = firstName;
+        return this;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public AbstractPerson setLastName(String lastName) {
         this.lastName = lastName;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public AbstractPerson setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     public String getComment() {
         return comment;
     }
 
-    public void setComment(String comment) {
+    public AbstractPerson setComment(String comment) {
         this.comment = comment;
+        return this;
     }
 
     public boolean isActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public AbstractPerson setActive(boolean active) {
         this.active = active;
+        return this;
     }
 
     @Override

@@ -8,10 +8,10 @@ import java.util.Objects;
 
 public class Lesson {
     private Long id;
-    private Course course;
-    private Lecturer lecturer;
+    private Course course = new Course();
+    private Lecturer lecturer = new Lecturer();
     private LocalDate date;
-    private TimeSlot timeSlot;
+    private TimeSlot timeSlot = new TimeSlot();
     private LocalTime startTime;
     private LocalTime endTime;
     private List<Group> groups = new ArrayList<>();

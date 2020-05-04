@@ -3,26 +3,27 @@ package ru.petrowich.university.model;
 import java.util.Objects;
 
 public class Course {
-    private Long id;
-    private Lecturer author;
+    private Integer id;
+    private String name;
     private String description;
+    private Lecturer author = new Lecturer();
     private boolean active;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public Course setId(Long id) {
+    public Course setId(Integer id) {
         this.id = id;
         return this;
     }
 
-    public Lecturer getAuthor() {
-        return author;
+    public String getName() {
+        return name;
     }
 
-    public Course setAuthor(Lecturer author) {
-        this.author = author;
+    public Course setName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -32,6 +33,15 @@ public class Course {
 
     public Course setDescription(String description) {
         this.description = description;
+        return this;
+    }
+
+    public Lecturer getAuthor() {
+        return author;
+    }
+
+    public Course setAuthor(Lecturer author) {
+        this.author = author;
         return this;
     }
 

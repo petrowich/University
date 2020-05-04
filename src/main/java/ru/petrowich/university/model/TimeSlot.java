@@ -4,16 +4,26 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public class TimeSlot {
-    private Long id;
+    private Integer id;
+    private String name;
     private LocalTime startTime;
     private LocalTime endTime;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public TimeSlot setId(Long id) {
+    public TimeSlot setId(Integer id) {
         this.id = id;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public TimeSlot setName(String name) {
+        this.name = name;
         return this;
     }
 
