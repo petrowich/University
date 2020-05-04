@@ -4,16 +4,26 @@ import java.util.List;
 import java.util.Objects;
 
 public class Group {
-    private Long id;
+    private Integer id;
+    private String name;
     private List<Student> students;
     private boolean active;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public Group setId(Long id) {
+    public Group setId(Integer id) {
         this.id = id;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Group setName(String name) {
+        this.name = name;
         return this;
     }
 
