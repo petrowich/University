@@ -8,7 +8,7 @@ import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public abstract class AbstractGenericDAO {
+public abstract class AbstractDAO {
     protected static void setNullableValue(PreparedStatement preparedStatement, int parameterIndex, String value) throws SQLException {
         if (value != null) {
             preparedStatement.setString(parameterIndex, value);
