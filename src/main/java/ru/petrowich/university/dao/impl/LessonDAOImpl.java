@@ -1,5 +1,7 @@
 package ru.petrowich.university.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -25,6 +27,7 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
     private final JdbcTemplate jdbcTemplate;
     private final Queries queries;
 
+    @Autowired
     public LessonDAOImpl(JdbcTemplate jdbcTemplate, Queries queries) {
         this.jdbcTemplate = jdbcTemplate;
         this.queries = queries;
@@ -32,9 +35,13 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
 
     @Override
     public Lesson getById(Long lessonId) {
-        return jdbcTemplate.queryForObject(queries.getQuery("Lesson.getById"),
-                (ResultSet resultSet, int rowNumber) -> getLesson(resultSet),
-                lessonId);
+        try {
+            return jdbcTemplate.queryForObject(queries.getQuery("Lesson.getById"),
+                    (ResultSet resultSet, int rowNumber) -> getLesson(resultSet),
+                    lessonId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -54,7 +61,7 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
                     return preparedStatement;
                 }, keyHolder);
 
-        Long lessonId = (Long) keyHolder.getKeyList().get(0).get("lesson_id");
+        Long lessonId = ((Number) keyHolder.getKeyList().get(0).get("lesson_id")).longValue();
         lesson.setId(lessonId);
     }
 

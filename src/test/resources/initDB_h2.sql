@@ -23,7 +23,7 @@ CREATE SEQUENCE public.seq_lessons START WITH 1000001;
 
 CREATE TABLE public.t_roles
 (
-  role_id     INTEGER PRIMARY KEY DEFAULT nextval('public.seq_roles'),
+  role_id     INTEGER DEFAULT public.seq_roles.nextval PRIMARY KEY,
   role_name   VARCHAR(15) NOT NULL
 );
 CREATE INDEX ix_role_name ON public.t_roles (role_name);
@@ -32,25 +32,25 @@ INSERT INTO public.t_roles (role_name) VALUES ('STUDENT'), ('LECTURER');
 
 CREATE TABLE public.t_timeslots
 (
-  timeslot_id     INTEGER PRIMARY KEY DEFAULT nextval('public.seq_timeslots'),
+  timeslot_id     INTEGER DEFAULT public.seq_timeslots.nextval PRIMARY KEY ,
   timeslot_name   VARCHAR(255) NOT NULL,
   timeslot_start_time     TIME NOT NULL,
   timeslot_end_time     TIME NOT NULL
 );
 
 INSERT INTO public.t_timeslots (timeslot_name, timeslot_start_time, timeslot_end_time) VALUES
- ('first lesson','08:00:00','09:30:00')
-,('second lesson','09:40:00','11:10:00')
-,('third lesson','11:20:00','12:50:00')
-,('fourth lesson','13:20:00','14:50:00')
-,('fifth lesson','15:00:00','16:30:00')
-,('sixth lesson','16:40:00','18:10:00')
-,('seventh lesson','18:20:00','19:50:00')
-,('eighth lesson','20:00:00','21:30:00');
+  ('first lesson','08:00:00','09:30:00')
+, ('second lesson','09:40:00','11:10:00')
+, ('third lesson','11:20:00','12:50:00')
+, ('fourth lesson','13:20:00','14:50:00')
+, ('fifth lesson','15:00:00','16:30:00')
+, ('sixth lesson','16:40:00','18:10:00')
+, ('seventh lesson','18:20:00','19:50:00')
+, ('eighth lesson','20:00:00','21:30:00');
 
 CREATE TABLE public.t_persons
 (
-  person_id     INTEGER PRIMARY KEY DEFAULT nextval('public.seq_persons'),
+  person_id     INTEGER DEFAULT public.seq_persons.nextval PRIMARY KEY,
   person_first_name   VARCHAR(255) NULL,
   person_last_name   VARCHAR(255) NULL,
   person_role_id     INTEGER NOT NULL,
@@ -64,7 +64,7 @@ CREATE INDEX ix_person_email ON public.t_persons (person_email);
 
 CREATE TABLE public.t_courses
 (
-  course_id     INTEGER PRIMARY KEY DEFAULT nextval('public.seq_courses'),
+  course_id     INTEGER DEFAULT public.seq_courses.nextval PRIMARY KEY,
   course_name   VARCHAR(255) NULL,
   course_description VARCHAR(2048) NULL,
   course_author_id     INTEGER NULL,
@@ -74,7 +74,7 @@ CREATE TABLE public.t_courses
 
 CREATE TABLE public.t_groups
 (
-  group_id     INTEGER PRIMARY KEY DEFAULT nextval('public.seq_groups'),
+  group_id     INTEGER DEFAULT public.seq_groups.nextval PRIMARY KEY,
   group_name   VARCHAR(255) NULL,
   group_capacity INTEGER NOT NULL DEFAULT 0,
   group_active     BOOLEAN NOT NULL DEFAULT TRUE
@@ -86,7 +86,7 @@ CREATE TABLE public.t_groups_courses
   course_id     INTEGER NOT NULL,
   FOREIGN KEY (group_id) REFERENCES public.t_groups (group_id),
   FOREIGN KEY (course_id) REFERENCES public.t_courses (course_id),
-  UNIQUE (group_id, course_id)
+  UNIQUE(group_id, course_id)
 );
 CREATE INDEX ix_groups_courses_group_id ON public.t_groups_courses (group_id);
 CREATE INDEX ix_groups_courses_course_id ON public.t_groups_courses (course_id);
@@ -104,7 +104,7 @@ CREATE INDEX ix_groups_students_student_id ON public.t_groups_students (student_
 
 CREATE TABLE public.t_lessons
 (
-  lesson_id     INTEGER PRIMARY KEY DEFAULT nextval('public.seq_lessons'),
+  lesson_id     INTEGER DEFAULT public.seq_lessons.nextval PRIMARY KEY,
   course_id     INTEGER NOT NULL,
   lecturer_id     INTEGER NOT NULL,
   timeslot_id     INTEGER NULL,

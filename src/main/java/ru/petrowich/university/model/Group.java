@@ -1,12 +1,13 @@
 package ru.petrowich.university.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class Group {
     private Integer id;
     private String name;
-    private List<Student> students;
+    private List<Student> students = new ArrayList<>();
     private boolean active;
 
     public Integer getId() {

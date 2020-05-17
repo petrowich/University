@@ -1,5 +1,7 @@
 package ru.petrowich.university.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -24,6 +26,7 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
     private final Queries queries;
     private final Integer roleId;
 
+    @Autowired
     public StudentDAOImpl(JdbcTemplate jdbcTemplate, Queries queries) {
         this.jdbcTemplate = jdbcTemplate;
         this.queries = queries;
@@ -32,10 +35,13 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
 
     @Override
     public Student getById(Integer studentId) {
-        return jdbcTemplate.queryForObject(queries.getQuery("Student.getById"),
-                (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
-                studentId,
-                roleId);
+        try {
+            return jdbcTemplate.queryForObject(queries.getQuery("Student.getById"),
+                    (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
+                    studentId, roleId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -74,6 +80,7 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
                     setNullableValue(preparedStatement, 4, student.getComment());
                     preparedStatement.setBoolean(5, student.isActive());
                     preparedStatement.setInt(6, student.getId());
+                    preparedStatement.setInt(7, roleId);
                     return preparedStatement;
                 }
         );
@@ -87,7 +94,7 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
 
     @Override
     public void delete(Student student) {
-        jdbcTemplate.update(queries.getQuery("Person.delete"), student.getId());
+        jdbcTemplate.update(queries.getQuery("Person.delete"), student.getId(), roleId);
     }
 
     @Override
@@ -108,10 +115,19 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
     }
 
     @Override
-    public List<Student> getByGroupsCourseId(Integer courseId) {
-        return jdbcTemplate.query(queries.getQuery("Student.getByGroupsCourseId"),
+    public List<Student> getByCourseId(Integer courseId) {
+        return jdbcTemplate.query(queries.getQuery("Student.getByCourseId"),
                 (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
                 courseId,
+                roleId
+        );
+    }
+
+    @Override
+    public List<Student> getByLessonId(Long lessonId) {
+        return jdbcTemplate.query(queries.getQuery("Student.getByLessonId"),
+                (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
+                lessonId,
                 roleId
         );
     }

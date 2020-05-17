@@ -1,5 +1,7 @@
 package ru.petrowich.university.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,6 +25,7 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
     private final Queries queries;
     private final Integer roleId;
 
+    @Autowired
     public LecturerDAOImpl(JdbcTemplate jdbcTemplate, Queries queries) {
         this.jdbcTemplate = jdbcTemplate;
         this.queries = queries;
@@ -31,10 +34,13 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
 
     @Override
     public Lecturer getById(Integer lecturerId) {
-        return jdbcTemplate.queryForObject(queries.getQuery("Person.getById"),
-                (ResultSet resultSet, int rowNumber) -> getLecturer(resultSet),
-                lecturerId,
-                roleId);
+        try {
+            return jdbcTemplate.queryForObject(queries.getQuery("Person.getById"),
+                    (ResultSet resultSet, int rowNumber) -> getLecturer(resultSet),
+                    lecturerId, roleId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -73,7 +79,7 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
 
     @Override
     public void delete(Lecturer lecturer) {
-        jdbcTemplate.update(queries.getQuery("Person.delete"), lecturer.getId());
+        jdbcTemplate.update(queries.getQuery("Person.delete"), lecturer.getId(), roleId);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package ru.petrowich.university.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -21,6 +23,7 @@ public class TimeSlotDAOImpl extends AbstractDAO implements TimeSlotDAO {
     private final JdbcTemplate jdbcTemplate;
     private final Queries queries;
 
+    @Autowired
     public TimeSlotDAOImpl(JdbcTemplate jdbcTemplate, Queries queries) {
         this.jdbcTemplate = jdbcTemplate;
         this.queries = queries;
@@ -28,9 +31,13 @@ public class TimeSlotDAOImpl extends AbstractDAO implements TimeSlotDAO {
 
     @Override
     public TimeSlot getById(Integer timeSlotId) {
-        return jdbcTemplate.queryForObject(queries.getQuery("TimeSlots.getById"),
-                (ResultSet resultSet, int rowNumber) -> getTimeSlot(resultSet),
-                timeSlotId);
+        try {
+            return jdbcTemplate.queryForObject(queries.getQuery("TimeSlots.getById"),
+                    (ResultSet resultSet, int rowNumber) -> getTimeSlot(resultSet),
+                    timeSlotId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override

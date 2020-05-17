@@ -1,5 +1,7 @@
 package ru.petrowich.university.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -21,6 +23,7 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
     private final JdbcTemplate jdbcTemplate;
     private final Queries queries;
 
+    @Autowired
     public GroupDAOImpl(JdbcTemplate jdbcTemplate, Queries queries) {
         this.jdbcTemplate = jdbcTemplate;
         this.queries = queries;
@@ -28,8 +31,12 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
 
     @Override
     public Group getById(Integer groupId) {
-        return jdbcTemplate.queryForObject(queries.getQuery("Group.getById"),
-                (ResultSet resultSet, int rowNumber) -> getGroup(resultSet), groupId);
+        try {
+            return jdbcTemplate.queryForObject(queries.getQuery("Group.getById"),
+                    (ResultSet resultSet, int rowNumber) -> getGroup(resultSet), groupId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -41,7 +48,8 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
                     PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Group.add"),
                             Statement.RETURN_GENERATED_KEYS);
                     setNullableValue(preparedStatement, 1, group.getName());
-                    preparedStatement.setBoolean(2, group.isActive());
+                    preparedStatement.setInt(2, group.getStudents().size());
+                    preparedStatement.setBoolean(3, group.isActive());
                     return preparedStatement;
                 }, keyHolder);
 
@@ -55,8 +63,9 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
                 (Connection connection) -> {
                     PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Group.update"));
                     setNullableValue(preparedStatement, 1, group.getName());
-                    preparedStatement.setBoolean(2, group.isActive());
-                    preparedStatement.setInt(3, group.getId());
+                    preparedStatement.setInt(2, group.getStudents().size());
+                    preparedStatement.setBoolean(3, group.isActive());
+                    preparedStatement.setInt(4, group.getId());
                     return preparedStatement;
                 }
         );

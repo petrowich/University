@@ -1,5 +1,7 @@
 package ru.petrowich.university.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -19,10 +21,10 @@ import java.util.List;
 
 @Repository
 public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
-
     private final JdbcTemplate jdbcTemplate;
     private final Queries queries;
 
+    @Autowired
     public CourseDAOImpl(JdbcTemplate jdbcTemplate, Queries queries) {
         this.jdbcTemplate = jdbcTemplate;
         this.queries = queries;
@@ -30,14 +32,12 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
 
     @Override
     public Course getById(Integer courseId) {
-        return jdbcTemplate.queryForObject(queries.getQuery("Course.getById"),
-                (ResultSet resultSet, int rowNumber) -> new Course()
-                        .setId(courseId)
-                        .setName(resultSet.getString("course_name"))
-                        .setDescription(resultSet.getString("course_description"))
-                        .setAuthor(new Lecturer().setId(resultSet.getInt("course_author_id")))
-                        .setActive(resultSet.getBoolean("course_active")),
-                courseId);
+        try {
+            return jdbcTemplate.queryForObject(queries.getQuery("Course.getById"),
+                    (ResultSet resultSet, int rowNumber) -> getCourse(resultSet), courseId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -103,11 +103,18 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
     }
 
     private Course getCourse(ResultSet resultSet) throws SQLException {
-        return new Course()
+        Course course = new Course()
                 .setId(resultSet.getInt("course_id"))
                 .setName(resultSet.getString("course_name"))
                 .setDescription(resultSet.getString("course_description"))
-                .setAuthor(new Lecturer().setId(resultSet.getInt("course_author_id")))
                 .setActive(resultSet.getBoolean("course_active"));
+
+        Integer authorId = resultSet.getInt("course_author_id");
+
+        if (!resultSet.wasNull()) {
+            course.setAuthor(new Lecturer().setId(authorId));
+        }
+
+        return course;
     }
 }
