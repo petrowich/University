@@ -1,4 +1,4 @@
-package ru.petrowich.university;
+package ru.petrowich.university.dao;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

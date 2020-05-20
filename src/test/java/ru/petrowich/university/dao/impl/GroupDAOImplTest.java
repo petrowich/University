@@ -2,11 +2,9 @@ package ru.petrowich.university.dao.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
 import ru.petrowich.university.dao.GroupDAO;
 import ru.petrowich.university.model.Group;
@@ -24,8 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AppConfigurationTest.class})
+@SpringJUnitConfig(classes = {AppConfigurationTest.class})
 class GroupDAOImplTest {
     private static final Integer NONEXISTENT_GROUP_ID = 999;
     private static final String NEW_GROUP_NAME = "DD-04";

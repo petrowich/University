@@ -2,11 +2,9 @@ package ru.petrowich.university.dao.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
 import ru.petrowich.university.dao.LessonDAO;
 import ru.petrowich.university.model.Course;
@@ -28,8 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AppConfigurationTest.class})
+@SpringJUnitConfig(classes = {AppConfigurationTest.class})
 class LessonDAOImplTest {
     private static final Long NONEXISTENT_LESSON_ID = 9999999L;
     private static final Long EXISTENT_LESSON_ID_5000001 = 5000001L;

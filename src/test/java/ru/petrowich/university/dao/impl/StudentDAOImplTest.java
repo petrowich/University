@@ -2,11 +2,9 @@ package ru.petrowich.university.dao.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
 import ru.petrowich.university.dao.LecturerDAO;
 import ru.petrowich.university.dao.StudentDAO;
@@ -28,8 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AppConfigurationTest.class})
+@SpringJUnitConfig(classes = {AppConfigurationTest.class})
 class StudentDAOImplTest {
     private static final Integer NONEXISTENT_PERSON_ID = 99999;
     private static final String NEW_PERSON_FIRST_NAME = "Улов";

@@ -2,11 +2,9 @@ package ru.petrowich.university.dao.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
 import ru.petrowich.university.dao.LessonDAO;
 import ru.petrowich.university.dao.TimeSlotDAO;
@@ -27,8 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AppConfigurationTest.class})
+@SpringJUnitConfig(classes = {AppConfigurationTest.class})
 class TimeSlotDAOImplTest {
     private static final Integer NONEXISTENT_TIME_SLOT_ID = 0;
     private static final String NEW_TIME_SLOT_NAME = "ninth lesson";
