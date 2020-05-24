@@ -47,6 +47,7 @@ INSERT INTO public.t_groups_courses (group_id, course_id) VALUES
   (501, 51)
 , (501, 52)
 , (501, 54)
+, (502, 51)
 , (502, 53)
 , (502, 54)
 , (502, 55)

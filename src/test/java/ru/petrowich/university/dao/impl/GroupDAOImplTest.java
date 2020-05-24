@@ -34,6 +34,7 @@ class GroupDAOImplTest {
     private static final String EXISTENT_GROUP_NAME_503 = "CC-03";
     private static final Integer NONEXISTENT_COURSE_ID = 99;
     private static final Integer EXISTENT_COURSE_ID_54 = 54;
+    private static final Long EXISTENT_LESSON_ID_5000001 = 5000001L;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -164,5 +165,19 @@ class GroupDAOImplTest {
         List<Group> expected = new ArrayList<>();
         List<Group> actual = groupDAOImpl.getByCourseId(null);
         assertEquals(expected, actual, "empty courses list is expected");
+    }
+
+    @Test
+    void testGetByLessonIdShouldReturnCourseGroupsListWhenCourseIdPassed() {
+        List<Group> expected = new ArrayList<>();
+        expected.add(new Group().setId(EXISTENT_GROUP_ID_501).setName(EXISTENT_GROUP_NAME_501).setActive(true));
+        expected.add(new Group().setId(EXISTENT_GROUP_ID_502).setName(EXISTENT_GROUP_NAME_502).setActive(true));
+
+        List<Group> actual = groupDAOImpl.getByLessonId(EXISTENT_LESSON_ID_5000001);
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+
+        Set<Group> expectedSet = new HashSet<>(expected);
+        Set<Group> actualSet = new HashSet<>(actual);
+        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
     }
 }

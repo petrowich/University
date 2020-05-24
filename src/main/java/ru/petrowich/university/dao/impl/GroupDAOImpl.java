@@ -90,6 +90,13 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
         );
     }
 
+    @Override
+    public List<Group> getByLessonId(Long lessonId) {
+        return jdbcTemplate.query(queries.getQuery("Group.getByLessonId"),
+                (ResultSet resultSet, int rowNumber) -> getGroup(resultSet), lessonId
+        );
+    }
+
     private Group getGroup(ResultSet resultSet) throws SQLException {
         return new Group()
                 .setId(resultSet.getInt("group_id"))
