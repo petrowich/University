@@ -200,7 +200,7 @@ class CourseDAOImplTest {
     }
 
     @Test
-    void testGetByCourseIdShouldReturnEmptyCoursesListWhenNonexistentCourseId() {
+    void testGetByCourseIdShouldReturnEmptyCoursesListWhenNonexistentCourseIdPassed() {
         List<Course> expected = new ArrayList<>();
         List<Course> actual = courseDAOImpl.getByStudentId(NONEXISTENT_STUDENT_ID);
         assertEquals(expected, actual, "empty courses list is expected");
