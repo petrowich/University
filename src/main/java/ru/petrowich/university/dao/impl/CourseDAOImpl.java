@@ -1,5 +1,6 @@
 package ru.petrowich.university.dao.impl;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,8 +20,11 @@ import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 @Repository
 public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
+    private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final JdbcTemplate jdbcTemplate;
     private final Queries queries;
 
@@ -32,10 +36,14 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
 
     @Override
     public Course getById(Integer courseId) {
+        String sql = queries.getQuery("Course.getById");
+        LOGGER.info("getById: {}; courseId {}", sql, courseId);
+
         try {
-            return jdbcTemplate.queryForObject(queries.getQuery("Course.getById"),
+            return jdbcTemplate.queryForObject(sql,
                     (ResultSet resultSet, int rowNumber) -> getCourse(resultSet), courseId);
         } catch (EmptyResultDataAccessException e) {
+            LOGGER.warn("getById: {}", String.valueOf(e));
             return null;
         }
     }
@@ -52,8 +60,10 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
                     setNullableValue(preparedStatement, 2, course.getDescription());
                     setNullableValue(preparedStatement, 3, course.getAuthor().getId());
                     preparedStatement.setBoolean(4, course.isActive());
+                    LOGGER.info("add: {}", preparedStatement);
                     return preparedStatement;
-                }, keyHolder);
+                }, keyHolder
+        );
 
         Integer courseId = (Integer) keyHolder.getKeyList().get(0).get("course_id");
         course.setId(courseId);
@@ -70,6 +80,7 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
                     setNullableValue(preparedStatement, 3, course.getAuthor().getId());
                     preparedStatement.setBoolean(4, course.isActive());
                     preparedStatement.setInt(5, course.getId());
+                    LOGGER.info("update: {}", preparedStatement);
                     return preparedStatement;
                 }
         );
@@ -77,19 +88,23 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
 
     @Override
     public void delete(Course course) {
-        jdbcTemplate.update(queries.getQuery("Course.delete"), course.getId());
+        String sql = queries.getQuery("Course.delete");
+        LOGGER.info("delete: {}; courseId {}", sql, course.getId());
+        jdbcTemplate.update(sql, course.getId());
     }
 
     @Override
     public List<Course> getAll() {
-        return jdbcTemplate.query(queries.getQuery("Course.getAll"),
-                (ResultSet resultSet, int rowNumber) -> getCourse(resultSet)
-        );
+        String query = queries.getQuery("Course.getAll");
+        LOGGER.info("getAll: {}", query);
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getCourse(resultSet));
     }
 
     @Override
     public List<Course> getByAuthorId(Integer authorId) {
-        return jdbcTemplate.query(queries.getQuery("Course.getByAuthorId"),
+        String query = queries.getQuery("Course.getByAuthorId");
+        LOGGER.info("getByAuthorId: {}; getByAuthorId = {}", query, authorId);
+        return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getCourse(resultSet),
                 authorId
         );
@@ -97,8 +112,11 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
 
     @Override
     public List<Course> getByStudentId(Integer studentId) {
-        return jdbcTemplate.query(queries.getQuery("Course.getByStudentId"),
-                (ResultSet resultSet, int rowNumber) -> getCourse(resultSet), studentId
+        String query = queries.getQuery("Course.getByStudentId");
+        LOGGER.info("getByStudentId: {}; getByAuthorId = {}", query, studentId);
+        return jdbcTemplate.query(query,
+                (ResultSet resultSet, int rowNumber) -> getCourse(resultSet),
+                studentId
         );
     }
 

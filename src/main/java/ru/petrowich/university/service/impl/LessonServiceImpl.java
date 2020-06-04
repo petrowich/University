@@ -1,5 +1,6 @@
 package ru.petrowich.university.service.impl;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.petrowich.university.dao.LessonDAO;
@@ -19,9 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class LessonServiceImpl implements LessonService {
+    private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final LessonDAO lessonDAO;
     private final CourseDAO courseDAO;
     private final LecturerDAO lecturerDAO;
@@ -30,8 +33,12 @@ public class LessonServiceImpl implements LessonService {
     private final StudentDAO studentDAO;
 
     @Autowired
-    public LessonServiceImpl(LessonDAO lessonDAO, CourseDAO courseDAO, LecturerDAO lecturerDAO
-            , TimeSlotDAO timeSlotDAO, GroupDAO groupDAO, StudentDAO studentDAO) {
+    public LessonServiceImpl(LessonDAO lessonDAO,
+                             CourseDAO courseDAO,
+                             LecturerDAO lecturerDAO,
+                             TimeSlotDAO timeSlotDAO,
+                             GroupDAO groupDAO,
+                             StudentDAO studentDAO) {
         this.lessonDAO = lessonDAO;
         this.courseDAO = courseDAO;
         this.lecturerDAO = lecturerDAO;
@@ -42,6 +49,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public Lesson getById(Long lessonId) {
+        LOGGER.info("getById {}", lessonId);
         Lesson lesson = lessonDAO.getById(lessonId);
 
         if (lesson != null) {
@@ -57,21 +65,25 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public void add(Lesson lesson) {
+        LOGGER.info("add {}", lesson);
         lessonDAO.add(lesson);
     }
 
     @Override
     public void update(Lesson lesson) {
+        LOGGER.info("update {}", lesson);
         lessonDAO.update(lesson);
     }
 
     @Override
     public void delete(Lesson lesson) {
+        LOGGER.info("delete {}", lesson);
         lessonDAO.delete(lesson);
     }
 
     @Override
     public List<Lesson> getAll() {
+        LOGGER.info("getAll");
         List<Lesson> lessons = lessonDAO.getAll().stream()
                 .map(lesson -> lesson.setGroups(groupDAO.getByLessonId(lesson.getId())))
                 .map(lesson -> lesson.setStudents(studentDAO.getByLessonId(lesson.getId())))
@@ -86,6 +98,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<Lesson> getByLecturerId(Integer lecturerId) {
+        LOGGER.info("getByLecturerId {}", lecturerId);
         List<Lesson> lessons = lessonDAO.getByLecturerId(lecturerId).stream()
                 .map(lesson -> lesson.setGroups(groupDAO.getByLessonId(lesson.getId())))
                 .map(lesson -> lesson.setStudents(studentDAO.getByLessonId(lesson.getId())))
@@ -100,6 +113,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<Lesson> getByStudentId(Integer studentId) {
+        LOGGER.info("getByStudentId {}", studentId);
         List<Lesson> lessons = lessonDAO.getByStudentId(studentId).stream()
                 .map(lesson -> lesson.setGroups(groupDAO.getByLessonId(lesson.getId())))
                 .map(lesson -> lesson.setStudents(studentDAO.getByLessonId(lesson.getId())))

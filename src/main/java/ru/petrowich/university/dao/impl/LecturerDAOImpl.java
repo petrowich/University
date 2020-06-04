@@ -1,5 +1,6 @@
 package ru.petrowich.university.dao.impl;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,9 +19,12 @@ import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 @Repository
 public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
     private static final String ROLE = "LECTURER";
+    private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final JdbcTemplate jdbcTemplate;
     private final Queries queries;
     private final Integer roleId;
@@ -34,11 +38,15 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
 
     @Override
     public Lecturer getById(Integer lecturerId) {
+        String sql = queries.getQuery("Person.getById");
+        LOGGER.info("getById: {}; lecturerId {}, roleId = {}", sql, lecturerId, roleId);
+
         try {
             return jdbcTemplate.queryForObject(queries.getQuery("Person.getById"),
                     (ResultSet resultSet, int rowNumber) -> getLecturer(resultSet),
                     lecturerId, roleId);
         } catch (EmptyResultDataAccessException e) {
+            LOGGER.warn("getById: {}", String.valueOf(e));
             return null;
         }
     }
@@ -57,6 +65,7 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
                     preparedStatement.setString(4, lecturer.getEmail());
                     preparedStatement.setString(5, lecturer.getComment());
                     preparedStatement.setBoolean(6, lecturer.isActive());
+                    LOGGER.info("add: {}", preparedStatement);
                     return preparedStatement;
                 }, keyHolder);
 
@@ -66,25 +75,34 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
 
     @Override
     public void update(Lecturer lecturer) {
-        jdbcTemplate.update(queries.getQuery("Person.update"),
-                lecturer.getFirstName(),
-                lecturer.getLastName(),
-                lecturer.getEmail(),
-                lecturer.getComment(),
-                lecturer.isActive(),
-                lecturer.getId(),
-                roleId
+        jdbcTemplate.update(
+                (Connection connection) -> {
+                    PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Person.update"));
+                    setNullableValue(preparedStatement, 1, lecturer.getFirstName());
+                    setNullableValue(preparedStatement,2, lecturer.getLastName());
+                    setNullableValue(preparedStatement,3, lecturer.getEmail());
+                    setNullableValue(preparedStatement,4, lecturer.getComment());
+                    preparedStatement.setBoolean(5, lecturer.isActive());
+                    preparedStatement.setInt(6, lecturer.getId());
+                    preparedStatement.setInt(7, roleId);
+                    LOGGER.info("update: {}", preparedStatement);
+                    return preparedStatement;
+                }
         );
     }
 
     @Override
     public void delete(Lecturer lecturer) {
-        jdbcTemplate.update(queries.getQuery("Person.delete"), lecturer.getId(), roleId);
+        String sql = queries.getQuery("Person.delete");
+        LOGGER.info("delete: {}; lecturerId {}, roleId = {}", sql, lecturer.getId(), roleId);
+        jdbcTemplate.update(sql, lecturer.getId(), roleId);
     }
 
     @Override
     public List<Lecturer> getAll() {
-        return jdbcTemplate.query(queries.getQuery("Person.getAll"),
+        String query = queries.getQuery("Person.getAll");
+        LOGGER.info("getAll: {}; roleId = {}", query, roleId);
+        return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getLecturer(resultSet),
                 roleId
         );

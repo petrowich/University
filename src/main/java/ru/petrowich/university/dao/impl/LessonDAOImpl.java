@@ -1,5 +1,6 @@
 package ru.petrowich.university.dao.impl;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,8 +23,11 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 @Repository
 public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
+    private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final JdbcTemplate jdbcTemplate;
     private final Queries queries;
 
@@ -35,11 +39,15 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
 
     @Override
     public Lesson getById(Long lessonId) {
+        String sql = queries.getQuery("Lesson.getById");
+        LOGGER.info("getById: {}; lessonId {}", sql, lessonId);
+
         try {
-            return jdbcTemplate.queryForObject(queries.getQuery("Lesson.getById"),
+            return jdbcTemplate.queryForObject(sql,
                     (ResultSet resultSet, int rowNumber) -> getLesson(resultSet),
                     lessonId);
         } catch (EmptyResultDataAccessException e) {
+            LOGGER.warn("getById: {}", String.valueOf(e));
             return null;
         }
     }
@@ -58,6 +66,7 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
                     setNullableValue(preparedStatement, 4, lesson.getDate());
                     setNullableValue(preparedStatement, 5, lesson.getStartTime());
                     setNullableValue(preparedStatement, 6, lesson.getEndTime());
+                    LOGGER.info("add: {}", preparedStatement);
                     return preparedStatement;
                 }, keyHolder);
 
@@ -77,25 +86,32 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
                     setNullableValue(preparedStatement, 5, lesson.getStartTime());
                     setNullableValue(preparedStatement, 6, lesson.getEndTime());
                     preparedStatement.setLong(7, lesson.getId());
+                    LOGGER.info("update: {}", preparedStatement);
                     return preparedStatement;
                 });
     }
 
     @Override
     public void delete(Lesson lesson) {
-        jdbcTemplate.update(queries.getQuery("Lesson.delete"), lesson.getId());
+        String sql = queries.getQuery("Lesson.delete");
+        LOGGER.info("delete: {}; lessonId {}", sql, lesson.getId());
+        jdbcTemplate.update(sql, lesson.getId());
     }
 
     @Override
     public List<Lesson> getAll() {
-        return jdbcTemplate.query(queries.getQuery("Lesson.getAll"),
+        String query = queries.getQuery("Lesson.getAll");
+        LOGGER.info("getAll: {} ", query);
+        return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getLesson(resultSet)
         );
     }
 
     @Override
     public List<Lesson> getByLecturerId(Integer lecturerId) {
-        return jdbcTemplate.query(queries.getQuery("Lesson.getByLecturerId"),
+        String query = queries.getQuery("Lesson.getByLecturerId");
+        LOGGER.info("getByLecturerId: {}; lecturerId = {}", query, lecturerId);
+        return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getLesson(resultSet),
                 lecturerId
         );
@@ -103,7 +119,9 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
 
     @Override
     public List<Lesson> getByStudentId(Integer studentIdId) {
-        return jdbcTemplate.query(queries.getQuery("Lesson.getByStudentId"),
+        String query = queries.getQuery("Lesson.getByStudentId");
+        LOGGER.info("getByStudentId: {}; lecturerId = {}", query, studentIdId);
+        return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getLesson(resultSet),
                 studentIdId
         );

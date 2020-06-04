@@ -1,5 +1,6 @@
 package ru.petrowich.university.service.impl;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.petrowich.university.dao.CourseDAO;
@@ -12,8 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 @Service
 public class CourseServiceImpl implements CourseService {
+    private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private CourseDAO courseDAO;
     private LecturerDAO lecturerDAO;
 
@@ -25,6 +29,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course getById(Integer id) {
+        LOGGER.info("getById {}", id);
         Course course = courseDAO.getById(id);
 
         if (course != null) {
@@ -36,21 +41,25 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void add(Course course) {
+        LOGGER.info("add {}", course);
         courseDAO.add(course);
     }
 
     @Override
     public void update(Course course) {
+        LOGGER.info("update {}", course);
         courseDAO.update(course);
     }
 
     @Override
     public void delete(Course course) {
+        LOGGER.info("delete {}", course);
         courseDAO.delete(course);
     }
 
     @Override
     public List<Course> getAll() {
+        LOGGER.info("getAll");
         List<Course> courses = courseDAO.getAll();
         fillWithAuthors(courses);
         return courses;
@@ -58,6 +67,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Course> getByAuthorId(Integer authorId) {
+        LOGGER.info("getByAuthorId {}", authorId);
         List<Course> courses = courseDAO.getByAuthorId(authorId);
         fillWithAuthors(courses);
         return courses;
@@ -65,6 +75,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Course> getByStudentId(Integer studentId) {
+        LOGGER.info("getByStudentId {}", studentId);
         List<Course> courses = courseDAO.getByStudentId(studentId);
         fillWithAuthors(courses);
         return courses;
