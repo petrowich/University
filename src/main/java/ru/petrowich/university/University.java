@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Import;
 import ru.petrowich.university.dao.DataBaseConfiguration;
 
 import org.slf4j.Logger;
-import ru.petrowich.university.service.GroupService;
-import ru.petrowich.university.service.impl.GroupServiceImpl;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -21,6 +19,6 @@ public class University {
     private static final ApplicationContext context = new AnnotationConfigApplicationContext(University.class);
 
     public static void main(String[] args) {
-        GroupService groupService = (GroupServiceImpl) context.getBean(GroupServiceImpl.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(University.class);
     }
 }

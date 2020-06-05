@@ -40,7 +40,7 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
     @Override
     public Lesson getById(Long lessonId) {
         String sql = queries.getQuery("Lesson.getById");
-        LOGGER.info("getById: {}; lessonId {}", sql, lessonId);
+        LOGGER.debug("getById: {}; lessonId {}", sql, lessonId);
 
         try {
             return jdbcTemplate.queryForObject(sql,
@@ -66,7 +66,7 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
                     setNullableValue(preparedStatement, 4, lesson.getDate());
                     setNullableValue(preparedStatement, 5, lesson.getStartTime());
                     setNullableValue(preparedStatement, 6, lesson.getEndTime());
-                    LOGGER.info("add: {}", preparedStatement);
+                    LOGGER.debug("add: {}", preparedStatement);
                     return preparedStatement;
                 }, keyHolder);
 
@@ -86,7 +86,7 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
                     setNullableValue(preparedStatement, 5, lesson.getStartTime());
                     setNullableValue(preparedStatement, 6, lesson.getEndTime());
                     preparedStatement.setLong(7, lesson.getId());
-                    LOGGER.info("update: {}", preparedStatement);
+                    LOGGER.debug("update: {}", preparedStatement);
                     return preparedStatement;
                 });
     }
@@ -94,14 +94,14 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
     @Override
     public void delete(Lesson lesson) {
         String sql = queries.getQuery("Lesson.delete");
-        LOGGER.info("delete: {}; lessonId {}", sql, lesson.getId());
+        LOGGER.debug("delete: {}; lessonId {}", sql, lesson.getId());
         jdbcTemplate.update(sql, lesson.getId());
     }
 
     @Override
     public List<Lesson> getAll() {
         String query = queries.getQuery("Lesson.getAll");
-        LOGGER.info("getAll: {} ", query);
+        LOGGER.debug("getAll: {} ", query);
         return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getLesson(resultSet)
         );
@@ -110,7 +110,7 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
     @Override
     public List<Lesson> getByLecturerId(Integer lecturerId) {
         String query = queries.getQuery("Lesson.getByLecturerId");
-        LOGGER.info("getByLecturerId: {}; lecturerId = {}", query, lecturerId);
+        LOGGER.debug("getByLecturerId: {}; lecturerId = {}", query, lecturerId);
         return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getLesson(resultSet),
                 lecturerId
@@ -120,7 +120,7 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
     @Override
     public List<Lesson> getByStudentId(Integer studentIdId) {
         String query = queries.getQuery("Lesson.getByStudentId");
-        LOGGER.info("getByStudentId: {}; lecturerId = {}", query, studentIdId);
+        LOGGER.debug("getByStudentId: {}; lecturerId = {}", query, studentIdId);
         return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getLesson(resultSet),
                 studentIdId

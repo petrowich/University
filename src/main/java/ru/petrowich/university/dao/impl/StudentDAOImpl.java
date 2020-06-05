@@ -40,7 +40,7 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
     @Override
     public Student getById(Integer studentId) {
         String sql = queries.getQuery("Student.getById");
-        LOGGER.info("getById: {}; studentId = {}, roleId = {}", sql, studentId, roleId);
+        LOGGER.debug("getById: {}; studentId = {}, roleId = {}", sql, studentId, roleId);
 
         try {
             return jdbcTemplate.queryForObject(sql,
@@ -66,7 +66,7 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
                     setNullableValue(preparedStatement, 4, student.getEmail());
                     setNullableValue(preparedStatement, 5, student.getComment());
                     preparedStatement.setBoolean(6, student.isActive());
-                    LOGGER.info("add: {}", preparedStatement);
+                    LOGGER.debug("add: {}", preparedStatement);
                     return preparedStatement;
                 }, keyHolder);
 
@@ -90,7 +90,7 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
                     preparedStatement.setBoolean(5, student.isActive());
                     preparedStatement.setInt(6, student.getId());
                     preparedStatement.setInt(7, roleId);
-                    LOGGER.info("update: {}", preparedStatement);
+                    LOGGER.debug("update: {}", preparedStatement);
                     return preparedStatement;
                 }
         );
@@ -105,14 +105,14 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
     @Override
     public void delete(Student student) {
         String sql = queries.getQuery("Person.delete");
-        LOGGER.info("delete: {}; studentId = {}, roleId = {}", sql, student.getId(), roleId);
+        LOGGER.debug("delete: {}; studentId = {}, roleId = {}", sql, student.getId(), roleId);
         jdbcTemplate.update(sql, student.getId(), roleId);
     }
 
     @Override
     public List<Student> getAll() {
         String query = queries.getQuery("Student.getAll");
-        LOGGER.info("getAll: {}; roleId = {}", query, roleId);
+        LOGGER.debug("getAll: {}; roleId = {}", query, roleId);
         return jdbcTemplate.query(queries.getQuery("Student.getAll"),
                 (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
                 roleId
@@ -122,7 +122,7 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
     @Override
     public List<Student> getByGroupId(Integer groupId) {
         String query = queries.getQuery("Student.getByGroupId");
-        LOGGER.info("getByGroupId: {}; groupId = {}, roleId = {}", query, groupId, roleId);
+        LOGGER.debug("getByGroupId: {}; groupId = {}, roleId = {}", query, groupId, roleId);
         return jdbcTemplate.query(queries.getQuery("Student.getByGroupId"),
                 (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
                 groupId,
@@ -133,7 +133,7 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
     @Override
     public List<Student> getByCourseId(Integer courseId) {
         String query = queries.getQuery("Student.getByCourseId");
-        LOGGER.info("getByCourseId: {}; courseId = {}, roleId = {}", query, courseId, roleId);
+        LOGGER.debug("getByCourseId: {}; courseId = {}, roleId = {}", query, courseId, roleId);
         return jdbcTemplate.query(queries.getQuery("Student.getByCourseId"),
                 (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
                 courseId,
@@ -144,7 +144,7 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
     @Override
     public List<Student> getByLessonId(Long lessonId) {
         String query = queries.getQuery("Student.getByLessonId");
-        LOGGER.info("getByLessonId: {}; lessonId = {}, roleId = {}", query, lessonId, roleId);
+        LOGGER.debug("getByLessonId: {}; lessonId = {}, roleId = {}", query, lessonId, roleId);
         return jdbcTemplate.query(queries.getQuery("Student.getByLessonId"),
                 (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
                 lessonId,
@@ -172,13 +172,13 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
 
     private void deleteStudentGroupId(Integer studentId) {
         String query = queries.getQuery("Student.deleteStudentGroupId");
-        LOGGER.info("deleteStudentGroupId: {}; studentId = {}", query, studentId);
+        LOGGER.debug("deleteStudentGroupId: {}; studentId = {}", query, studentId);
         this.jdbcTemplate.update(query, studentId);
     }
 
     private void setStudentGroupId(Integer groupId, Integer studentId) {
         String query = queries.getQuery("Student.addStudentGroupId");
-        LOGGER.info("addStudentGroupId: {}; groupId = {}, studentId = {}", query, groupId, studentId);
+        LOGGER.debug("addStudentGroupId: {}; groupId = {}, studentId = {}", query, groupId, studentId);
         this.jdbcTemplate.update(query, groupId, studentId);
     }
 }

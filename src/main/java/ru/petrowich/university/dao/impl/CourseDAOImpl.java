@@ -37,7 +37,7 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
     @Override
     public Course getById(Integer courseId) {
         String sql = queries.getQuery("Course.getById");
-        LOGGER.info("getById: {}; courseId {}", sql, courseId);
+        LOGGER.debug("getById: {}; courseId {}", sql, courseId);
 
         try {
             return jdbcTemplate.queryForObject(sql,
@@ -60,7 +60,7 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
                     setNullableValue(preparedStatement, 2, course.getDescription());
                     setNullableValue(preparedStatement, 3, course.getAuthor().getId());
                     preparedStatement.setBoolean(4, course.isActive());
-                    LOGGER.info("add: {}", preparedStatement);
+                    LOGGER.debug("add: {}", preparedStatement);
                     return preparedStatement;
                 }, keyHolder
         );
@@ -80,7 +80,7 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
                     setNullableValue(preparedStatement, 3, course.getAuthor().getId());
                     preparedStatement.setBoolean(4, course.isActive());
                     preparedStatement.setInt(5, course.getId());
-                    LOGGER.info("update: {}", preparedStatement);
+                    LOGGER.debug("update: {}", preparedStatement);
                     return preparedStatement;
                 }
         );
@@ -89,21 +89,21 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
     @Override
     public void delete(Course course) {
         String sql = queries.getQuery("Course.delete");
-        LOGGER.info("delete: {}; courseId {}", sql, course.getId());
+        LOGGER.debug("delete: {}; courseId {}", sql, course.getId());
         jdbcTemplate.update(sql, course.getId());
     }
 
     @Override
     public List<Course> getAll() {
         String query = queries.getQuery("Course.getAll");
-        LOGGER.info("getAll: {}", query);
+        LOGGER.debug("getAll: {}", query);
         return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getCourse(resultSet));
     }
 
     @Override
     public List<Course> getByAuthorId(Integer authorId) {
         String query = queries.getQuery("Course.getByAuthorId");
-        LOGGER.info("getByAuthorId: {}; getByAuthorId = {}", query, authorId);
+        LOGGER.debug("getByAuthorId: {}; authorId = {}", query, authorId);
         return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getCourse(resultSet),
                 authorId
@@ -113,7 +113,7 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
     @Override
     public List<Course> getByStudentId(Integer studentId) {
         String query = queries.getQuery("Course.getByStudentId");
-        LOGGER.info("getByStudentId: {}; getByAuthorId = {}", query, studentId);
+        LOGGER.debug("getByStudentId: {}; studentId = {}", query, studentId);
         return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getCourse(resultSet),
                 studentId

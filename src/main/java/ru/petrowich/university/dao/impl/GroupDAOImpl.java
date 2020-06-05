@@ -36,7 +36,7 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
     @Override
     public Group getById(Integer groupId) {
         String sql = queries.getQuery("Group.getById");
-        LOGGER.info("getById: {}; groupId {}", sql, groupId);
+        LOGGER.debug("getById: {}; groupId {}", sql, groupId);
 
         try {
             return jdbcTemplate.queryForObject(sql,
@@ -59,7 +59,7 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
                     setNullableValue(preparedStatement, 1, group.getName());
                     preparedStatement.setInt(2, group.getStudents().size());
                     preparedStatement.setBoolean(3, group.isActive());
-                    LOGGER.info("add: {}", preparedStatement);
+                    LOGGER.debug("add: {}", preparedStatement);
                     return preparedStatement;
                 }, keyHolder
         );
@@ -77,7 +77,7 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
                     preparedStatement.setInt(2, group.getStudents().size());
                     preparedStatement.setBoolean(3, group.isActive());
                     preparedStatement.setInt(4, group.getId());
-                    LOGGER.info("update: {}", preparedStatement);
+                    LOGGER.debug("update: {}", preparedStatement);
                     return preparedStatement;
                 }
         );
@@ -86,21 +86,21 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
     @Override
     public void delete(Group group) {
         String sql = queries.getQuery("Group.delete");
-        LOGGER.info("delete: {}; groupId {}", sql, group.getId());
+        LOGGER.debug("delete: {}; groupId {}", sql, group.getId());
         jdbcTemplate.update(sql, group.getId());
     }
 
     @Override
     public List<Group> getAll() {
         String query = queries.getQuery("Group.getAll");
-        LOGGER.info("getAll: {} ", query);
+        LOGGER.debug("getAll: {} ", query);
         return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getGroup(resultSet));
     }
 
     @Override
     public List<Group> getByCourseId(Integer courseId) {
         String query = queries.getQuery("Group.getByCourseId");
-        LOGGER.info("getByCourseId: {}; courseId = {}", query, courseId);
+        LOGGER.debug("getByCourseId: {}; courseId = {}", query, courseId);
         return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getGroup(resultSet),
                 courseId
@@ -110,7 +110,7 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
     @Override
     public List<Group> getByLessonId(Long lessonId) {
         String query = queries.getQuery("Group.getByLessonId");
-        LOGGER.info("getByLessonId: {}; getByLessonId = {}", query, lessonId);
+        LOGGER.debug("getByLessonId: {}; lessonId = {}", query, lessonId);
         return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getGroup(resultSet),
                 lessonId

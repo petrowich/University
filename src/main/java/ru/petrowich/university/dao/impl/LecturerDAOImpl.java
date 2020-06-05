@@ -39,7 +39,7 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
     @Override
     public Lecturer getById(Integer lecturerId) {
         String sql = queries.getQuery("Person.getById");
-        LOGGER.info("getById: {}; lecturerId {}, roleId = {}", sql, lecturerId, roleId);
+        LOGGER.debug("getById: {}; lecturerId {}, roleId = {}", sql, lecturerId, roleId);
 
         try {
             return jdbcTemplate.queryForObject(queries.getQuery("Person.getById"),
@@ -65,7 +65,7 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
                     preparedStatement.setString(4, lecturer.getEmail());
                     preparedStatement.setString(5, lecturer.getComment());
                     preparedStatement.setBoolean(6, lecturer.isActive());
-                    LOGGER.info("add: {}", preparedStatement);
+                    LOGGER.debug("add: {}", preparedStatement);
                     return preparedStatement;
                 }, keyHolder);
 
@@ -85,7 +85,7 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
                     preparedStatement.setBoolean(5, lecturer.isActive());
                     preparedStatement.setInt(6, lecturer.getId());
                     preparedStatement.setInt(7, roleId);
-                    LOGGER.info("update: {}", preparedStatement);
+                    LOGGER.debug("update: {}", preparedStatement);
                     return preparedStatement;
                 }
         );
@@ -94,14 +94,14 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
     @Override
     public void delete(Lecturer lecturer) {
         String sql = queries.getQuery("Person.delete");
-        LOGGER.info("delete: {}; lecturerId {}, roleId = {}", sql, lecturer.getId(), roleId);
+        LOGGER.debug("delete: {}; lecturerId {}, roleId = {}", sql, lecturer.getId(), roleId);
         jdbcTemplate.update(sql, lecturer.getId(), roleId);
     }
 
     @Override
     public List<Lecturer> getAll() {
         String query = queries.getQuery("Person.getAll");
-        LOGGER.info("getAll: {}; roleId = {}", query, roleId);
+        LOGGER.debug("getAll: {}; roleId = {}", query, roleId);
         return jdbcTemplate.query(query,
                 (ResultSet resultSet, int rowNumber) -> getLecturer(resultSet),
                 roleId
