@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.petrowich.university.dao.AbstractDAO;
+import ru.petrowich.university.dao.DaoNotFoundException;
 import ru.petrowich.university.dao.TimeSlotDAO;
 import ru.petrowich.university.model.TimeSlot;
 import ru.petrowich.university.util.Queries;
@@ -42,8 +43,8 @@ public class TimeSlotDAOImpl extends AbstractDAO implements TimeSlotDAO {
                     (ResultSet resultSet, int rowNumber) -> getTimeSlot(resultSet),
                     timeSlotId);
         } catch (EmptyResultDataAccessException e) {
-            LOGGER.warn("getById: {}", String.valueOf(e));
-            return null;
+            LOGGER.error("nonexistent timeSlotId {} was passed", timeSlotId);
+            throw new DaoNotFoundException(e.getMessage());
         }
     }
 

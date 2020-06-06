@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.petrowich.university.dao.AbstractDAO;
+import ru.petrowich.university.dao.DaoNotFoundException;
 import ru.petrowich.university.dao.LecturerDAO;
 import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.util.Queries;
@@ -46,8 +47,8 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
                     (ResultSet resultSet, int rowNumber) -> getLecturer(resultSet),
                     lecturerId, roleId);
         } catch (EmptyResultDataAccessException e) {
-            LOGGER.warn("getById: {}", String.valueOf(e));
-            return null;
+            LOGGER.error("nonexistent lecturerId {} was passed", lecturerId);
+            throw new DaoNotFoundException(e.getMessage());
         }
     }
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
+import ru.petrowich.university.dao.DaoNotFoundException;
 import ru.petrowich.university.dao.LessonDAO;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Lecturer;
@@ -97,15 +98,13 @@ class LessonDAOImplTest {
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenNonexistentIdPassed() {
-        Lesson actual = lessonDAOImpl.getById(NONEXISTENT_LESSON_ID);
-        assertNull(actual, "null is expected");
+    void testGetByIdShouldThrowDaoNotFoundExceptionWhenNonexistentIdPassed() {
+        assertThrows(DaoNotFoundException.class, () -> lessonDAOImpl.getById(NONEXISTENT_LESSON_ID), "DaoNotFoundException throw is expected");
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenNullPassed() {
-        Lesson actual = lessonDAOImpl.getById(null);
-        assertNull(actual, "null is expected");
+    void testGetByIdShouldThrowDaoNotFoundExceptionWhenNullPassed() {
+        assertThrows(DaoNotFoundException.class, () -> lessonDAOImpl.getById(null), "DaoNotFoundException throw is expected");
     }
 
     @Test
@@ -156,8 +155,7 @@ class LessonDAOImplTest {
         Lesson lesson = new Lesson().setId(EXISTENT_LESSON_ID_5000001);
         lessonDAOImpl.delete(lesson);
 
-        Lesson actual = lessonDAOImpl.getById(lesson.getId());
-        assertNull(actual, "null is expected");
+        assertThrows(DaoNotFoundException.class, () -> lessonDAOImpl.getById(lesson.getId()), "DaoNotFoundException throw is expected");
     }
 
     @Test

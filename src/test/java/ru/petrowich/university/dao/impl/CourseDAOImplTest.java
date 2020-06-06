@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
 import ru.petrowich.university.dao.CourseDAO;
+import ru.petrowich.university.dao.DaoNotFoundException;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Lecturer;
 
@@ -77,15 +78,13 @@ class CourseDAOImplTest {
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenNonexistentIdPassed() {
-        Course actual = courseDAOImpl.getById(NONEXISTENT_COURSE_ID);
-        assertNull(actual, "null is expected");
+    void testGetByIdShouldThrowDaoNotFoundExceptionWhenNonexistentIdPassed() {
+        assertThrows(DaoNotFoundException.class, () -> courseDAOImpl.getById(NONEXISTENT_COURSE_ID), "DaoNotFoundException throw is expected");
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenNullPassed() {
-        Course actual = courseDAOImpl.getById(null);
-        assertNull(actual, "null is expected");
+    void testGetByIdShouldThrowDaoNotFoundExceptionWhenNullPassed() {
+        assertThrows(DaoNotFoundException.class, () -> courseDAOImpl.getById(null), "DaoNotFoundException throw is expected");
     }
 
     @Test
