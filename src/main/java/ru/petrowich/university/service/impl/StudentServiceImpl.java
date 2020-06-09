@@ -1,5 +1,6 @@
 package ru.petrowich.university.service.impl;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.petrowich.university.dao.CourseDAO;
@@ -15,9 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class StudentServiceImpl implements StudentService {
+    private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final StudentDAO studentDAO;
     private final GroupDAO groupDAO;
     private final CourseDAO courseDAO;
@@ -33,6 +36,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student getById(Integer studentId) {
+        LOGGER.info("getById {}", studentId);
         Student student = studentDAO.getById(studentId);
 
         if (student != null) {
@@ -46,21 +50,25 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void add(Student student) {
+        LOGGER.info("add {}", student);
         studentDAO.add(student);
     }
 
     @Override
     public void update(Student student) {
+        LOGGER.info("update {}", student);
         studentDAO.update(student);
     }
 
     @Override
     public void delete(Student student) {
+        LOGGER.info("delete {}", student);
         studentDAO.delete(student);
     }
 
     @Override
     public List<Student> getAll() {
+        LOGGER.info("getAll");
         List<Student> students = studentDAO.getAll().stream()
                 .map(student -> student.setCourses(courseDAO.getByStudentId(student.getId())))
                 .map(student -> student.setLessons(lessonDAO.getByStudentId(student.getId())))
@@ -73,6 +81,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<Student> getByGroupId(Integer groupId) {
+        LOGGER.info("getByGroupId {}", groupId);
         List<Student> students = studentDAO.getByGroupId(groupId).stream()
                 .map(student -> student.setCourses(courseDAO.getByStudentId(student.getId())))
                 .map(student -> student.setLessons(lessonDAO.getByStudentId(student.getId())))
@@ -85,6 +94,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<Student> getByCourseId(Integer courseId) {
+        LOGGER.info("getByCourseId {}", courseId);
         List<Student> students = studentDAO.getByCourseId(courseId).stream()
                 .map(student -> student.setCourses(courseDAO.getByStudentId(student.getId())))
                 .map(student -> student.setLessons(lessonDAO.getByStudentId(student.getId())))
@@ -97,6 +107,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<Student> getByLessonId(Long lessonId) {
+        LOGGER.info("getByLessonId {}", lessonId);
         List<Student> students = studentDAO.getByLessonId(lessonId).stream()
                 .map(student -> student.setCourses(courseDAO.getByStudentId(student.getId())))
                 .map(student -> student.setLessons(lessonDAO.getByStudentId(student.getId())))

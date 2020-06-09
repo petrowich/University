@@ -7,10 +7,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import ru.petrowich.university.dao.DataBaseConfiguration;
 
+import org.slf4j.Logger;
+
+import static org.slf4j.LoggerFactory.getLogger;
+
 @Configuration
-@ComponentScan({"ru.petrowich.university.dao","ru.petrowich.university.util"})
+@ComponentScan({"ru.petrowich.university.service", "ru.petrowich.university.dao", "ru.petrowich.university.util"})
 @Import({DataBaseConfiguration.class})
 public class University {
+    private static final Logger LOGGER = getLogger(University.class.getSimpleName());
+    private static final ApplicationContext context = new AnnotationConfigApplicationContext(University.class);
+
     public static void main(String[] args) {
         ApplicationContext context = new AnnotationConfigApplicationContext(University.class);
     }

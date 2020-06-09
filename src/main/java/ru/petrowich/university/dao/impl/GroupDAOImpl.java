@@ -1,5 +1,6 @@
 package ru.petrowich.university.dao.impl;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.petrowich.university.dao.AbstractDAO;
+import ru.petrowich.university.dao.DaoException;
 import ru.petrowich.university.dao.GroupDAO;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.util.Queries;
@@ -18,8 +20,11 @@ import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 @Repository
 public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
+    private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final JdbcTemplate jdbcTemplate;
     private final Queries queries;
 
@@ -31,11 +36,16 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
 
     @Override
     public Group getById(Integer groupId) {
+        String sql = queries.getQuery("Group.getById");
+        LOGGER.debug("getById: {}; groupId {}", sql, groupId);
+
         try {
-            return jdbcTemplate.queryForObject(queries.getQuery("Group.getById"),
-                    (ResultSet resultSet, int rowNumber) -> getGroup(resultSet), groupId);
+            return jdbcTemplate.queryForObject(sql,
+                    (ResultSet resultSet, int rowNumber) -> getGroup(resultSet),
+                    groupId);
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            LOGGER.error("nonexistent groupId {} was passed", groupId);
+            throw new DaoException(e.getMessage());
         }
     }
 
@@ -50,8 +60,10 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
                     setNullableValue(preparedStatement, 1, group.getName());
                     preparedStatement.setInt(2, group.getStudents().size());
                     preparedStatement.setBoolean(3, group.isActive());
+                    LOGGER.debug("add: {}", preparedStatement);
                     return preparedStatement;
-                }, keyHolder);
+                }, keyHolder
+        );
 
         Integer courseId = (Integer) keyHolder.getKeyList().get(0).get("group_id");
         group.setId(courseId);
@@ -66,6 +78,7 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
                     preparedStatement.setInt(2, group.getStudents().size());
                     preparedStatement.setBoolean(3, group.isActive());
                     preparedStatement.setInt(4, group.getId());
+                    LOGGER.debug("update: {}", preparedStatement);
                     return preparedStatement;
                 }
         );
@@ -73,27 +86,35 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
 
     @Override
     public void delete(Group group) {
-        jdbcTemplate.update(queries.getQuery("Group.delete"), group.getId());
+        String sql = queries.getQuery("Group.delete");
+        LOGGER.debug("delete: {}; groupId {}", sql, group.getId());
+        jdbcTemplate.update(sql, group.getId());
     }
 
     @Override
     public List<Group> getAll() {
-        return jdbcTemplate.query(queries.getQuery("Group.getAll"),
-                (ResultSet resultSet, int rowNumber) -> getGroup(resultSet)
-        );
+        String query = queries.getQuery("Group.getAll");
+        LOGGER.debug("getAll: {} ", query);
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getGroup(resultSet));
     }
 
     @Override
     public List<Group> getByCourseId(Integer courseId) {
-        return jdbcTemplate.query(queries.getQuery("Group.getByCourseId"),
-                (ResultSet resultSet, int rowNumber) -> getGroup(resultSet), courseId
+        String query = queries.getQuery("Group.getByCourseId");
+        LOGGER.debug("getByCourseId: {}; courseId = {}", query, courseId);
+        return jdbcTemplate.query(query,
+                (ResultSet resultSet, int rowNumber) -> getGroup(resultSet),
+                courseId
         );
     }
 
     @Override
     public List<Group> getByLessonId(Long lessonId) {
-        return jdbcTemplate.query(queries.getQuery("Group.getByLessonId"),
-                (ResultSet resultSet, int rowNumber) -> getGroup(resultSet), lessonId
+        String query = queries.getQuery("Group.getByLessonId");
+        LOGGER.debug("getByLessonId: {}; lessonId = {}", query, lessonId);
+        return jdbcTemplate.query(query,
+                (ResultSet resultSet, int rowNumber) -> getGroup(resultSet),
+                lessonId
         );
     }
 

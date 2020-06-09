@@ -2,13 +2,12 @@ package ru.petrowich.university.dao.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
 import ru.petrowich.university.dao.CourseDAO;
+import ru.petrowich.university.dao.DaoException;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Lecturer;
 
@@ -79,15 +78,13 @@ class CourseDAOImplTest {
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenNonexistentIdPassed() {
-        Course actual = courseDAOImpl.getById(NONEXISTENT_COURSE_ID);
-        assertNull(actual, "null is expected");
+    void testGetByIdShouldThrowDaoExceptionWhenNonexistentIdPassed() {
+        assertThrows(DaoException.class, () -> courseDAOImpl.getById(NONEXISTENT_COURSE_ID), "DaoException throw is expected");
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenNullPassed() {
-        Course actual = courseDAOImpl.getById(null);
-        assertNull(actual, "null is expected");
+    void testGetByIdShouldThrowDaoExceptionWhenNullPassed() {
+        assertThrows(DaoException.class, () -> courseDAOImpl.getById(null), "DaoException throw is expected");
     }
 
     @Test

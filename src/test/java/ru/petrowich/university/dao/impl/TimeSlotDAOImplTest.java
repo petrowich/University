@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
+import ru.petrowich.university.dao.DaoException;
 import ru.petrowich.university.dao.LessonDAO;
 import ru.petrowich.university.dao.TimeSlotDAO;
 import ru.petrowich.university.model.TimeSlot;
@@ -94,15 +95,13 @@ class TimeSlotDAOImplTest {
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenNonexistentIdPassed() {
-        TimeSlot actual = timeSlotDAOImpl.getById(NONEXISTENT_TIME_SLOT_ID);
-        assertNull(actual, "null is expected");
+    void testGetByIdShouldShouldThrowDaoExceptionWhenNonexistentIdPassed() {
+        assertThrows(DaoException.class, () -> timeSlotDAOImpl.getById(NONEXISTENT_TIME_SLOT_ID), "DaoException throw is expected");
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenNullPassed() {
-        TimeSlot actual = timeSlotDAOImpl.getById(null);
-        assertNull(actual, "null is expected");
+    void testGetByIdShouldShouldThrowDaoExceptionWhenNullPassed() {
+        assertThrows(DaoException.class, () -> timeSlotDAOImpl.getById(null), "DaoException throw is expected");
     }
 
     @Test
@@ -149,8 +148,8 @@ class TimeSlotDAOImplTest {
         List<Lesson> allLessonsBefore = lessonDAOImpl.getAll();
         timeSlotDAOImpl.delete(timeSlot);
 
-        TimeSlot actual = timeSlotDAOImpl.getById(EXISTENT_TIME_SLOT_ID_1);
-        assertNull(actual, "null instead deleted time slot is expected");
+        assertThrows(DaoException.class, () -> timeSlotDAOImpl.getById(EXISTENT_TIME_SLOT_ID_1), "DaoException throw is expected");
+
 
         List<Lesson> allLessonsAfter = lessonDAOImpl.getAll();
 
