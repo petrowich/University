@@ -8,7 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.petrowich.university.dao.AbstractDAO;
-import ru.petrowich.university.dao.DaoNotFoundException;
+import ru.petrowich.university.dao.DaoException;
 import ru.petrowich.university.dao.GroupDAO;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.util.Queries;
@@ -45,7 +45,7 @@ public class GroupDAOImpl extends AbstractDAO implements GroupDAO {
                     groupId);
         } catch (EmptyResultDataAccessException e) {
             LOGGER.error("nonexistent groupId {} was passed", groupId);
-            throw new DaoNotFoundException(e.getMessage());
+            throw new DaoException(e.getMessage());
         }
     }
 

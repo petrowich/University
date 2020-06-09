@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
-import ru.petrowich.university.dao.DaoNotFoundException;
+import ru.petrowich.university.dao.DaoException;
 import ru.petrowich.university.dao.GroupDAO;
 import ru.petrowich.university.model.Group;
 
@@ -63,13 +63,13 @@ class GroupDAOImplTest {
     }
 
     @Test
-    void testGetByIdShouldThrowDaoNotFoundExceptionWhenNonexistentIdPassed() {
-        assertThrows(DaoNotFoundException.class, () -> groupDAOImpl.getById(NONEXISTENT_GROUP_ID), "DaoNotFoundException throw is expected");
+    void testGetByIdShouldThrowDaoExceptionWhenNonexistentIdPassed() {
+        assertThrows(DaoException.class, () -> groupDAOImpl.getById(NONEXISTENT_GROUP_ID), "DaoException throw is expected");
     }
 
     @Test
-    void testGetByIdShouldThrowDaoNotFoundExceptionWhenNullPassed() {
-        assertThrows(DaoNotFoundException.class, () -> groupDAOImpl.getById(null), "DaoNotFoundException throw is expected");
+    void testGetByIdShouldThrowDaoExceptionWhenNullPassed() {
+        assertThrows(DaoException.class, () -> groupDAOImpl.getById(null), "DaoException throw is expected");
     }
 
     @Test

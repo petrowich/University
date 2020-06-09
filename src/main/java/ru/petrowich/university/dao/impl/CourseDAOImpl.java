@@ -9,7 +9,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.petrowich.university.dao.AbstractDAO;
 import ru.petrowich.university.dao.CourseDAO;
-import ru.petrowich.university.dao.DaoNotFoundException;
+import ru.petrowich.university.dao.DaoException;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.util.Queries;
@@ -45,7 +45,7 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
                     (ResultSet resultSet, int rowNumber) -> getCourse(resultSet), courseId);
         } catch (EmptyResultDataAccessException e) {
             LOGGER.error("nonexistent courseId {} was passed", courseId);
-            throw new DaoNotFoundException(e.getMessage());
+            throw new DaoException(e.getMessage());
         }
     }
 

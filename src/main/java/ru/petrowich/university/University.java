@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Configuration
-@ComponentScan({"ru.petrowich.university.service","ru.petrowich.university.dao","ru.petrowich.university.util"})
+@ComponentScan({"ru.petrowich.university.service", "ru.petrowich.university.dao", "ru.petrowich.university.util"})
 @Import({DataBaseConfiguration.class})
 public class University {
     private static final Logger LOGGER = getLogger(University.class.getSimpleName());

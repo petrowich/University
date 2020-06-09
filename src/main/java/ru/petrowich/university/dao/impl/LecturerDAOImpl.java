@@ -8,7 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.petrowich.university.dao.AbstractDAO;
-import ru.petrowich.university.dao.DaoNotFoundException;
+import ru.petrowich.university.dao.DaoException;
 import ru.petrowich.university.dao.LecturerDAO;
 import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.util.Queries;
@@ -48,7 +48,7 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
                     lecturerId, roleId);
         } catch (EmptyResultDataAccessException e) {
             LOGGER.error("nonexistent lecturerId {} was passed", lecturerId);
-            throw new DaoNotFoundException(e.getMessage());
+            throw new DaoException(e.getMessage());
         }
     }
 
@@ -80,9 +80,9 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
                 (Connection connection) -> {
                     PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Person.update"));
                     setNullableValue(preparedStatement, 1, lecturer.getFirstName());
-                    setNullableValue(preparedStatement,2, lecturer.getLastName());
-                    setNullableValue(preparedStatement,3, lecturer.getEmail());
-                    setNullableValue(preparedStatement,4, lecturer.getComment());
+                    setNullableValue(preparedStatement, 2, lecturer.getLastName());
+                    setNullableValue(preparedStatement, 3, lecturer.getEmail());
+                    setNullableValue(preparedStatement, 4, lecturer.getComment());
                     preparedStatement.setBoolean(5, lecturer.isActive());
                     preparedStatement.setInt(6, lecturer.getId());
                     preparedStatement.setInt(7, roleId);

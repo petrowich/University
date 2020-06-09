@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
-import ru.petrowich.university.dao.DaoNotFoundException;
+import ru.petrowich.university.dao.DaoException;
 import ru.petrowich.university.dao.LecturerDAO;
 import ru.petrowich.university.dao.StudentDAO;
 import ru.petrowich.university.model.Group;
@@ -77,18 +77,18 @@ class LecturerDAOImplTest {
     }
 
     @Test
-    void testGetByIdShouldThrowDaoNotFoundExceptionWhenAnotherRoleLecturerIdPassed() {
-        assertThrows(DaoNotFoundException.class, () -> lecturerDAOImpl.getById(EXISTENT_PERSON_ID_50001), "DaoNotFoundException throw is expected");
+    void testGetByIdShouldThrowDaoExceptionWhenAnotherRoleLecturerIdPassed() {
+        assertThrows(DaoException.class, () -> lecturerDAOImpl.getById(EXISTENT_PERSON_ID_50001), "DaoException throw is expected");
     }
 
     @Test
-    void testGetByIdShouldThrowDaoNotFoundExceptionWhenNonexistentIdPassed() {
-        assertThrows(DaoNotFoundException.class, () -> lecturerDAOImpl.getById(NONEXISTENT_PERSON_ID), "DaoNotFoundException throw is expected");
+    void testGetByIdShouldThrowDaoExceptionWhenNonexistentIdPassed() {
+        assertThrows(DaoException.class, () -> lecturerDAOImpl.getById(NONEXISTENT_PERSON_ID), "DaoException throw is expected");
     }
 
     @Test
-    void testGetByIdShouldThrowDaoNotFoundExceptionWhenNullPassed() {
-        assertThrows(DaoNotFoundException.class, () -> lecturerDAOImpl.getById(null), "DaoNotFoundException throw is expected");
+    void testGetByIdShouldThrowDaoExceptionWhenNullPassed() {
+        assertThrows(DaoException.class, () -> lecturerDAOImpl.getById(null), "DaoException throw is expected");
     }
 
     @Test

@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface GroupDAO extends GenericDAO<Group, Integer> {
     List<Group> getByCourseId(Integer courseId);
+
     List<Group> getByLessonId(Long lessonId);
 }
