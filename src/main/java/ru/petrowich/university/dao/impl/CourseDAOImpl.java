@@ -121,6 +121,16 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
         );
     }
 
+    @Override
+    public List<Course> getByGroupId(Integer groupId) {
+        String query = queries.getQuery("Course.getByGroupId");
+        LOGGER.debug("getByGroupId: {}; groupId = {}", query, groupId);
+        return jdbcTemplate.query(query,
+                (ResultSet resultSet, int rowNumber) -> getCourse(resultSet),
+                groupId
+        );
+    }
+
     private Course getCourse(ResultSet resultSet) throws SQLException {
         Course course = new Course()
                 .setId(resultSet.getInt("course_id"))

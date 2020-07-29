@@ -19,7 +19,6 @@ import java.util.HashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -47,6 +46,8 @@ class CourseDAOImplTest {
     private static final String EXISTENT_COURSE_DESCRIPTION_54 = "humanities";
     private static final String EXISTENT_COURSE_DESCRIPTION_55 = "humanities";
     private static final String EXISTENT_COURSE_DESCRIPTION_56 = "sport";
+    private static final Integer EXISTENT_GROUP_ID_501 = 501;
+    private static final Integer NONEXISTENT_GROUP_ID = 999;
     private static final Integer EXISTENT_STUDENT_ID_50001 = 50001;
     private static final Integer NONEXISTENT_STUDENT_ID = 99999;
 
@@ -207,6 +208,35 @@ class CourseDAOImplTest {
     void testGetByStudentIdShouldReturnEmptyCoursesListWhenNullPassed() {
         List<Course> expected = new ArrayList<>();
         List<Course> actual = courseDAOImpl.getByStudentId(null);
+        assertEquals(expected, actual, "empty courses list is expected");
+    }
+
+    @Test
+    void testGetByGroupIdShouldReturnGroupCoursesListWhenGroupIdPassed() {
+        List<Course> expected = new ArrayList<>();
+        expected.add(new Course().setId(EXISTENT_COURSE_ID_51).setName(EXISTENT_COURSE_NAME_51).setDescription(EXISTENT_COURSE_DESCRIPTION_51).setAuthor(new Lecturer().setId(50005)).setActive(true));
+        expected.add(new Course().setId(EXISTENT_COURSE_ID_54).setName(EXISTENT_COURSE_NAME_54).setDescription(EXISTENT_COURSE_DESCRIPTION_54).setAuthor(new Lecturer()).setActive(true));
+        expected.add(new Course().setId(EXISTENT_COURSE_ID_52).setName(EXISTENT_COURSE_NAME_52).setDescription(EXISTENT_COURSE_DESCRIPTION_52).setAuthor(new Lecturer().setId(50005)).setActive(true));
+
+        List<Course> actual = courseDAOImpl.getByGroupId(EXISTENT_GROUP_ID_501);
+        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
+
+        Set<Course> expectedSet = new HashSet<>(expected);
+        Set<Course> actualSet = new HashSet<>(actual);
+        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
+    }
+
+    @Test
+    void testGetByGroupIdShouldReturnEmptyCoursesListWhenNonexistentGroupIdPassed() {
+        List<Course> expected = new ArrayList<>();
+        List<Course> actual = courseDAOImpl.getByGroupId(NONEXISTENT_GROUP_ID);
+        assertEquals(expected, actual, "empty courses list is expected");
+    }
+
+    @Test
+    void testGetByGroupIdShouldReturnEmptyCoursesListWhenNullPassed() {
+        List<Course> expected = new ArrayList<>();
+        List<Course> actual = courseDAOImpl.getByGroupId(null);
         assertEquals(expected, actual, "empty courses list is expected");
     }
 }

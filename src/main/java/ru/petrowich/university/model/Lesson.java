@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Lesson {
+public class Lesson implements Comparable<Lesson> {
     private Long id;
     private Course course = new Course();
     private Lecturer lecturer = new Lecturer();
@@ -116,5 +116,28 @@ public class Lesson {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public int compareTo(Lesson lesson){
+        int compare = this.date.compareTo(lesson.date);
+
+        if (compare!=0) {
+            return compare;
+        }
+
+        compare = this.startTime.compareTo(lesson.startTime);
+
+        if (compare!=0) {
+            return compare;
+        }
+
+        compare = lesson.endTime.compareTo(this.endTime);
+
+        if (compare!=0) {
+            return compare;
+        }
+
+        return this.id.compareTo(lesson.id);
     }
 }

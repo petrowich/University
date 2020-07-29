@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="template :: head">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+<header>
+    <vav th:replace="template :: navbar"/>
+</header>
+<main>
+    <div class="jumbotron">
+        <p class="lead">lecturer</p>
+        <h1 class="display-4" th:text="${lecturer.fullName}">full name</h1>
+        <p class="lead" th:text="${lecturer.comment}">description</p>
+        <a href="mailto:email@email.com" th:href="'mailto:' + ${lecturer.email}" th:text="${lecturer.email}">email@email.com</a>
+    </div>
+    <div class="container-fluid">
+        <div class="p-2">
+            <table th:unless="${#lists.isEmpty(lecturer.courses)}">
+                <thead>
+                    <tr>
+                        <th scope="col" class="w-50"><h5>teaching courses:</h5></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="course : ${lecturer.courses}">
+                        <td scope="row"><a href="#" th:href="@{/courses/course(courseId=${course.id})}" th:text="${course.name}">course name</a><td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<footer th:replace="template :: footer"/></body>
+</html>

@@ -1,6 +1,7 @@
 package ru.petrowich.university.model;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public abstract class AbstractPerson {
     private Integer id;
@@ -62,6 +63,20 @@ public abstract class AbstractPerson {
     public AbstractPerson setActive(boolean active) {
         this.active = active;
         return this;
+    }
+
+    public String getFullName() {
+        StringJoiner fullName = new StringJoiner(" ");
+
+        if (firstName != null) {
+            fullName.add(firstName);
+        }
+
+        if (lastName != null) {
+            fullName.add(lastName);
+        }
+
+        return fullName.toString();
     }
 
     @Override

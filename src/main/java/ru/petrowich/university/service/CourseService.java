@@ -9,4 +9,6 @@ public interface CourseService extends GenericDAO<Course, Integer> {
     List<Course> getByAuthorId(Integer authorId);
 
     List<Course> getByStudentId(Integer studentId);
+
+    List<Course> getByGroupId(Integer groupId);
 }

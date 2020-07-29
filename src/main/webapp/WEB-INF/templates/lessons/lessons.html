@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="template :: head">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+<header>
+    <vav th:replace="template :: navbar"/>
+</header>
+<main>
+    <h1 class="text-center">Lessons</h1>
+    <div class="container">
+        <table class="table" th:unless="${#lists.isEmpty(allLessons)}">
+            <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Time</th>
+                <th scope="col">Course</th>
+                <th scope="col">Lecturer</th>
+                <th scope="col"># of attendees</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="lesson : ${allLessons}">
+                <td th:text="${lesson.date}">01/01/1900</td>
+                <td th:text="${lesson.startTime} + ' - ' + ${lesson.endTime}">0:00 - 0:00</td>
+                <td scope="row"><a href="#" th:href="@{/courses/course(courseId=${lesson.course.id})}" th:text="${lesson.course.name}">course name</a></td>
+                <td><a href="#" th:href="@{/lecturers/lecturer(lecturerId=${lesson.lecturer.id})}" th:text="${lesson.lecturer.fullName}">lecturer name</a></td>
+                <td th:text="${lesson.students.size()}">10</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<footer th:replace="template :: footer"/></body>
+</html>
