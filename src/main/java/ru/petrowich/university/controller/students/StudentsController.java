@@ -26,16 +26,13 @@ public class StudentsController {
 
     @GetMapping("/students")
     public String courses(Model model) {
-        populateCourses(model);
-        return "students/students";
-    }
-
-    private void populateCourses(Model model) {
         LOGGER.info("listing students");
         List<Student> students = studentService.getAll().stream()
                 .sorted(Comparator.comparing(Student::isActive).reversed())
                 .collect(Collectors.toList());
         model.addAttribute("allStudents", students);
         LOGGER.info("number of students: {}", students.size());
+
+        return "students/students";
     }
 }

@@ -31,22 +31,16 @@ public class CourseController {
 
     @GetMapping("/course")
     public String course(@RequestParam("courseId") Integer courseId, Model model) {
-        populateCourse(courseId, model);
-        populateGroups(courseId, model);
-        return "courses/course";
-    }
-
-    private void populateCourse(Integer courseId, Model model) {
         LOGGER.info("getting course id={}", courseId);
         Course course = courseService.getById(courseId);
         model.addAttribute("course", course);
         LOGGER.info("course: {} {}", course.getId(), course.getName());
-    }
 
-    private void populateGroups(Integer courseId, Model model) {
         LOGGER.info("listing groups of course id={}", courseId);
         List<Group> groups = groupService.getByCourseId(courseId);
         model.addAttribute("groups", groups);
         LOGGER.info("number of groups: {}", groups.size());
+
+        return "courses/course";
     }
 }

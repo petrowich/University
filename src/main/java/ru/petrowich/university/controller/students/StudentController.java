@@ -25,14 +25,11 @@ public class StudentController {
 
     @GetMapping("/student")
     public String course(@RequestParam("studentId") Integer studentId, Model model) {
-        populateStudent(studentId, model);
-        return "students/student";
-    }
-
-    private void populateStudent(Integer courseId, Model model) {
-        LOGGER.info("getting student id={}", courseId);
-        Student student = studentService.getById(courseId);
+        LOGGER.info("getting student id={}", studentId);
+        Student student = studentService.getById(studentId);
         model.addAttribute("student", student);
         LOGGER.info("student: {} {}", student.getId(), student.getFullName());
+
+        return "students/student";
     }
 }

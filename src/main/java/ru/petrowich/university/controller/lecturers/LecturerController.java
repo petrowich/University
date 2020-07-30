@@ -25,14 +25,11 @@ public class LecturerController {
 
     @GetMapping("/lecturer")
     public String course(@RequestParam("lecturerId") Integer lecturerId, Model model) {
-        populateLecturer(lecturerId, model);
-        return "lecturers/lecturer";
-    }
-
-    private void populateLecturer(Integer courseId, Model model) {
-        LOGGER.info("getting lecturer id={}", courseId);
-        Lecturer lecturer = lecturerService.getById(courseId);
+        LOGGER.info("getting lecturer id={}", lecturerId);
+        Lecturer lecturer = lecturerService.getById(lecturerId);
         model.addAttribute("lecturer", lecturer);
         LOGGER.info("lecturer: {} {}", lecturer.getId(), lecturer.getFullName());
+
+        return "lecturers/lecturer";
     }
 }
