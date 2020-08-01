@@ -37,11 +37,11 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
 
     @Override
     public Course getById(Integer courseId) {
-        String sql = queries.getQuery("Course.getById");
-        LOGGER.debug("getById: {}; courseId {}", sql, courseId);
+        String query = queries.getQuery("Course.getById");
+        LOGGER.debug("getById: {}; courseId {}", query, courseId);
 
         try {
-            return jdbcTemplate.queryForObject(sql,
+            return jdbcTemplate.queryForObject(query,
                     (ResultSet resultSet, int rowNumber) -> getCourse(resultSet), courseId);
         } catch (EmptyResultDataAccessException e) {
             LOGGER.error("nonexistent courseId {} was passed", courseId);
@@ -52,19 +52,18 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
     @Override
     public void add(Course course) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+        String query = queries.getQuery("Course.add");
 
         jdbcTemplate.update(
                 (Connection connection) -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Course.add"),
-                            Statement.RETURN_GENERATED_KEYS);
+                    PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                     setNullableValue(preparedStatement, 1, course.getName());
                     setNullableValue(preparedStatement, 2, course.getDescription());
                     setNullableValue(preparedStatement, 3, course.getAuthor().getId());
                     preparedStatement.setBoolean(4, course.isActive());
                     LOGGER.debug("add: {}", preparedStatement);
                     return preparedStatement;
-                }, keyHolder
-        );
+                }, keyHolder);
 
         Integer courseId = (Integer) keyHolder.getKeyList().get(0).get("course_id");
         course.setId(courseId);
@@ -72,10 +71,11 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
 
     @Override
     public void update(Course course) {
+        String query = queries.getQuery("Course.update");
+
         jdbcTemplate.update(
                 (Connection connection) -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Course.update"),
-                            Statement.RETURN_GENERATED_KEYS);
+                    PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                     setNullableValue(preparedStatement, 1, course.getName());
                     setNullableValue(preparedStatement, 2, course.getDescription());
                     setNullableValue(preparedStatement, 3, course.getAuthor().getId());
@@ -83,15 +83,14 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
                     preparedStatement.setInt(5, course.getId());
                     LOGGER.debug("update: {}", preparedStatement);
                     return preparedStatement;
-                }
-        );
+                });
     }
 
     @Override
     public void delete(Course course) {
-        String sql = queries.getQuery("Course.delete");
-        LOGGER.debug("delete: {}; courseId {}", sql, course.getId());
-        jdbcTemplate.update(sql, course.getId());
+        String query = queries.getQuery("Course.delete");
+        LOGGER.debug("delete: {}; courseId {}", query, course.getId());
+        jdbcTemplate.update(query, course.getId());
     }
 
     @Override
@@ -105,30 +104,21 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
     public List<Course> getByAuthorId(Integer authorId) {
         String query = queries.getQuery("Course.getByAuthorId");
         LOGGER.debug("getByAuthorId: {}; authorId = {}", query, authorId);
-        return jdbcTemplate.query(query,
-                (ResultSet resultSet, int rowNumber) -> getCourse(resultSet),
-                authorId
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getCourse(resultSet), authorId);
     }
 
     @Override
     public List<Course> getByStudentId(Integer studentId) {
         String query = queries.getQuery("Course.getByStudentId");
         LOGGER.debug("getByStudentId: {}; studentId = {}", query, studentId);
-        return jdbcTemplate.query(query,
-                (ResultSet resultSet, int rowNumber) -> getCourse(resultSet),
-                studentId
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getCourse(resultSet), studentId);
     }
 
     @Override
     public List<Course> getByGroupId(Integer groupId) {
         String query = queries.getQuery("Course.getByGroupId");
         LOGGER.debug("getByGroupId: {}; groupId = {}", query, groupId);
-        return jdbcTemplate.query(query,
-                (ResultSet resultSet, int rowNumber) -> getCourse(resultSet),
-                groupId
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getCourse(resultSet), groupId);
     }
 
     private Course getCourse(ResultSet resultSet) throws SQLException {

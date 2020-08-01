@@ -38,6 +38,7 @@ public class TimeSlotDAOImpl extends AbstractDAO implements TimeSlotDAO {
     public TimeSlot getById(Integer timeSlotId) {
         String query = queries.getQuery("TimeSlots.getById");
         LOGGER.debug("getById: {}; timeSlotId = {}", query, timeSlotId);
+
         try {
             return jdbcTemplate.queryForObject(query,
                     (ResultSet resultSet, int rowNumber) -> getTimeSlot(resultSet),
@@ -51,10 +52,11 @@ public class TimeSlotDAOImpl extends AbstractDAO implements TimeSlotDAO {
     @Override
     public void add(TimeSlot timeSlot) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+        String query = queries.getQuery("TimeSlots.add");
 
         jdbcTemplate.update(
                 (Connection connection) -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("TimeSlots.add"),
+                    PreparedStatement preparedStatement = connection.prepareStatement(query,
                             Statement.RETURN_GENERATED_KEYS);
                     setNullableValue(preparedStatement, 1, timeSlot.getName());
                     setNullableValue(preparedStatement, 2, timeSlot.getStartTime());
@@ -69,17 +71,18 @@ public class TimeSlotDAOImpl extends AbstractDAO implements TimeSlotDAO {
 
     @Override
     public void update(TimeSlot timeSlot) {
+        String query = queries.getQuery("TimeSlots.update");
+
         jdbcTemplate.update(
                 (Connection connection) -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("TimeSlots.update"));
+                    PreparedStatement preparedStatement = connection.prepareStatement(query);
                     setNullableValue(preparedStatement, 1, timeSlot.getName());
                     setNullableValue(preparedStatement, 2, timeSlot.getStartTime());
                     setNullableValue(preparedStatement, 3, timeSlot.getEndTime());
                     preparedStatement.setInt(4, timeSlot.getId());
                     LOGGER.debug("update: {}", preparedStatement);
                     return preparedStatement;
-                }
-        );
+                });
     }
 
     @Override
@@ -97,9 +100,7 @@ public class TimeSlotDAOImpl extends AbstractDAO implements TimeSlotDAO {
     public List<TimeSlot> getAll() {
         String query = queries.getQuery("TimeSlots.getAll");
         LOGGER.debug("getAll: {}", query);
-        return jdbcTemplate.query(query,
-                (ResultSet resultSet, int rowNumber) -> getTimeSlot(resultSet)
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getTimeSlot(resultSet));
     }
 
     private TimeSlot getTimeSlot(ResultSet resultSet) throws SQLException {

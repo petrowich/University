@@ -40,11 +40,11 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
 
     @Override
     public Student getById(Integer studentId) {
-        String sql = queries.getQuery("Student.getById");
-        LOGGER.debug("getById: {}; studentId = {}, roleId = {}", sql, studentId, roleId);
+        String query = queries.getQuery("Student.getById");
+        LOGGER.debug("getById: {}; studentId = {}, roleId = {}", query, studentId, roleId);
 
         try {
-            return jdbcTemplate.queryForObject(sql,
+            return jdbcTemplate.queryForObject(query,
                     (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
                     studentId, roleId);
         } catch (EmptyResultDataAccessException e) {
@@ -56,10 +56,11 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
     @Override
     public void add(Student student) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+        String query = queries.getQuery("Person.add");
 
         jdbcTemplate.update(
                 (Connection connection) -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Person.add"),
+                    PreparedStatement preparedStatement = connection.prepareStatement(query,
                             Statement.RETURN_GENERATED_KEYS);
                     setNullableValue(preparedStatement, 1, student.getFirstName());
                     setNullableValue(preparedStatement, 2, student.getLastName());
@@ -81,9 +82,11 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
 
     @Override
     public void update(Student student) {
+        String query = queries.getQuery("Person.update");
+
         jdbcTemplate.update(
                 (Connection connection) -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Person.update"));
+                    PreparedStatement preparedStatement = connection.prepareStatement(query);
                     setNullableValue(preparedStatement, 1, student.getFirstName());
                     setNullableValue(preparedStatement, 2, student.getLastName());
                     setNullableValue(preparedStatement, 3, student.getEmail());
@@ -93,8 +96,7 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
                     preparedStatement.setInt(7, roleId);
                     LOGGER.debug("update: {}", preparedStatement);
                     return preparedStatement;
-                }
-        );
+                });
 
         deleteStudentGroupId(student.getId());
 
@@ -105,52 +107,37 @@ public class StudentDAOImpl extends AbstractDAO implements StudentDAO {
 
     @Override
     public void delete(Student student) {
-        String sql = queries.getQuery("Person.delete");
-        LOGGER.debug("delete: {}; studentId = {}, roleId = {}", sql, student.getId(), roleId);
-        jdbcTemplate.update(sql, student.getId(), roleId);
+        String query = queries.getQuery("Person.delete");
+        LOGGER.debug("delete: {}; studentId = {}, roleId = {}", query, student.getId(), roleId);
+        jdbcTemplate.update(query, student.getId(), roleId);
     }
 
     @Override
     public List<Student> getAll() {
         String query = queries.getQuery("Student.getAll");
         LOGGER.debug("getAll: {}; roleId = {}", query, roleId);
-        return jdbcTemplate.query(queries.getQuery("Student.getAll"),
-                (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
-                roleId
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getStudent(resultSet), roleId);
     }
 
     @Override
     public List<Student> getByGroupId(Integer groupId) {
         String query = queries.getQuery("Student.getByGroupId");
         LOGGER.debug("getByGroupId: {}; groupId = {}, roleId = {}", query, groupId, roleId);
-        return jdbcTemplate.query(queries.getQuery("Student.getByGroupId"),
-                (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
-                groupId,
-                roleId
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getStudent(resultSet), groupId, roleId);
     }
 
     @Override
     public List<Student> getByCourseId(Integer courseId) {
         String query = queries.getQuery("Student.getByCourseId");
         LOGGER.debug("getByCourseId: {}; courseId = {}, roleId = {}", query, courseId, roleId);
-        return jdbcTemplate.query(queries.getQuery("Student.getByCourseId"),
-                (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
-                courseId,
-                roleId
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getStudent(resultSet), courseId, roleId);
     }
 
     @Override
     public List<Student> getByLessonId(Long lessonId) {
         String query = queries.getQuery("Student.getByLessonId");
         LOGGER.debug("getByLessonId: {}; lessonId = {}, roleId = {}", query, lessonId, roleId);
-        return jdbcTemplate.query(queries.getQuery("Student.getByLessonId"),
-                (ResultSet resultSet, int rowNumber) -> getStudent(resultSet),
-                lessonId,
-                roleId
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getStudent(resultSet), lessonId, roleId);
     }
 
     private Student getStudent(ResultSet resultSet) throws SQLException {

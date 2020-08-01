@@ -40,11 +40,11 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
 
     @Override
     public Lesson getById(Long lessonId) {
-        String sql = queries.getQuery("Lesson.getById");
-        LOGGER.debug("getById: {}; lessonId {}", sql, lessonId);
+        String query = queries.getQuery("Lesson.getById");
+        LOGGER.debug("getById: {}; lessonId {}", query, lessonId);
 
         try {
-            return jdbcTemplate.queryForObject(sql,
+            return jdbcTemplate.queryForObject(query,
                     (ResultSet resultSet, int rowNumber) -> getLesson(resultSet),
                     lessonId);
         } catch (EmptyResultDataAccessException e) {
@@ -56,11 +56,11 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
     @Override
     public void add(Lesson lesson) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+        String query = queries.getQuery("Lesson.add");
 
         jdbcTemplate.update(
                 (Connection connection) -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Lesson.add"),
-                            Statement.RETURN_GENERATED_KEYS);
+                    PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                     setNullableValue(preparedStatement, 1, lesson.getCourse().getId());
                     setNullableValue(preparedStatement, 2, lesson.getLecturer().getId());
                     setNullableValue(preparedStatement, 3, lesson.getTimeSlot().getId());
@@ -77,9 +77,11 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
 
     @Override
     public void update(Lesson lesson) {
+        String query = queries.getQuery("Lesson.update");
+
         jdbcTemplate.update(
                 (Connection connection) -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Lesson.update"));
+                    PreparedStatement preparedStatement = connection.prepareStatement(query);
                     setNullableValue(preparedStatement, 1, lesson.getCourse().getId());
                     setNullableValue(preparedStatement, 2, lesson.getLecturer().getId());
                     setNullableValue(preparedStatement, 3, lesson.getTimeSlot().getId());
@@ -94,38 +96,30 @@ public class LessonDAOImpl extends AbstractDAO implements LessonDAO {
 
     @Override
     public void delete(Lesson lesson) {
-        String sql = queries.getQuery("Lesson.delete");
-        LOGGER.debug("delete: {}; lessonId {}", sql, lesson.getId());
-        jdbcTemplate.update(sql, lesson.getId());
+        String query = queries.getQuery("Lesson.delete");
+        LOGGER.debug("delete: {}; lessonId {}", query, lesson.getId());
+        jdbcTemplate.update(query, lesson.getId());
     }
 
     @Override
     public List<Lesson> getAll() {
         String query = queries.getQuery("Lesson.getAll");
         LOGGER.debug("getAll: {} ", query);
-        return jdbcTemplate.query(query,
-                (ResultSet resultSet, int rowNumber) -> getLesson(resultSet)
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getLesson(resultSet));
     }
 
     @Override
     public List<Lesson> getByLecturerId(Integer lecturerId) {
         String query = queries.getQuery("Lesson.getByLecturerId");
         LOGGER.debug("getByLecturerId: {}; lecturerId = {}", query, lecturerId);
-        return jdbcTemplate.query(query,
-                (ResultSet resultSet, int rowNumber) -> getLesson(resultSet),
-                lecturerId
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getLesson(resultSet), lecturerId);
     }
 
     @Override
     public List<Lesson> getByStudentId(Integer studentIdId) {
         String query = queries.getQuery("Lesson.getByStudentId");
         LOGGER.debug("getByStudentId: {}; lecturerId = {}", query, studentIdId);
-        return jdbcTemplate.query(query,
-                (ResultSet resultSet, int rowNumber) -> getLesson(resultSet),
-                studentIdId
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getLesson(resultSet), studentIdId);
     }
 
     private Lesson getLesson(ResultSet resultSet) throws SQLException {
