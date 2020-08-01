@@ -28,7 +28,7 @@ public class LecturerController {
         LOGGER.info("getting lecturer id={}", lecturerId);
         Lecturer lecturer = lecturerService.getById(lecturerId);
         model.addAttribute("lecturer", lecturer);
-        LOGGER.info("lecturer: {} {}", lecturer.getId(), lecturer.getFullName());
+        LOGGER.debug("lecturer: {} {}", lecturer.getId(), lecturer.getFullName());
 
         return "lecturers/lecturer";
     }

@@ -30,7 +30,7 @@ public class LessonsController {
                 .sorted()
                 .collect(Collectors.toList());;
         model.addAttribute("allLessons", lessons);
-        LOGGER.info("number of Lessons: {}", lessons.size());
+        LOGGER.debug("number of Lessons: {}", lessons.size());
 
         return "lessons/lessons";
     }

@@ -31,7 +31,7 @@ public class CoursesController {
                 .sorted(Comparator.comparing(Course::isActive).reversed())
                 .collect(Collectors.toList());
         model.addAttribute("allCourses", courses);
-        LOGGER.info("number of courses: {}", courses.size());
+        LOGGER.debug("number of courses: {}", courses.size());
 
         return "courses/courses";
     }

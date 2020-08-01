@@ -28,7 +28,7 @@ public class StudentController {
         LOGGER.info("getting student id={}", studentId);
         Student student = studentService.getById(studentId);
         model.addAttribute("student", student);
-        LOGGER.info("student: {} {}", student.getId(), student.getFullName());
+        LOGGER.debug("student: {} {}", student.getId(), student.getFullName());
 
         return "students/student";
     }

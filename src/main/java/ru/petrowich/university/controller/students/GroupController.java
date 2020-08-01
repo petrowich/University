@@ -34,12 +34,12 @@ public class GroupController {
         LOGGER.info("getting group id={}", groupId);
         Group group = groupService.getById(groupId);
         model.addAttribute("group", group);
-        LOGGER.info("group: {} {}", group.getId(), group.getName());
+        LOGGER.debug("group: {} {}", group.getId(), group.getName());
 
         LOGGER.info("listing lecturers of group id={}", groupId);
         List<Course> courses = courseService.getByGroupId(groupId);
         model.addAttribute("courses", courses);
-        LOGGER.info("number of courses: {}", courses.size());
+        LOGGER.debug("number of courses: {}", courses.size());
 
         return "students/group";
     }

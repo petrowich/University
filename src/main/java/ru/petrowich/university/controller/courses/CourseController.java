@@ -34,12 +34,12 @@ public class CourseController {
         LOGGER.info("getting course id={}", courseId);
         Course course = courseService.getById(courseId);
         model.addAttribute("course", course);
-        LOGGER.info("course: {} {}", course.getId(), course.getName());
+        LOGGER.debug("course: {} {}", course.getId(), course.getName());
 
         LOGGER.info("listing groups of course id={}", courseId);
         List<Group> groups = groupService.getByCourseId(courseId);
         model.addAttribute("groups", groups);
-        LOGGER.info("number of groups: {}", groups.size());
+        LOGGER.debug("number of groups: {}", groups.size());
 
         return "courses/course";
     }

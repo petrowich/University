@@ -31,7 +31,7 @@ public class LecturersController {
                 .sorted(Comparator.comparing(Lecturer::isActive).reversed())
                 .collect(Collectors.toList());
         model.addAttribute("allLecturers", lecturers);
-        LOGGER.info("number of lecturers: {}", lecturers.size());
+        LOGGER.debug("number of lecturers: {}", lecturers.size());
 
         return "lecturers/lecturers";
     }
