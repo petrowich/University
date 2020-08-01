@@ -8,4 +8,6 @@ public interface CourseDAO extends GenericDAO<Course, Integer> {
     List<Course> getByAuthorId(Integer authorId);
 
     List<Course> getByStudentId(Integer studentId);
+
+    List<Course> getByGroupId(Integer group_id);
 }

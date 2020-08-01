@@ -39,8 +39,8 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
 
     @Override
     public Lecturer getById(Integer lecturerId) {
-        String sql = queries.getQuery("Person.getById");
-        LOGGER.debug("getById: {}; lecturerId {}, roleId = {}", sql, lecturerId, roleId);
+        String query = queries.getQuery("Person.getById");
+        LOGGER.debug("getById: {}; lecturerId {}, roleId = {}", query, lecturerId, roleId);
 
         try {
             return jdbcTemplate.queryForObject(queries.getQuery("Person.getById"),
@@ -55,11 +55,11 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
     @Override
     public void add(Lecturer lecturer) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+        String query = queries.getQuery("Person.add");
 
         jdbcTemplate.update(
                 (Connection connection) -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Person.add"),
-                            Statement.RETURN_GENERATED_KEYS);
+                    PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
                     preparedStatement.setString(1, lecturer.getFirstName());
                     preparedStatement.setString(2, lecturer.getLastName());
                     preparedStatement.setInt(3, roleId);
@@ -76,9 +76,11 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
 
     @Override
     public void update(Lecturer lecturer) {
+        String query = queries.getQuery("Person.update");
+
         jdbcTemplate.update(
                 (Connection connection) -> {
-                    PreparedStatement preparedStatement = connection.prepareStatement(queries.getQuery("Person.update"));
+                    PreparedStatement preparedStatement = connection.prepareStatement(query);
                     setNullableValue(preparedStatement, 1, lecturer.getFirstName());
                     setNullableValue(preparedStatement, 2, lecturer.getLastName());
                     setNullableValue(preparedStatement, 3, lecturer.getEmail());
@@ -88,25 +90,21 @@ public class LecturerDAOImpl extends AbstractDAO implements LecturerDAO {
                     preparedStatement.setInt(7, roleId);
                     LOGGER.debug("update: {}", preparedStatement);
                     return preparedStatement;
-                }
-        );
+                });
     }
 
     @Override
     public void delete(Lecturer lecturer) {
-        String sql = queries.getQuery("Person.delete");
-        LOGGER.debug("delete: {}; lecturerId {}, roleId = {}", sql, lecturer.getId(), roleId);
-        jdbcTemplate.update(sql, lecturer.getId(), roleId);
+        String query = queries.getQuery("Person.delete");
+        LOGGER.debug("delete: {}; lecturerId {}, roleId = {}", query, lecturer.getId(), roleId);
+        jdbcTemplate.update(query, lecturer.getId(), roleId);
     }
 
     @Override
     public List<Lecturer> getAll() {
         String query = queries.getQuery("Person.getAll");
         LOGGER.debug("getAll: {}; roleId = {}", query, roleId);
-        return jdbcTemplate.query(query,
-                (ResultSet resultSet, int rowNumber) -> getLecturer(resultSet),
-                roleId
-        );
+        return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getLecturer(resultSet), roleId);
     }
 
     private Lecturer getLecturer(ResultSet resultSet) throws SQLException {

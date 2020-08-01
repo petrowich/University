@@ -24,6 +24,9 @@ public class DataBaseConfiguration {
     @Value("${db.password}")
     private String dbPassword;
 
+    @Value("${db.connectionProperties}")
+    private String dbConnectionProperties;
+
     @Bean
     public BasicDataSource basicDataSource() {
         BasicDataSource basicDataSource = new BasicDataSource();
@@ -31,6 +34,7 @@ public class DataBaseConfiguration {
         basicDataSource.setUrl(dbUrl);
         basicDataSource.setUsername(dbUserName);
         basicDataSource.setPassword(dbPassword);
+        basicDataSource.setConnectionProperties(dbConnectionProperties);
         return basicDataSource;
     }
 

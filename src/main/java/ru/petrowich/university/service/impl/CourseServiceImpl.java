@@ -81,6 +81,14 @@ public class CourseServiceImpl implements CourseService {
         return courses;
     }
 
+    @Override
+    public List<Course> getByGroupId(Integer groupId) {
+        LOGGER.info("getByGroupId {}", groupId);
+        List<Course> courses = courseDAO.getByGroupId(groupId);
+        fillWithAuthors(courses);
+        return courses;
+    }
+
     private void fillWithAuthor(Course course) {
         Integer lecturerId = course.getAuthor().getId();
 

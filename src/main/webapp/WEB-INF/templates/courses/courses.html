@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="template :: head">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+<header>
+    <vav th:replace="template :: navbar"/>
+</header>
+<main>
+    <h1 class="text-center">courses</h1>
+    <div class="courses">
+        <div class="container">
+            <div class="row" th:unless="${#lists.isEmpty(allCourses)}">
+                <div class="card mx-auto my-2 my-sm-3 my-lg-4 p-3" style="width: 18rem;" th:each="course : ${allCourses}">
+                    <div class="card-header stretched-link">
+                        <a href="#" class="card-title" th:href="@{/courses/course(courseId=${course.id})}">
+                            <h5 th:text="${course.name}">course name</h5>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text" th:text="${course.description}">course description</p>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <a href="#" class="card-link" th:href="@{/lecturers/lecturer(lecturerId=${course.author.id})}" th:text="${course.author.FullName}">author</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="template :: footer"/>
+</body>
+</html>

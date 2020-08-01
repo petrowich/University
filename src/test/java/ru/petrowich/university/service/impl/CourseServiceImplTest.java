@@ -34,6 +34,7 @@ class CourseServiceImplTest {
     private static final String COURSE_NAME_51 = "math";
     private static final String COURSE_NAME_52 = "biology";
     private static final String COURSE_NAME_53 = "physics";
+    private static final Integer GROUP_ID_501 = 501;
 
     private final Lecturer firstLecturer = new Lecturer().setId(PERSON_ID_50005).setEmail(PERSON_EMAIL_50005).setActive(true);
     private final Lecturer secondLecturer = new Lecturer().setId(PERSON_ID_50006).setEmail(PERSON_EMAIL_50006).setActive(false);
@@ -204,6 +205,36 @@ class CourseServiceImplTest {
         List<Course> actual = courseServiceImpl.getByStudentId(null);
 
         verify(mockCourseDAO, times(1)).getByStudentId(null);
+        assertEquals(expected, actual, "empty courses list should be returned");
+    }
+
+    @Test
+    void testGetByGroupIdShouldReturnCourseListWhenGroupIdPassed() {
+        List<Course> expected = new ArrayList<>();
+        expected.add(secondCourse);
+        expected.add(thirdCourse);
+
+        when(mockCourseDAO.getByGroupId(GROUP_ID_501)).thenReturn(expected);
+        when(mockLecturerDAO.getById(PERSON_ID_50005)).thenReturn(firstLecturer);
+        when(mockLecturerDAO.getById(PERSON_ID_50006)).thenReturn(secondLecturer);
+
+        List<Course> actual = courseServiceImpl.getByGroupId(GROUP_ID_501);
+
+        verify(mockCourseDAO, times(1)).getByGroupId(GROUP_ID_501);
+        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50005);
+        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50006);
+
+        assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
+    }
+
+    @Test
+    void testGetByGroupIdShouldReturnEmptyCourseListWhenNullPassed() {
+        List<Course> expected = new ArrayList<>();
+        when(mockCourseDAO.getByGroupId(null)).thenReturn(expected);
+
+        List<Course> actual = courseServiceImpl.getByGroupId(null);
+
+        verify(mockCourseDAO, times(1)).getByGroupId(null);
         assertEquals(expected, actual, "empty courses list should be returned");
     }
 }

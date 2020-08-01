@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="template :: head">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+<header>
+    <vav th:replace="template :: navbar"/>
+</header>
+<main>
+    <div class="jumbotron">
+        <p class="lead">group</p>
+        <h1 class="display-4" th:text="${group.name}">group name</h1>
+    </div>
+    <div class="container-fluid">
+        <div class="p-2">
+            <table th:unless="${#lists.isEmpty(courses)}">
+                <thead>
+                    <tr>
+                        <th scope="col" class="w-50"><h5>assigned to courses:</h5></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="course : ${courses}">
+                        <td scope="row"><a href="#" th:href="@{/courses/course(courseId=${course.id})}" th:text="${course.name}">course name</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="p-2">
+            <table th:unless="${#lists.isEmpty(group.students)}">
+                <thead>
+                    <tr>
+                        <th scope="col" class="w-50"><h5>students:</h5></th>
+                        <th scope="col"><small>email</small></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="student : ${group.students}">
+                        <td scope="row">
+                            <a href="#" th:href="@{/students/student(studentId=${student.id})}" th:text="${student.fullName}">student</a>
+                        </td>
+                        <td><a href="mailto:email@email.com" th:href="'mailto:' + ${student.email}" th:text="${student.email}">email@email.com</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<footer th:replace="template :: footer"/></body>
+</html>
