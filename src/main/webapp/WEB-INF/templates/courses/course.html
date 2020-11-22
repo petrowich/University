@@ -3,6 +3,7 @@
 <head th:replace="template :: head">
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
 </head>
 <body>
 <header>
@@ -13,26 +14,43 @@
         <p class="lead">course</p>
         <h1 class="display-4" th:text="${course.name}">Course name</h1>
         <p class="lead" th:text="${course.description}">description</p>
-        <p>by <a th:href="@{/lecturers/lecturer(lecturerId=${course.author.id})}" th:text="${course.author.FullName}">author</a></p>
+        <p>by <a th:href="@{/lecturers/lecturer(id=${course.author.id})}" th:text="${course.author.FullName}">author</a></p>
     </div>
     <div class="container-fluid">
         <div class="p-2">
-            <table th:unless="${#lists.isEmpty(groups)}">
-                <thead>
-                    <tr>
-                        <th scope="col" class="w-50"><h5>groups</h5></th>
-                        <th scope="col"><small>number of students</small></th>
-                    </tr>
-                </thead>
-                <tbody th:each="group : ${groups}">
-                    <tr>
-                        <td scope="row">
-                            <a href="#" th:href="@{/students/group(groupId=${group.id})}" th:text="${group.name}">name</a>
-                        </td>
-                        <td class="text-center" th:text="${group.students.size()}">10</td>
-                    </tr>
-                </tbody>
-            </table>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col" class="w-50"><h5>groups</h5></th>
+                            <th scope="col"><small>number of students</small></th>
+                            <th/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <form action="#" th:action="@{/courses/course/remove-group(courseId=${course.id})}" th:object="${course}" method="post">
+                        <tr th:each="courseGroup : ${courseGroups}">
+                                <td scope="row"><a href="#" th:href="@{/students/group(id=${courseGroup.id})}" th:text="${courseGroup.name}">group name</a></td>
+                                <td class="text-center" th:text="${courseGroup.students.size()}">10</td>
+                                <td><button type="submit" class="btn btn-danger" name="groupId" th:value="${courseGroup.id}"><i class="fas fa-minus ml-0"/></button></td>
+                        </tr>
+                    </form>
+                    </tbody>
+                    <tfoot>
+                    <form action="#" th:action="@{/courses/course/assign-group(courseId=${course.id})}" th:object="${course}" method="post">
+                        <tr>
+                            <td colspan="2">
+                                <select class="form-control" name="groupId" onChange="isSelectedGroup(this.form.groupId.value)">
+                                    <option value=""></option>
+                                    <option th:each="group : ${restGroups}" th:value="${group.id}" th:text="${group.id != null} ? ${group.name} : 'no group'"></option>
+                                </select>
+                            </td>
+                            <td><button type="submit" class="btn btn-success" id="addGroup" disabled><i class="fas fa-plus ml-0"/></button></td>
+                        </tr>
+                    </form>
+                    </tfoot>
+                </table>
+
         </div>
     </div>
 </main>

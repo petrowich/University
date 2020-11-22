@@ -23,7 +23,7 @@
                 </thead>
                 <tbody>
                     <tr th:each="course : ${courses}">
-                        <td scope="row"><a href="#" th:href="@{/courses/course(courseId=${course.id})}" th:text="${course.name}">course name</a></td>
+                        <td scope="row"><a href="#" th:href="@{/courses/course(id=${course.id})}" th:text="${course.name}">course name</a></td>
                     </tr>
                 </tbody>
             </table>
@@ -39,7 +39,7 @@
                 <tbody>
                     <tr th:each="student : ${group.students}">
                         <td scope="row">
-                            <a href="#" th:href="@{/students/student(studentId=${student.id})}" th:text="${student.fullName}">student</a>
+                            <a href="#" th:href="@{/students/student(id=${student.id})}" th:text="${student.fullName}">student</a>
                         </td>
                         <td><a href="mailto:email@email.com" th:href="'mailto:' + ${student.email}" th:text="${student.email}">email@email.com</a></td>
                     </tr>

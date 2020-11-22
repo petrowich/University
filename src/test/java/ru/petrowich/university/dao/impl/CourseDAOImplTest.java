@@ -8,7 +8,9 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
 import ru.petrowich.university.dao.CourseDAO;
 import ru.petrowich.university.dao.DaoException;
+import ru.petrowich.university.dao.GroupDAO;
 import ru.petrowich.university.model.Course;
+import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Lecturer;
 
 import java.util.List;
@@ -47,6 +49,8 @@ class CourseDAOImplTest {
     private static final String EXISTENT_COURSE_DESCRIPTION_55 = "humanities";
     private static final String EXISTENT_COURSE_DESCRIPTION_56 = "sport";
     private static final Integer EXISTENT_GROUP_ID_501 = 501;
+    private static final Integer EXISTENT_GROUP_ID_502 = 502;
+    private static final Integer EXISTENT_GROUP_ID_503 = 503;
     private static final Integer NONEXISTENT_GROUP_ID = 999;
     private static final Integer EXISTENT_STUDENT_ID_50001 = 50001;
     private static final Integer NONEXISTENT_STUDENT_ID = 99999;
@@ -56,6 +60,9 @@ class CourseDAOImplTest {
 
     @Autowired
     private CourseDAO courseDAOImpl;
+
+    @Autowired
+    private GroupDAO groupDAOImpl;
 
     @Autowired
     private String populateDbSql;
@@ -238,5 +245,68 @@ class CourseDAOImplTest {
         List<Course> expected = new ArrayList<>();
         List<Course> actual = courseDAOImpl.getByGroupId(null);
         assertEquals(expected, actual, "empty courses list is expected");
+    }
+
+    @Test
+    void testAssignGroupToCourseShouldAddExistentGroupToCourse() {
+        Course course = courseDAOImpl.getById(EXISTENT_COURSE_ID_51);
+        Group group = groupDAOImpl.getById(EXISTENT_GROUP_ID_503);
+
+        List<Group> expected = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
+        expected.add(new Group().setId(EXISTENT_GROUP_ID_503));
+
+        courseDAOImpl.assignGroupToCourse(group, course);
+        List<Group> actual = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
+
+        assertEquals(expected, actual, "list of 3 groups is expected");
+    }
+
+    @Test
+    void testRemoveGroupFromCourseShouldAddExistentGroupToCourse() {
+        Course course = courseDAOImpl.getById(EXISTENT_COURSE_ID_51);
+        Group group = groupDAOImpl.getById(EXISTENT_GROUP_ID_502);
+
+        List<Group> expected = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
+        expected.remove(group);
+
+        courseDAOImpl.removeGroupFromCourse(group, course);
+        List<Group> actual = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
+
+        assertEquals(expected, actual, "list of 1 group is expected");
+    }
+
+    @Test
+    void testAssignGroupsToCourseShouldAddExistentGroupToCourse() {
+        Course course = courseDAOImpl.getById(EXISTENT_COURSE_ID_51);
+
+        List<Group> groups = new ArrayList<>();
+        groups.add(new Group().setId(EXISTENT_GROUP_ID_501));
+        groups.add(new Group().setId(EXISTENT_GROUP_ID_502));
+        groups.add(new Group().setId(EXISTENT_GROUP_ID_503));
+
+        List<Group> expected = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
+        expected.add(new Group().setId(EXISTENT_GROUP_ID_503));
+
+        courseDAOImpl.assignGroupsToCourse(groups, course);
+        List<Group> actual = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
+
+        assertEquals(expected, actual, "list of 3 groups is expected");
+    }
+
+    @Test
+    void testRemoveGroupsFromCourseShouldAddExistentGroupToCourse() {
+        Course course = courseDAOImpl.getById(EXISTENT_COURSE_ID_51);
+        Group group = groupDAOImpl.getById(EXISTENT_GROUP_ID_502);
+
+        List<Group> groups = new ArrayList<>();
+        groups.add(new Group().setId(EXISTENT_GROUP_ID_502));
+
+        List<Group> expected = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
+        expected.remove(group);
+
+        courseDAOImpl.removeGroupsFromCourse(groups, course);
+        List<Group> actual = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
+
+        assertEquals(expected, actual, "list of 1 group is expected");
     }
 }

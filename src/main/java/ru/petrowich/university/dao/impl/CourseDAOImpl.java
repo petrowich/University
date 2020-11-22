@@ -11,6 +11,7 @@ import ru.petrowich.university.dao.AbstractDAO;
 import ru.petrowich.university.dao.CourseDAO;
 import ru.petrowich.university.dao.DaoException;
 import ru.petrowich.university.model.Course;
+import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.util.Queries;
 
@@ -25,6 +26,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Repository
 public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
+    private static final String ERROR_MSG_COURSE_ID_IS_NULL = "Null course ID passed";
+    private static final String ERROR_MSG_GROUP_ID_IS_NULL = "Null group ID passed";
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final JdbcTemplate jdbcTemplate;
     private final Queries queries;
@@ -121,6 +124,62 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
         return jdbcTemplate.query(query, (ResultSet resultSet, int rowNumber) -> getCourse(resultSet), groupId);
     }
 
+    @Override
+    public void assignGroupToCourse(Group group, Course course) {
+        if (group.getId() == null) {
+            throw new NullPointerException(ERROR_MSG_GROUP_ID_IS_NULL);
+        }
+
+        if (course.getId() == null) {
+            throw new NullPointerException(ERROR_MSG_COURSE_ID_IS_NULL);
+        }
+
+        assignGroupToCourseById(group.getId(), course.getId());
+    }
+
+    @Override
+    public void removeGroupFromCourse(Group group, Course course) {
+        if (group.getId() == null) {
+            throw new NullPointerException(ERROR_MSG_GROUP_ID_IS_NULL);
+        }
+
+        if (course.getId() == null) {
+            throw new NullPointerException(ERROR_MSG_COURSE_ID_IS_NULL);
+        }
+
+        removeGroupFromCourseById(group.getId(), course.getId());
+    }
+
+    @Override
+    public void assignGroupsToCourse(List<Group> groups, Course course) {
+        if (course.getId() == null) {
+            throw new NullPointerException(ERROR_MSG_COURSE_ID_IS_NULL);
+        }
+
+        groups.forEach(group -> {
+            if (group.getId() == null) {
+                throw new NullPointerException(ERROR_MSG_GROUP_ID_IS_NULL);
+            }
+        });
+
+        groups.forEach(group -> assignGroupToCourseById(group.getId(), course.getId()));
+    }
+
+    @Override
+    public void removeGroupsFromCourse(List<Group> groups, Course course) {
+        if (course.getId() == null) {
+            throw new NullPointerException(ERROR_MSG_COURSE_ID_IS_NULL);
+        }
+
+        groups.forEach(group -> {
+            if (group.getId() == null) {
+                throw new NullPointerException(ERROR_MSG_GROUP_ID_IS_NULL);
+            }
+        });
+
+        groups.forEach(group -> removeGroupFromCourseById(group.getId(), course.getId()));
+    }
+
     private Course getCourse(ResultSet resultSet) throws SQLException {
         Course course = new Course()
                 .setId(resultSet.getInt("course_id"))
@@ -135,5 +194,17 @@ public class CourseDAOImpl extends AbstractDAO implements CourseDAO {
         }
 
         return course;
+    }
+
+    private void assignGroupToCourseById(Integer groupId, Integer courseId) {
+        String query = queries.getQuery("GroupCourse.add");
+        LOGGER.debug("GroupCourse.add: {}; courseId = {}; groupId = {};", query, courseId, groupId);
+        jdbcTemplate.update(query, groupId, courseId, groupId, courseId);
+    }
+
+    private void removeGroupFromCourseById(Integer groupId, Integer courseId) {
+        String query = queries.getQuery("GroupCourse.delete");
+        LOGGER.debug("GroupCourse.delete: {}; groupId = {}; courseId = {};", query, groupId, courseId);
+        jdbcTemplate.update(query, groupId, courseId);
     }
 }

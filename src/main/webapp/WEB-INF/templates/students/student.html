@@ -10,10 +10,11 @@
 </header>
 <main>
     <div class="jumbotron">
-        <p>sudent<a class="ml-1" href="#" th:href="@{/students/group(groupId=${student.group.id})}" th:text="${student.group.name}">group name</a></p>
+        <p>student<a class="ml-1" href="#" th:href="@{/students/group(id=${student.group.id})}" th:text="${student.group.name}">group name</a></p>
         <h1 class="display-4" th:text="${student.fullName}">full name</h1>
         <p class="lead" th:text="${student.comment}">description</p>
         <a href="mailto:email@email.com" th:href="'mailto:' + ${student.email}" th:text="${student.email}">email@email.com</a>
+        <p><a th:href="@{/students/student/edit(id=${student.id})}" class="btn btn-primary">Edit</a></p>
     </div>
     <div class="container-fluid">
         <div class="p-2">
@@ -25,7 +26,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="course : ${student.courses}">
-                    <td scope="row"><a href="#" th:href="@{/courses/course(courseId=${course.id})}" th:text="${course.name}">course name</a></td>
+                    <td scope="row"><a href="#" th:href="@{/courses/course(id=${course.id})}" th:text="${course.name}">course name</a></td>
                 </tr>
                 </tbody>
             </table>

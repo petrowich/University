@@ -3,6 +3,7 @@
 <head th:replace="template :: head">
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
 </head>
 <body>
 <header>
@@ -17,15 +18,25 @@
                     <th scope="col">Student</th>
                     <th scope="col">email</th>
                     <th scope="col">group</th>
+                    <th/>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="student : ${allStudents}">
-                    <td scope="row"><a href="#" th:href="@{/students/student(studentId=${student.id})}" th:text="${student.fullName}">student name</a></td>
-                    <td><a href="mailto:email@email.com" th:href="'mailto:' + ${student.email}" th:text="${student.email}">email@email.com</a></td>
-                    <td><a href="#" th:href="@{/students/group(groupId=${student.group.id})}" th:text="${student.group.name}">group</a><td>
+                <tr th:each="student : ${allStudents}" th:classappend="${student.isActive() ? '':'alert alert-danger text-danger'}">
+                    <td scope="row"><a href="#" th:href="@{/students/student(id=${student.id})}" th:text="${student.fullName}" th:classappend="${student.isActive() ? '':'text-danger'}">student name</a></td>
+                    <td><a href="mailto:email@email.com" th:href="'mailto:' + ${student.email}" th:text="${student.email}" th:classappend="${student.isActive() ? '':'text-danger'}">email@email.com</a></td>
+                    <td><a href="#" th:href="@{/students/group(id=${student.group.id})}" th:text="${student.group.name}">group</a></td>
+                    <td><a th:href="@{/students/student/edit(id=${student.id})}" class="btn btn-light"><i class="fas fa-user-edit ml-0"/></a></td>
                 </tr>
             </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="col"/>
+                    <th scope="col"/>
+                    <th scope="col"/>
+                    <td><a th:href="@{/students/student/new}" class="btn btn-success"><i class="fas fa-plus ml-0"/></a></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </main>

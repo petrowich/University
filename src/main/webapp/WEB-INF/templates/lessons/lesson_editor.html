@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="template :: head">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.0/css/bootstrap.min.css">
+</head>
+<body>
+<header>
+    <vav th:replace="template :: navbar"/>
+</header>
+<main>
+    <div class="container">
+        <h1 class="header">Edit lesson</h1>
+        <div class="card edit-card">
+            <div class="card-body">
+                <form action="#" th:action="@{/lessons/lesson/update(id=${lesson.id})}" th:object="${lesson}" method="post">
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label for="date">Date</label>
+                            <input type="date" class="form-control" id="date" th:field="*{date}">
+                            <span th:if="${#fields.hasErrors('date')}" th:errors="*{date}" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="startTime">Start Time</label>
+                            <input type="time" class="form-control" id="startTime" th:field="*{startTime}">
+                            <span th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="endTime">End Time</label>
+                            <input type="time" class="form-control" id="endTime" th:field="*{endTime}">
+                            <span th:if="${#fields.hasErrors('endTime')}" th:errors="*{endTime}" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label for="course">Course</label>
+                            <select class="form-control" id="course" th:field="*{course.id}">
+                                <option value="0" th:value="${lesson.course.id}" th:text="${lesson.course.id != null} ? ${lesson.course.name} : 'chose...'">course name</option>
+                                <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.id != null} ? ${course.name} : 'empty'"></option>
+                            </select>
+                            <span th:if="${#fields.hasErrors('course')}" th:errors="*{course}" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="lecturer">Lecturer</label>
+                            <select class="form-control" id="lecturer" th:field="*{lecturer.id}">
+                                <option value="0" th:value="${lesson.lecturer.id}" th:text="${lesson.lecturer.id != null} ? ${lesson.lecturer.fullName} : 'chose...'">lecturer name</option>
+                                <option th:each="lecturer : ${lecturers}" th:value="${lecturer.id}" th:text="${lecturer.id != null} ? ${lecturer.fullName} : 'empty'"></option>
+                            </select>
+                            <span th:if="${#fields.hasErrors('lecturer')}" th:errors="*{lecturer}" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="template :: footer"/>
+</body>
+</html>

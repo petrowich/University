@@ -3,29 +3,37 @@
 <head th:replace="template :: head">
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/style.css" th:href="@{/css/style.css}">
 </head>
 <body>
 <header>
     <vav th:replace="template :: navbar"/>
 </header>
 <main>
-    <h1 class="text-center">courses</h1>
-    <div class="courses">
-        <div class="container">
-            <div class="row" th:unless="${#lists.isEmpty(allCourses)}">
-                <div class="card mx-auto my-2 my-sm-3 my-lg-4 p-3" style="width: 18rem;" th:each="course : ${allCourses}">
-                    <div class="card-header stretched-link">
-                        <a href="#" class="card-title" th:href="@{/courses/course(courseId=${course.id})}">
-                            <h5 th:text="${course.name}">course name</h5>
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text" th:text="${course.description}">course description</p>
-                    </div>
-                    <div class="card-footer text-muted">
-                        <a href="#" class="card-link" th:href="@{/lecturers/lecturer(lecturerId=${course.author.id})}" th:text="${course.author.FullName}">author</a>
-                    </div>
+    <h1 class="text-center">Courses</h1>
+    <div class="container">
+        <div class="row" th:unless="${#lists.isEmpty(allCourses)}">
+            <div class="card mx-4 my-lg-4 p-3 courses-card" th:classappend="${course.active ? 'bg-light' : 'border-danger bg-secondary text-dark'}" th:each="course : ${allCourses}">
+                <div class="card-header">
+                    <a href="#" class="card-title" th:classappend="${course.active ? '' : 'text-dark'}" th:href="@{/courses/course(id=${course.id})}">
+                        <h5 th:text="${course.name}">course name</h5>
+                        <a href="#" class="card-link" th:href="@{/lecturers/lecturer(id=${course.author.id})}" th:text="${course.author.FullName}">author</a>
+                    </a>
                 </div>
+                <div class="card-body">
+                    <p class="card-text" th:text="${course.description}">course description</p>
+                </div>
+                <div class="card-footer text-muted">
+                    <span class="badge badge-danger" th:text="${course.active ? '' : 'closed'}">status</span>
+                    <span><a href="#" th:href="@{/courses/course/edit(id=${course.id})}" class="btn btn-sm float-right" th:classappend="${course.active ? 'btn-outline-primary' : 'btn-primary text-light'}">edit</a></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="mx-auto p-3">
+                <a href="#" th:href="@{/courses/course/new}" class="btn btn-success">New</a>
             </div>
         </div>
     </div>

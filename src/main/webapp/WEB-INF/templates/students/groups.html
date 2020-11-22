@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="template :: head">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
+</head>
+<body>
+<header>
+    <vav th:replace="template :: navbar"/>
+</header>
+<main>
+    <h1 class="text-center">Groups</h1>
+    <div class="container">
+        <table class="table" th:unless="${#lists.isEmpty(allGroups)}">
+            <thead>
+            <tr class="text-center">
+                <th scope="col">Group</th>
+                <th scope="col">Students</th>
+                <th scope="col"/>
+            </tr>
+            </thead>
+            <tbody>
+                <tr class="text-center" th:each="group : ${allGroups}" th:classappend="${group.isActive() ? '':'alert alert-danger text-danger'}">
+                    <td scope="row"><a href="#" th:href="@{/students/group(id=${group.id})}" th:text="${group.name}" th:classappend="${group.isActive() ? '':'text-danger'}">group name</a></td>
+                    <td th:text="${group.getStudents().size()}">0</td>
+                    <td><a th:href="@{/students/group/edit(id=${group.id})}" class="btn btn-light"><i class="fas fa-edit ml-0"/></a></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr class="text-center">
+                    <td colspan="2"/>
+                    <td><a th:href="@{/students/group/new}" class="btn btn-success"><i class="fas fa-plus ml-0"/></a></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</main>
+<footer th:replace="template :: footer"/></body>
+</html>

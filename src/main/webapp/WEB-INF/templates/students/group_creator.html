@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="template :: head">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.0/css/bootstrap.min.css">
+</head>
+<body>
+<header>
+    <vav th:replace="template :: navbar"/>
+</header>
+<main>
+    <div class="container my-5">
+        <h1 class="header">new group</h1>
+        <div class="card edit-card">
+            <div class="card-body">
+                <form action="#" th:action="@{/students/group/add}" th:object="${group}" method="post" class="needs-validation" novalidate>
+                    <div class="form-group col-md-6">
+                        <label for="groupName">Group Name</label>
+                        <input type="text" th:field="*{name}" class="form-control" id="groupName" placeholder="Group Name" required>
+                        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="template :: footer"/>
+</body>
+</html>

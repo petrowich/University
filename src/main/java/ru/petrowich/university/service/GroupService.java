@@ -5,6 +5,6 @@ import ru.petrowich.university.model.Group;
 
 import java.util.List;
 
-public interface GroupService extends GenericDAO<Group, Integer> {
+public interface GroupService extends GenericService<Group, Integer> {
     List<Group> getByCourseId(Integer courseId);
 }

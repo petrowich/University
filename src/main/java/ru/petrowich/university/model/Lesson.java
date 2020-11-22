@@ -1,5 +1,7 @@
 package ru.petrowich.university.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ public class Lesson implements Comparable<Lesson> {
     private Long id;
     private Course course = new Course();
     private Lecturer lecturer = new Lecturer();
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date;
     private TimeSlot timeSlot = new TimeSlot();
     private LocalTime startTime;
