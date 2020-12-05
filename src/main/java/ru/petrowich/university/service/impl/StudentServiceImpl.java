@@ -36,7 +36,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student getById(Integer studentId) {
-        LOGGER.info("getById {}", studentId);
+        LOGGER.debug("getById {}", studentId);
         Student student = studentDAO.getById(studentId);
 
         if (student != null) {
@@ -50,25 +50,25 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void add(Student student) {
-        LOGGER.info("add {}", student);
+        LOGGER.debug("add {}", student);
         studentDAO.add(student);
     }
 
     @Override
     public void update(Student student) {
-        LOGGER.info("update {}", student);
+        LOGGER.debug("update {}", student);
         studentDAO.update(student);
     }
 
     @Override
     public void delete(Student student) {
-        LOGGER.info("delete {}", student);
+        LOGGER.debug("delete {}", student);
         studentDAO.delete(student);
     }
 
     @Override
     public List<Student> getAll() {
-        LOGGER.info("getAll");
+        LOGGER.debug("getAll");
         List<Student> students = studentDAO.getAll().stream()
                 .map(student -> student.setCourses(courseDAO.getByStudentId(student.getId())))
                 .map(student -> student.setLessons(lessonDAO.getByStudentId(student.getId())))
@@ -81,7 +81,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<Student> getByGroupId(Integer groupId) {
-        LOGGER.info("getByGroupId {}", groupId);
+        LOGGER.debug("getByGroupId {}", groupId);
         List<Student> students = studentDAO.getByGroupId(groupId).stream()
                 .map(student -> student.setCourses(courseDAO.getByStudentId(student.getId())))
                 .map(student -> student.setLessons(lessonDAO.getByStudentId(student.getId())))
@@ -94,7 +94,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<Student> getByCourseId(Integer courseId) {
-        LOGGER.info("getByCourseId {}", courseId);
+        LOGGER.debug("getByCourseId {}", courseId);
         List<Student> students = studentDAO.getByCourseId(courseId).stream()
                 .map(student -> student.setCourses(courseDAO.getByStudentId(student.getId())))
                 .map(student -> student.setLessons(lessonDAO.getByStudentId(student.getId())))
@@ -107,7 +107,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<Student> getByLessonId(Long lessonId) {
-        LOGGER.info("getByLessonId {}", lessonId);
+        LOGGER.debug("getByLessonId {}", lessonId);
         List<Student> students = studentDAO.getByLessonId(lessonId).stream()
                 .map(student -> student.setCourses(courseDAO.getByStudentId(student.getId())))
                 .map(student -> student.setLessons(lessonDAO.getByStudentId(student.getId())))

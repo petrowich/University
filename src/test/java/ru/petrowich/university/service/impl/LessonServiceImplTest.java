@@ -1,16 +1,23 @@
 package ru.petrowich.university.service.impl;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import ru.petrowich.university.dao.LessonDAO;
 import ru.petrowich.university.dao.CourseDAO;
 import ru.petrowich.university.dao.LecturerDAO;
 import ru.petrowich.university.dao.TimeSlotDAO;
 import ru.petrowich.university.dao.GroupDAO;
 import ru.petrowich.university.dao.StudentDAO;
-import ru.petrowich.university.model.*;
+import ru.petrowich.university.model.Lecturer;
+import ru.petrowich.university.model.Course;
+import ru.petrowich.university.model.Group;
+import ru.petrowich.university.model.Lesson;
+import ru.petrowich.university.model.Student;
+import ru.petrowich.university.model.TimeSlot;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -20,8 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doNothing;
 
 class LessonServiceImplTest {
     private static final Integer PERSON_ID_50001 = 50001;
@@ -69,6 +78,8 @@ class LessonServiceImplTest {
     private final Lesson secondLesson = new Lesson().setId(LESSON_ID_5000002).setTimeSlot(timeSlot).setLecturer(lecturer).setCourse(secondCourse);
     private final Lesson thirdLesson = new Lesson().setId(LESSON_ID_5000003).setTimeSlot(timeSlot).setLecturer(lecturer).setCourse(new Course());
 
+    private AutoCloseable autoCloseable;
+
     {
         firstLessonGroups.add(firstGroup);
         firstLessonGroups.add(secondGroup);
@@ -103,7 +114,12 @@ class LessonServiceImplTest {
 
     @BeforeEach
     private void setUp() {
-        initMocks(this);
+        autoCloseable = MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    public void releaseMocks() throws Exception {
+        autoCloseable.close();
     }
 
     @Test

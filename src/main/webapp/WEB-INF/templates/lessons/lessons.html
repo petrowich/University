@@ -31,8 +31,10 @@
                 <td scope="row"><a href="#" th:href="@{/courses/course(courseId=${lesson.course.id})}" th:text="${lesson.course.name}">course name</a></td>
                 <td><a href="#" th:href="@{/lecturers/lecturer(lecturerId=${lesson.lecturer.id})}" th:text="${lesson.lecturer.fullName}">lecturer name</a></td>
                 <td class="text-center" th:text="${lesson.students.size()}">10</td>
-                <td><a th:href="@{/lessons/lesson/edit(id=${lesson.id})}" class="btn btn-light"><i class="fas fa-edit ml-0"/></a></td>
-                <td><a th:href="@{/lessons/lesson/delete(id=${lesson.id})}" class="btn btn-outline-danger"><i class="fas fa-trash ml-0"/></a></td>
+                <td><a th:href="@{/lessons/lesson/edit(id=${lesson.id})}" class="btn btn-light fas fa-edit"></a></td>
+                <td><form action="#" th:action="@{/lessons/lesson/delete(id=${lesson.id})}" th:object="${lesson}" method="post">
+                    <button type="submit" class="btn btn-light fas fa-trash"></button>
+                </form></td>
             </tr>
             </tbody>
             <tfoot>

@@ -26,7 +26,7 @@
                     <td scope="row"><a href="#" th:href="@{/students/student(id=${student.id})}" th:text="${student.fullName}" th:classappend="${student.isActive() ? '':'text-danger'}">student name</a></td>
                     <td><a href="mailto:email@email.com" th:href="'mailto:' + ${student.email}" th:text="${student.email}" th:classappend="${student.isActive() ? '':'text-danger'}">email@email.com</a></td>
                     <td><a href="#" th:href="@{/students/group(id=${student.group.id})}" th:text="${student.group.name}">group</a></td>
-                    <td><a th:href="@{/students/student/edit(id=${student.id})}" class="btn btn-light"><i class="fas fa-user-edit ml-0"/></a></td>
+                    <td><a th:href="@{/students/student/edit(id=${student.id})}" class="btn btn-light fas fa-user-edit"></a></td>
                 </tr>
             </tbody>
             <tfoot>

@@ -23,31 +23,31 @@ public class TimeSlotServiceImpl implements TimeSlotService {
 
     @Override
     public TimeSlot getById(Integer timeSlotId) {
-        LOGGER.info("getById {}", timeSlotId);
+        LOGGER.debug("getById {}", timeSlotId);
         return timeSlotDAO.getById(timeSlotId);
     }
 
     @Override
     public void add(TimeSlot timeSlot) {
-        LOGGER.info("add {}", timeSlot);
+        LOGGER.debug("add {}", timeSlot);
         timeSlotDAO.add(timeSlot);
     }
 
     @Override
     public void update(TimeSlot timeSlot) {
-        LOGGER.info("update {}", timeSlot);
+        LOGGER.debug("update {}", timeSlot);
         timeSlotDAO.update(timeSlot);
     }
 
     @Override
     public void delete(TimeSlot timeSlot) {
-        LOGGER.info("delete {}", timeSlot);
+        LOGGER.debug("delete {}", timeSlot);
         timeSlotDAO.delete(timeSlot);
     }
 
     @Override
     public List<TimeSlot> getAll() {
-        LOGGER.info("getAll");
+        LOGGER.debug("getAll");
         return timeSlotDAO.getAll();
     }
 }

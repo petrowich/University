@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Group;
+import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.service.CourseService;
 import ru.petrowich.university.service.GroupService;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +25,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Controller
 @RequestMapping("/students")
 public class GroupController {
+    private static final String ATTRIBUTE_GROUP = "group";
+    private static final String ATTRIBUTE_COURSES = "courses";
+    private static final String ATTRIBUTE_ALL_GROUPS = "allGroups";
+    private static final String ERROR_MSG_FORM_CONTAINS_ERRORS = "student form contains {} errors";
+
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final GroupService groupService;
     private final CourseService courseService;
@@ -31,21 +38,6 @@ public class GroupController {
     public GroupController(GroupService groupService, CourseService courseService) {
         this.groupService = groupService;
         this.courseService = courseService;
-    }
-
-    @GetMapping("/group")
-    public String course(@RequestParam("id") Integer groupId, Model model) {
-        LOGGER.info("getting group id={}", groupId);
-        Group group = groupService.getById(groupId);
-        model.addAttribute("group", group);
-        LOGGER.debug("group: {} {}", group.getId(), group.getName());
-
-        LOGGER.info("listing lecturers of group id={}", groupId);
-        List<Course> courses = courseService.getByGroupId(groupId);
-        model.addAttribute("courses", courses);
-        LOGGER.debug("number of courses: {}", courses.size());
-
-        return "students/group";
     }
 
     @GetMapping("/groups")
@@ -58,19 +50,36 @@ public class GroupController {
         List<Group> groups = groupService.getAll().stream()
                 .sorted(groupComparator)
                 .collect(Collectors.toList());
-        model.addAttribute("allGroups", groups);
+        model.addAttribute(ATTRIBUTE_ALL_GROUPS, groups);
 
         LOGGER.debug("number of groups: {}", groups.size());
 
         return "students/groups";
     }
 
+    @GetMapping("/group")
+    public String group(@RequestParam("id") Integer groupId, Model model) {
+        LOGGER.info("getting group id={}", groupId);
+        Group group = groupService.getById(groupId);
+        model.addAttribute(ATTRIBUTE_GROUP, group);
+        LOGGER.debug("group: {} {}", group.getId(), group.getName());
+
+        LOGGER.info("listing lecturers of group id={}", groupId);
+        List<Course> courses = courseService.getByGroupId(groupId).stream()
+                .sorted(Comparator.comparing(Course::getName))
+                .collect(Collectors.toList());
+        model.addAttribute(ATTRIBUTE_COURSES, courses);
+        LOGGER.debug("number of courses: {}", courses.size());
+
+        return "students/group";
+    }
+
     @GetMapping("/group/edit")
-    public String editGroup(@RequestParam("id") Integer groupId, Model model) {
+    public String edit(@RequestParam("id") Integer groupId, Model model) {
         LOGGER.info("getting group id={}", groupId);
 
         Group group = groupService.getById(groupId);
-        model.addAttribute("group", group);
+        model.addAttribute(ATTRIBUTE_GROUP, group);
 
         LOGGER.debug("student: {} {}", group.getId(), group.getName());
 
@@ -78,14 +87,14 @@ public class GroupController {
     }
 
     @PostMapping("/group/update")
-    public String update(@RequestParam("id") Integer groupId, Group group, BindingResult result, Model model) {
-        LOGGER.info("submit update of student id={}", groupId);
+    public String update(Group group, BindingResult result, Model model, HttpServletResponse httpServletResponse) {
+        LOGGER.info("submit update of student id={}", group.getId());
 
         if (result.hasErrors()) {
-            LOGGER.info("group edit form contains {} errors", result.getErrorCount());
+            LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, result.getErrorCount());
             result.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
-            group.setId(groupId);
-            return "students/group_editor";
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return groups(model);
         }
 
         groupService.update(group);
@@ -94,10 +103,10 @@ public class GroupController {
     }
 
     @GetMapping("/group/new")
-    public String createGroup(Model model) {
+    public String create(Model model) {
         LOGGER.debug("creating group");
 
-        model.addAttribute("group", new Group());
+        model.addAttribute(ATTRIBUTE_GROUP, new Group());
 
         return "students/group_creator";
     }
@@ -107,7 +116,7 @@ public class GroupController {
         LOGGER.info("add new group");
 
         if (result.hasErrors()) {
-            LOGGER.info("group edit form contains {} errors", result.getErrorCount());
+            LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, result.getErrorCount());
             result.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
             return "students/group_creator";
         }

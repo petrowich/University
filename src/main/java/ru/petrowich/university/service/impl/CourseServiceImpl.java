@@ -34,7 +34,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Course getById(Integer id) {
-        LOGGER.info("getById {}", id);
+        LOGGER.debug("getById {}", id);
         Course course = courseDAO.getById(id);
 
         if (course != null) {
@@ -46,25 +46,25 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void add(Course course) {
-        LOGGER.info("add {}", course);
+        LOGGER.debug("add {}", course);
         courseDAO.add(course);
     }
 
     @Override
     public void update(Course course) {
-        LOGGER.info("update {}", course);
+        LOGGER.debug("update {}", course);
         courseDAO.update(course);
     }
 
     @Override
     public void delete(Course course) {
-        LOGGER.info("delete {}", course);
+        LOGGER.debug("delete {}", course);
         courseDAO.delete(course);
     }
 
     @Override
     public List<Course> getAll() {
-        LOGGER.info("getAll");
+        LOGGER.debug("getAll");
         List<Course> courses = courseDAO.getAll();
         fillWithAuthors(courses);
         return courses;
@@ -72,7 +72,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Course> getByAuthorId(Integer authorId) {
-        LOGGER.info("getByAuthorId {}", authorId);
+        LOGGER.debug("getByAuthorId {}", authorId);
         List<Course> courses = courseDAO.getByAuthorId(authorId);
         fillWithAuthors(courses);
         return courses;
@@ -80,7 +80,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Course> getByStudentId(Integer studentId) {
-        LOGGER.info("getByStudentId {}", studentId);
+        LOGGER.debug("getByStudentId {}", studentId);
         List<Course> courses = courseDAO.getByStudentId(studentId);
         fillWithAuthors(courses);
         return courses;
@@ -88,7 +88,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Course> getByGroupId(Integer groupId) {
-        LOGGER.info("getByGroupId {}", groupId);
+        LOGGER.debug("getByGroupId {}", groupId);
         List<Course> courses = courseDAO.getByGroupId(groupId);
         fillWithAuthors(courses);
         return courses;
@@ -96,33 +96,33 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void assignGroupToCourse(Group group, Course course) {
-        LOGGER.info("assign Group {} to Course {}", group, course);
+        LOGGER.debug("assign Group {} to Course {}", group, course);
         courseDAO.assignGroupToCourse(group, course);
     }
 
     @Override
     public void removeGroupFromCourse(Group group, Course course) {
-        LOGGER.info("remove Group {} from Course {}", group, course);
+        LOGGER.debug("remove Group {} from Course {}", group, course);
         courseDAO.removeGroupFromCourse(group, course);
     }
 
     @Override
     public void applyGroupsToCourse(List<Group> groups, Course course) {
-        LOGGER.info("apply {} groups to course {}", groups.size(), course);
+        LOGGER.debug("apply {} groups to course {}", groups.size(), course);
         List<Group> currentGroups = groupDAO.getByCourseId(course.getId());
 
         List<Group> additionalGroups = groups.stream()
                 .filter(group -> !currentGroups.contains(group))
                 .collect(Collectors.toList());
 
-        LOGGER.info("assign {} groups to Course {}", additionalGroups.size(), course);
+        LOGGER.debug("assign {} groups to Course {}", additionalGroups.size(), course);
         courseDAO.assignGroupsToCourse(additionalGroups, course);
 
         List<Group> excessGroups = currentGroups.stream()
                 .filter(group -> !groups.contains(group))
                 .collect(Collectors.toList());
 
-        LOGGER.info("remove {} groups from course {}", excessGroups.size(), course);
+        LOGGER.debug("remove {} groups from course {}", excessGroups.size(), course);
         courseDAO.removeGroupsFromCourse(excessGroups, course);
     }
 

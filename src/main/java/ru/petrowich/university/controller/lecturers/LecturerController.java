@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.service.LecturerService;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,6 +22,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Controller
 @RequestMapping("/lecturers")
 public class LecturerController {
+    private static final String ATTRIBUTE_LECTURER = "lecturer";
+    private static final String ATTRIBUTE_ALL_LECTURERS = "allLecturers";
+    private static final String ERROR_MSG_FORM_CONTAINS_ERRORS = "lecturer form contains {} errors";
+
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final LecturerService lecturerService;
 
@@ -32,10 +37,15 @@ public class LecturerController {
     @GetMapping("")
     public String lecturers(Model model) {
         LOGGER.info("listing lecturers");
+
+        Comparator<Lecturer> lecturerComparator = Comparator.comparing(Lecturer::isActive).reversed()
+                .thenComparing(Lecturer::getFullName);
+
         List<Lecturer> lecturers = lecturerService.getAll().stream()
-                .sorted(Comparator.comparing(Lecturer::isActive).reversed())
+                .sorted(lecturerComparator)
                 .collect(Collectors.toList());
-        model.addAttribute("allLecturers", lecturers);
+        model.addAttribute(ATTRIBUTE_ALL_LECTURERS, lecturers);
+
         LOGGER.debug("number of lecturers: {}", lecturers.size());
 
         return "lecturers/lecturers";
@@ -45,33 +55,31 @@ public class LecturerController {
     public String lecturer(@RequestParam("id") Integer lecturerId, Model model) {
         LOGGER.info("getting lecturer id={}", lecturerId);
         Lecturer lecturer = lecturerService.getById(lecturerId);
-        model.addAttribute("lecturer", lecturer);
+        model.addAttribute(ATTRIBUTE_LECTURER, lecturer);
         LOGGER.debug("lecturer: {} {}", lecturer.getId(), lecturer.getFullName());
 
         return "lecturers/lecturer";
     }
 
     @GetMapping("/lecturer/edit")
-    public String editlecturer(@RequestParam("id") Integer lecturerId, Model model) {
+    public String edit(@RequestParam("id") Integer lecturerId, Model model) {
         LOGGER.info("getting lecturer id={}", lecturerId);
-
         Lecturer lecturer = lecturerService.getById(lecturerId);
-        model.addAttribute("lecturer", lecturer);
-
+        model.addAttribute(ATTRIBUTE_LECTURER, lecturer);
         LOGGER.debug("lecturer: {} {}", lecturer.getId(), lecturer.getFullName());
 
         return "lecturers/lecturer_editor";
     }
 
     @PostMapping("/lecturer/update")
-    public String update(@RequestParam("id") Integer lecturerId, Lecturer lecturer, BindingResult result, Model model) {
-        LOGGER.info("submit update of lecturer id={}", lecturerId);
+    public String update(Lecturer lecturer, BindingResult bindingResult, Model model, HttpServletResponse httpServletResponse) {
+        LOGGER.info("submit update of lecturer id={}", lecturer.getId());
 
-        if (result.hasErrors()) {
-            LOGGER.info("lecturer edit form contains {} errors", result.getErrorCount());
-            result.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
-            lecturer.setId(lecturerId);
-            return "lecturers/lecturer_editor";
+        if (bindingResult.hasErrors()) {
+            LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, bindingResult.getErrorCount());
+            bindingResult.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return lecturers(model);
         }
 
         lecturerService.update(lecturer);
@@ -80,21 +88,21 @@ public class LecturerController {
     }
 
     @GetMapping("/lecturer/new")
-    public String editLecturer(Model model) {
+    public String create(Model model) {
         LOGGER.info("creating lecturer");
 
-        model.addAttribute("lecturer", new Lecturer());
+        model.addAttribute(ATTRIBUTE_LECTURER, new Lecturer());
 
         return "lecturers/lecturer_creator";
     }
 
     @PostMapping("/lecturer/add")
-    public String add(Lecturer lecturer, BindingResult result, Model model) {
+    public String add(Lecturer lecturer, BindingResult bindingResult, Model model) {
         LOGGER.info("add new lecturer");
 
-        if (result.hasErrors()) {
-            LOGGER.info("group edit form contains {} errors", result.getErrorCount());
-            result.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
+        if (bindingResult.hasErrors()) {
+            LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, bindingResult.getErrorCount());
+            bindingResult.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
             return "lecturers/lecturer_creator";
         }
 

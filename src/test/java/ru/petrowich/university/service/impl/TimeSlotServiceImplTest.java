@@ -1,9 +1,11 @@
 package ru.petrowich.university.service.impl;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import ru.petrowich.university.dao.TimeSlotDAO;
 import ru.petrowich.university.model.TimeSlot;
 
@@ -17,7 +19,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 class TimeSlotServiceImplTest {
     private static final Integer TIME_SLOT_ID = 1;
@@ -27,6 +28,8 @@ class TimeSlotServiceImplTest {
 
     private final TimeSlot timeSlot = new TimeSlot().setId(TIME_SLOT_ID).setName(TIME_SLOT_NAME).setStartTime(TIME_SLOT_START_TIME).setEndTime(TIME_SLOT_END_TIME);
 
+    private AutoCloseable autoCloseable;
+
     @Mock
     private TimeSlotDAO mockTimeSlotDAO;
 
@@ -35,7 +38,12 @@ class TimeSlotServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        initMocks(this);
+        autoCloseable = MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    public void releaseMocks() throws Exception {
+        autoCloseable.close();
     }
 
     @Test

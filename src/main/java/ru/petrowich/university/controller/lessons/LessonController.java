@@ -18,6 +18,7 @@ import ru.petrowich.university.service.LecturerService;
 import ru.petrowich.university.service.LessonService;
 import ru.petrowich.university.service.TimeSlotService;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +27,14 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Controller
 @RequestMapping("/lessons")
-public class LessonsController {
+public class LessonController {
+    private static final String ATTRIBUTE_LESSON = "lesson";
+    private static final String ATTRIBUTE_TIMESLOTS = "timeSlots";
+    private static final String ATTRIBUTE_COURSES = "courses";
+    private static final String ATTRIBUTE_LECTURERS = "lecturers";
+    private static final String ATTRIBUTE_ALL_LESSONS = "allLessons";
+    private static final String ERROR_MSG_FORM_CONTAINS_ERRORS = "lesson form contains {} errors";
+
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final LessonService lessonService;
     private final TimeSlotService timeSlotService;
@@ -34,7 +42,7 @@ public class LessonsController {
     private final LecturerService lecturerService;
 
     @Autowired
-    public LessonsController(LessonService lessonService, TimeSlotService timeSlotService, CourseService courseService, LecturerService lecturerService) {
+    public LessonController(LessonService lessonService, TimeSlotService timeSlotService, CourseService courseService, LecturerService lecturerService) {
         this.lessonService = lessonService;
         this.timeSlotService = timeSlotService;
         this.courseService = courseService;
@@ -44,22 +52,25 @@ public class LessonsController {
     @GetMapping("")
     public String lessons(Model model) {
         LOGGER.info("listing lessons");
+
         List<Lesson> lessons = lessonService.getAll().stream()
                 .sorted()
-                .collect(Collectors.toList());;
-        model.addAttribute("allLessons", lessons);
+                .collect(Collectors.toList());
+        model.addAttribute(ATTRIBUTE_ALL_LESSONS, lessons);
+
         LOGGER.debug("number of Lessons: {}", lessons.size());
 
         return "lessons/lessons";
     }
 
     @GetMapping("/lesson/new")
-    public String newCourse(Model model) {
+    public String create(Model model) {
         LOGGER.info("creating lesson");
 
         List<Course> courses = courseService.getAll().stream()
                 .filter(Course::isActive)
-                .filter(course -> (course.getAuthor().getId()!=null))
+                .filter(course -> (course.getAuthor().getId() != null))
+                .filter(course -> (course.getAuthor().isActive()))
                 .sorted(Comparator.comparing(Course::getName))
                 .collect(Collectors.toList());
 
@@ -67,9 +78,9 @@ public class LessonsController {
                 .sorted(Comparator.comparing(TimeSlot::getStartTime))
                 .collect(Collectors.toList());
 
-        model.addAttribute("lesson", new Lesson());
-        model.addAttribute("timeSlots", timeSlots);
-        model.addAttribute("courses", courses);
+        model.addAttribute(ATTRIBUTE_LESSON, new Lesson());
+        model.addAttribute(ATTRIBUTE_TIMESLOTS, timeSlots);
+        model.addAttribute(ATTRIBUTE_COURSES, courses);
 
         return "lessons/lesson_creator";
     }
@@ -79,7 +90,7 @@ public class LessonsController {
         LOGGER.info("add new lesson");
 
         if (result.hasErrors()) {
-            LOGGER.info("lesson edit form contains {} errors", result.getErrorCount());
+            LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, result.getErrorCount());
             result.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
             return "lessons/lesson_creator";
         }
@@ -97,10 +108,11 @@ public class LessonsController {
     }
 
     @GetMapping("/lesson/edit")
-    public String editLesson(@RequestParam("id") Long lessonId, Model model) {
+    public String edit(@RequestParam("id") Long lessonId, Model model) {
         LOGGER.info("getting lesson id={}", lessonId);
+
         Lesson lesson = lessonService.getById(lessonId);
-        model.addAttribute("lesson", lesson);
+        model.addAttribute(ATTRIBUTE_LESSON, lesson);
 
         List<Course> courses = courseService.getAll().stream()
                 .filter(Course::isActive)
@@ -114,8 +126,8 @@ public class LessonsController {
                 .sorted(Comparator.comparing(Lecturer::getFirstName))
                 .collect(Collectors.toList());
 
-        model.addAttribute("courses", courses);
-        model.addAttribute("lecturers", lecturers);
+        model.addAttribute(ATTRIBUTE_COURSES, courses);
+        model.addAttribute(ATTRIBUTE_LECTURERS, lecturers);
 
         LOGGER.info("opening lesson editor: {} {}", lesson.getId(), lesson);
 
@@ -123,14 +135,14 @@ public class LessonsController {
     }
 
     @PostMapping("/lesson/update")
-    public String update(Lesson lesson, BindingResult result, Model model) {
+    public String update(Lesson lesson, BindingResult bindingResult, Model model, HttpServletResponse httpServletResponse) {
         LOGGER.info("submit update of lesson id={}", lesson.getId());
 
-        if (result.hasErrors()) {
-            LOGGER.info("course edit form contains {} errors", result.getErrorCount());
-            result.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
-            lesson.setId(lesson.getId());
-            return "lessons/lesson_editor";
+        if (bindingResult.hasErrors()) {
+            LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, bindingResult.getErrorCount());
+            bindingResult.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return lessons(model);
         }
 
         lessonService.update(lesson);
@@ -138,9 +150,17 @@ public class LessonsController {
         return lessons(model);
     }
 
-    @GetMapping("/lesson/delete")
-    public String delete(Lesson lesson, Model model) {
+    @PostMapping("/lesson/delete")
+    public String delete(Lesson lesson, BindingResult bindingResult, Model model, HttpServletResponse httpServletResponse) {
         LOGGER.info("delete lesson id={}", lesson.getId());
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, bindingResult.getErrorCount());
+            bindingResult.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return lessons(model);
+        }
+
         lessonService.delete(lesson);
 
         return lessons(model);

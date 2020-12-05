@@ -24,7 +24,7 @@
                 <tr class="text-center" th:each="group : ${allGroups}" th:classappend="${group.isActive() ? '':'alert alert-danger text-danger'}">
                     <td scope="row"><a href="#" th:href="@{/students/group(id=${group.id})}" th:text="${group.name}" th:classappend="${group.isActive() ? '':'text-danger'}">group name</a></td>
                     <td th:text="${group.getStudents().size()}">0</td>
-                    <td><a th:href="@{/students/group/edit(id=${group.id})}" class="btn btn-light"><i class="fas fa-edit ml-0"/></a></td>
+                    <td><a th:href="@{/students/group/edit(id=${group.id})}" class="btn btn-light fas fa-edit"></a></td>
                 </tr>
             </tbody>
             <tfoot>

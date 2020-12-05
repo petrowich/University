@@ -1,9 +1,11 @@
 package ru.petrowich.university.service.impl;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import ru.petrowich.university.dao.CourseDAO;
 import ru.petrowich.university.dao.GroupDAO;
 import ru.petrowich.university.dao.LecturerDAO;
@@ -22,7 +24,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 class CourseServiceImplTest {
     private static final Integer PERSON_ID_50001 = 50001;
@@ -51,6 +52,8 @@ class CourseServiceImplTest {
     private final Group secondGroup = new Group().setId(GROUP_ID_502).setActive(false);
     private final Group thirdGroup = new Group().setId(GROUP_ID_503).setActive(false);
 
+    private AutoCloseable autoCloseable;
+
     @Mock
     private CourseDAO mockCourseDAO;
 
@@ -64,8 +67,13 @@ class CourseServiceImplTest {
     private CourseServiceImpl courseServiceImpl;
 
     @BeforeEach
-    private void setUp() {
-        initMocks(this);
+    private void openMocks() {
+        autoCloseable = MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    public void releaseMocks() throws Exception {
+        autoCloseable.close();
     }
 
     @Test

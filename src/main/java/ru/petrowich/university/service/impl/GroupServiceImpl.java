@@ -26,7 +26,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group getById(Integer groupId) {
-        LOGGER.info("getById {}", groupId);
+        LOGGER.debug("getById {}", groupId);
         Group group = groupDAO.getById(groupId);
 
         if (group != null) {
@@ -38,25 +38,25 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void add(Group group) {
-        LOGGER.info("add {}", group);
+        LOGGER.debug("add {}", group);
         groupDAO.add(group);
     }
 
     @Override
     public void update(Group group) {
-        LOGGER.info("update {}", group);
+        LOGGER.debug("update {}", group);
         groupDAO.update(group);
     }
 
     @Override
     public void delete(Group group) {
-        LOGGER.info("delete {}", group);
+        LOGGER.debug("delete {}", group);
         groupDAO.delete(group);
     }
 
     @Override
     public List<Group> getAll() {
-        LOGGER.info("getAll");
+        LOGGER.debug("getAll");
         List<Group> groups = groupDAO.getAll();
         groups.forEach(group -> group.setStudents(studentDAO.getByGroupId(group.getId())));
         return groups;
@@ -64,7 +64,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public List<Group> getByCourseId(Integer courseId) {
-        LOGGER.info("getByCourseId {}", courseId);
+        LOGGER.debug("getByCourseId {}", courseId);
         List<Group> groups = groupDAO.getByCourseId(courseId);
         groups.forEach(group -> group.setStudents(studentDAO.getByGroupId(group.getId())));
         return groups;

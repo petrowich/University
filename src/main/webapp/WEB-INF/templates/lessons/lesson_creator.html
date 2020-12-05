@@ -29,9 +29,9 @@
                             <span th:if="${#fields.hasErrors('date')}" th:errors="*{date}" class="text-danger"></span>
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="timeSlot">Lesson</label>
+                            <label for="timeSlot">Time</label>
                             <select class="form-control" id="timeSlot" th:field="*{timeSlot.id}" required>
-                                <option value="0" th:value="${lesson.course.id}" th:text="choose...">lesson</option>
+                                <option value="0" th:value="${lesson.course.id}" th:text="choose...">Time</option>
                                 <option th:each="timeSlot : ${timeSlots}" th:value="${timeSlot.id}" th:text="${timeSlot.id != null} ? ${timeSlot.name} : 'empty'"></option>
                             </select>
                             <span th:if="${#fields.hasErrors('timeSlot')}" th:errors="*{timeSlot}" class="text-danger"></span>

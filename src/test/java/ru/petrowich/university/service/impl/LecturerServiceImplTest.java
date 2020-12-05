@@ -1,9 +1,11 @@
 package ru.petrowich.university.service.impl;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import ru.petrowich.university.dao.LecturerDAO;
 import ru.petrowich.university.dao.CourseDAO;
 import ru.petrowich.university.dao.LessonDAO;
@@ -21,7 +23,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 class LecturerServiceImplTest {
     private static final Integer PERSON_ID_50005 = 50005;
@@ -47,8 +48,9 @@ class LecturerServiceImplTest {
     private final Course secondCourse = new Course().setId(COURSE_ID_52).setName(COURSE_NAME_52).setAuthor(firstLecturer).setActive(true);
 
     private final List<Course> firstLecturerCourses = new ArrayList<>();
-
     private final List<Lesson> firstLecturerLessons = new ArrayList<>();
+
+    private AutoCloseable autoCloseable;
 
     {
         List<Course> firstLecturerCourses = new ArrayList<>();
@@ -77,7 +79,12 @@ class LecturerServiceImplTest {
 
     @BeforeEach
     private void setUp() {
-        initMocks(this);
+        autoCloseable = MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    public void releaseMocks() throws Exception {
+        autoCloseable.close();
     }
 
     @Test

@@ -7,6 +7,7 @@ import ru.petrowich.university.dao.DataBaseConfiguration;
 
 @Configuration
 @ComponentScan({
+        "ru.petrowich.university.controller",
         "ru.petrowich.university.service",
         "ru.petrowich.university.dao",
         "ru.petrowich.university.util"
