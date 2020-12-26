@@ -29,10 +29,10 @@
         <servlet.version>4.0.1</servlet.version>
         <!--<bootstrap.version>4.5.0</bootstrap.version>-->
         <!--<jquery.version>3.5.1</jquery.version>-->
-<!--        <jackson.version>2.11.0</jackson.version>-->
+        <!--        <jackson.version>2.11.0</jackson.version>-->
     </properties>
     <build>
-        <finalName>university-${project.version}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <defaultGoal>package</defaultGoal>
         <plugins>
             <plugin>
@@ -49,17 +49,28 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-            <plugin>
+<!--            <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
                 <configuration>
-                    <war>${project.basedir}/target/university-${project.version}.war</war>
+                    <war>${project.basedir}/target/${project.artifactId}-${project.version}.war</war>
                     <webApp>
-                        <contextPath>/university</contextPath>
+                        <contextPath>/${project.artifactId}</contextPath>
                     </webApp>
                 </configuration>
-            </plugin>
+            </plugin>-->
+<!--            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <port>8080</port>
+                    <path>/${project.artifactId}</path>
+                    <serverXml>tomcat/tomcat-server.xml</serverXml>
+                    <contextFile>tomcat/context.xml</contextFile>
+                </configuration>
+            </plugin>-->
         </plugins>
     </build>
     <dependencies>
@@ -142,11 +153,11 @@
             <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>${logback.version}</version>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-core</artifactId>
+                    <version>${logback.version}</version>
+                </dependency>-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -162,31 +173,31 @@
             <artifactId>thymeleaf-spring5</artifactId>
             <version>${thymeleaf.version}</version>
         </dependency>
-<!--        <dependency>
-            <groupId>org.webjars.bower</groupId>
-            <artifactId>jquery</artifactId>
-            <version>${jquery.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>bootstrap</artifactId>
-            <version>${bootstrap.version}</version>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>org.webjars.bower</groupId>
+                    <artifactId>jquery</artifactId>
+                    <version>${jquery.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.webjars</groupId>
+                    <artifactId>bootstrap</artifactId>
+                    <version>${bootstrap.version}</version>
+                </dependency>-->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>${servlet.version}</version>
             <scope>provided</scope>
         </dependency>
-<!--        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>-->
+        <!--        <dependency>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                    <version>${jackson.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                    <version>${jackson.version}</version>
+                </dependency>-->
     </dependencies>
 </project>

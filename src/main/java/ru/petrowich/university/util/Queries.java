@@ -2,19 +2,25 @@ package ru.petrowich.university.util;
 
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 
 @Component("queries")
 public class Queries {
-    private Properties properties;
-    private static final String SQL_PROPERTIES_PATH = "src/main/resources/sql.properties";
+    private final Properties properties;
+    private static final String SQL_PROPERTIES = "sql.properties";
 
-    private Queries() throws IOException {
+    private Queries() throws IOException, URISyntaxException {
         properties = new Properties();
 
-        try (FileInputStream fileInputStream = new FileInputStream(SQL_PROPERTIES_PATH)) {
+        URL url = this.getClass().getClassLoader().getResource(SQL_PROPERTIES);
+        File file = new File(url.toURI());
+
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
             properties.load(fileInputStream);
         }
     }
