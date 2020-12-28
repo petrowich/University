@@ -3,6 +3,7 @@
 <head th:replace="template :: head">
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
 </head>
 <body>
 <header>
@@ -18,7 +19,9 @@
                 <th scope="col">Time</th>
                 <th scope="col">Course</th>
                 <th scope="col">Lecturer</th>
-                <th scope="col"># of attendees</th>
+                <th class="text-center" scope="col"># of attendees</th>
+                <th scope="col"/>
+                <th scope="col"/>
             </tr>
             </thead>
             <tbody>
@@ -27,9 +30,19 @@
                 <td th:text="${lesson.startTime} + ' - ' + ${lesson.endTime}">0:00 - 0:00</td>
                 <td scope="row"><a href="#" th:href="@{/courses/course(courseId=${lesson.course.id})}" th:text="${lesson.course.name}">course name</a></td>
                 <td><a href="#" th:href="@{/lecturers/lecturer(lecturerId=${lesson.lecturer.id})}" th:text="${lesson.lecturer.fullName}">lecturer name</a></td>
-                <td th:text="${lesson.students.size()}">10</td>
+                <td class="text-center" th:text="${lesson.students.size()}">10</td>
+                <td><a th:href="@{/lessons/lesson/edit(id=${lesson.id})}" class="btn btn-light fas fa-edit"></a></td>
+                <td><form action="#" th:action="@{/lessons/lesson/delete(id=${lesson.id})}" th:object="${lesson}" method="post">
+                    <button type="submit" class="btn btn-light fas fa-trash"></button>
+                </form></td>
             </tr>
             </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="5"/>
+                <td colspan="2"><a th:href="@{/lessons/lesson/new}" class="btn btn-success"><i class="fas fa-plus ml-0"/></a></td>
+            </tr>
+            </tfoot>
         </table>
     </div>
 </main>

@@ -154,7 +154,7 @@ class LessonDAOImplTest {
         Lesson lesson = new Lesson().setId(EXISTENT_LESSON_ID_5000001);
         lessonDAOImpl.delete(lesson);
 
-        assertThrows(DaoException.class, () -> lessonDAOImpl.getById(lesson.getId()), "DaoException throw is expected");
+        assertThrows(DaoException.class, () -> lessonDAOImpl.getById(EXISTENT_LESSON_ID_5000001), "DaoException throw is expected");
     }
 
     @Test

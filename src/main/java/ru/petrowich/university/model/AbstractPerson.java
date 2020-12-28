@@ -83,4 +83,19 @@ public abstract class AbstractPerson {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        AbstractPerson person = (AbstractPerson) object;
+
+        return Objects.equals(this.getId(), person.getId());
+    }
 }

@@ -49,7 +49,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public Lesson getById(Long lessonId) {
-        LOGGER.info("getById {}", lessonId);
+        LOGGER.debug("getById {}", lessonId);
         Lesson lesson = lessonDAO.getById(lessonId);
 
         if (lesson != null) {
@@ -65,25 +65,25 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public void add(Lesson lesson) {
-        LOGGER.info("add {}", lesson);
+        LOGGER.debug("add {}", lesson);
         lessonDAO.add(lesson);
     }
 
     @Override
     public void update(Lesson lesson) {
-        LOGGER.info("update {}", lesson);
+        LOGGER.debug("update {}", lesson);
         lessonDAO.update(lesson);
     }
 
     @Override
     public void delete(Lesson lesson) {
-        LOGGER.info("delete {}", lesson);
+        LOGGER.debug("delete {}", lesson);
         lessonDAO.delete(lesson);
     }
 
     @Override
     public List<Lesson> getAll() {
-        LOGGER.info("getAll");
+        LOGGER.debug("getAll");
         List<Lesson> lessons = lessonDAO.getAll().stream()
                 .map(lesson -> lesson.setGroups(groupDAO.getByLessonId(lesson.getId())))
                 .map(lesson -> lesson.setStudents(studentDAO.getByLessonId(lesson.getId())))
@@ -98,7 +98,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<Lesson> getByLecturerId(Integer lecturerId) {
-        LOGGER.info("getByLecturerId {}", lecturerId);
+        LOGGER.debug("getByLecturerId {}", lecturerId);
         List<Lesson> lessons = lessonDAO.getByLecturerId(lecturerId).stream()
                 .map(lesson -> lesson.setGroups(groupDAO.getByLessonId(lesson.getId())))
                 .map(lesson -> lesson.setStudents(studentDAO.getByLessonId(lesson.getId())))
@@ -113,7 +113,7 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public List<Lesson> getByStudentId(Integer studentId) {
-        LOGGER.info("getByStudentId {}", studentId);
+        LOGGER.debug("getByStudentId {}", studentId);
         List<Lesson> lessons = lessonDAO.getByStudentId(studentId).stream()
                 .map(lesson -> lesson.setGroups(groupDAO.getByLessonId(lesson.getId())))
                 .map(lesson -> lesson.setStudents(studentDAO.getByLessonId(lesson.getId())))

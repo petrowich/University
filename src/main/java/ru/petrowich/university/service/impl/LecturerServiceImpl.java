@@ -29,7 +29,7 @@ public class LecturerServiceImpl implements LecturerService {
 
     @Override
     public Lecturer getById(Integer lecturerId) {
-        LOGGER.info("getById {}", lecturerId);
+        LOGGER.debug("getById {}", lecturerId);
         Lecturer lecturer = lecturerDAO.getById(lecturerId);
 
         if (lecturer != null) {
@@ -42,25 +42,25 @@ public class LecturerServiceImpl implements LecturerService {
 
     @Override
     public void add(Lecturer lecturer) {
-        LOGGER.info("add {}", lecturer);
+        LOGGER.debug("add {}", lecturer);
         lecturerDAO.add(lecturer);
     }
 
     @Override
     public void update(Lecturer lecturer) {
-        LOGGER.info("update {}", lecturer);
+        LOGGER.debug("update {}", lecturer);
         lecturerDAO.update(lecturer);
     }
 
     @Override
     public void delete(Lecturer lecturer) {
-        LOGGER.info("delete {}", lecturer);
+        LOGGER.debug("delete {}", lecturer);
         lecturerDAO.delete(lecturer);
     }
 
     @Override
     public List<Lecturer> getAll() {
-        LOGGER.info("getAll");
+        LOGGER.debug("getAll");
         List<Lecturer> lecturers = lecturerDAO.getAll();
 
         lecturers.forEach((Lecturer lecturer) -> {

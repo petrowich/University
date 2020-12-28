@@ -1,12 +1,16 @@
 package ru.petrowich.university.service.impl;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import ru.petrowich.university.dao.CourseDAO;
+import ru.petrowich.university.dao.GroupDAO;
 import ru.petrowich.university.dao.LecturerDAO;
 import ru.petrowich.university.model.Course;
+import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Lecturer;
 
 import java.util.ArrayList;
@@ -20,7 +24,6 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 class CourseServiceImplTest {
     private static final Integer PERSON_ID_50001 = 50001;
@@ -35,6 +38,8 @@ class CourseServiceImplTest {
     private static final String COURSE_NAME_52 = "biology";
     private static final String COURSE_NAME_53 = "physics";
     private static final Integer GROUP_ID_501 = 501;
+    private static final Integer GROUP_ID_502 = 502;
+    private static final Integer GROUP_ID_503 = 503;
 
     private final Lecturer firstLecturer = new Lecturer().setId(PERSON_ID_50005).setEmail(PERSON_EMAIL_50005).setActive(true);
     private final Lecturer secondLecturer = new Lecturer().setId(PERSON_ID_50006).setEmail(PERSON_EMAIL_50006).setActive(false);
@@ -43,8 +48,17 @@ class CourseServiceImplTest {
     private final Course secondCourse = new Course().setId(COURSE_ID_52).setName(COURSE_NAME_52).setAuthor(firstLecturer).setActive(true);
     private final Course thirdCourse = new Course().setId(COURSE_ID_53).setName(COURSE_NAME_53).setAuthor(secondLecturer).setActive(false);
 
+    private final Group firstGroup = new Group().setId(GROUP_ID_501).setActive(true);
+    private final Group secondGroup = new Group().setId(GROUP_ID_502).setActive(false);
+    private final Group thirdGroup = new Group().setId(GROUP_ID_503).setActive(false);
+
+    private AutoCloseable autoCloseable;
+
     @Mock
     private CourseDAO mockCourseDAO;
+
+    @Mock
+    private GroupDAO mockGroupDAO;
 
     @Mock
     private LecturerDAO mockLecturerDAO;
@@ -53,8 +67,13 @@ class CourseServiceImplTest {
     private CourseServiceImpl courseServiceImpl;
 
     @BeforeEach
-    private void setUp() {
-        initMocks(this);
+    private void openMocks() {
+        autoCloseable = MockitoAnnotations.openMocks(this);
+    }
+
+    @AfterEach
+    public void releaseMocks() throws Exception {
+        autoCloseable.close();
     }
 
     @Test
@@ -236,5 +255,59 @@ class CourseServiceImplTest {
 
         verify(mockCourseDAO, times(1)).getByGroupId(null);
         assertEquals(expected, actual, "empty courses list should be returned");
+    }
+
+    @Test
+    void testAssignGroupToCourseShouldInvokeDaoAssignGroupToCourse(){
+        List<Group> currentGroups = new ArrayList<>();
+        currentGroups.add(firstGroup);
+        currentGroups.add(secondGroup);
+
+        when(mockGroupDAO.getByCourseId(COURSE_ID_51)).thenReturn(currentGroups);
+        doNothing().when(mockCourseDAO).assignGroupToCourse(thirdGroup, firstCourse);
+
+        courseServiceImpl.assignGroupToCourse(thirdGroup, firstCourse);
+
+        verify(mockCourseDAO, times(1)).assignGroupToCourse(thirdGroup, firstCourse);
+    }
+
+    @Test
+    void testRemoveGroupToCourseShouldInvokeDaoRemoveGroupFromCourse(){
+        List<Group> currentGroups = new ArrayList<>();
+        currentGroups.add(firstGroup);
+        currentGroups.add(secondGroup);
+
+        when(mockGroupDAO.getByCourseId(COURSE_ID_51)).thenReturn(currentGroups);
+        doNothing().when(mockCourseDAO).removeGroupFromCourse(secondGroup, firstCourse);
+
+        courseServiceImpl.removeGroupFromCourse(secondGroup, firstCourse);
+
+        verify(mockCourseDAO, times(1)).removeGroupFromCourse(secondGroup, firstCourse);
+    }
+
+    @Test
+    void testApplyGroupsToCourseShouldInvokeDaoAssignGroupsAndRemoveGroups() {
+        List<Group> currentGroups = new ArrayList<>();
+        currentGroups.add(firstGroup);
+        currentGroups.add(secondGroup);
+
+        List<Group> newGroupList = new ArrayList<>();
+        newGroupList.add(firstGroup);
+        newGroupList.add(thirdGroup);
+
+        List<Group> additionalGroups = new ArrayList<>();
+        currentGroups.add(thirdGroup);
+
+        List<Group> excessGroups = new ArrayList<>();
+        excessGroups.add(secondGroup);
+
+        when(mockGroupDAO.getByCourseId(COURSE_ID_51)).thenReturn(currentGroups);
+        doNothing().when(mockCourseDAO).assignGroupsToCourse(additionalGroups, firstCourse);
+        doNothing().when(mockCourseDAO).removeGroupsFromCourse(excessGroups, firstCourse);
+
+        courseServiceImpl.applyGroupsToCourse(newGroupList, firstCourse);
+
+        verify(mockCourseDAO, times(1)).assignGroupsToCourse(additionalGroups, firstCourse);
+        verify(mockCourseDAO, times(1)).removeGroupsFromCourse(excessGroups, firstCourse);
     }
 }

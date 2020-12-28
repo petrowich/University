@@ -1,7 +1,7 @@
-.container {
- min-width: 800px;
- }
-.courses{
- margin: 4em 0;
- position: relative;
+.courses-card {
+ width: 18rem;
+}
+
+.edit-card {
+ width: 50rem;
 }
