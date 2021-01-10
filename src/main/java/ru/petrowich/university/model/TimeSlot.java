@@ -1,12 +1,32 @@
 package ru.petrowich.university.model;
 
+import javax.persistence.Id;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
+import javax.persistence.GenerationType;
 import java.time.LocalTime;
 import java.util.Objects;
 
+@Entity(name = "TimeSlot")
+@Table(name = "t_timeslots")
 public class TimeSlot {
+
+    @Id
+    @SequenceGenerator(name="seq_timeslots", sequenceName="seq_timeslots", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_timeslots")
+    @Column(name = "timeslot_id")
     private Integer id;
+
+    @Column(name = "timeslot_name")
     private String name;
+
+    @Column(name = "timeslot_start_time")
     private LocalTime startTime;
+
+    @Column(name = "timeslot_end_time")
     private LocalTime endTime;
 
     public Integer getId() {

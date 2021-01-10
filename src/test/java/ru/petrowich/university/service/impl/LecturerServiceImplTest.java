@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.petrowich.university.dao.LecturerDAO;
-import ru.petrowich.university.dao.CourseDAO;
-import ru.petrowich.university.dao.LessonDAO;
+import ru.petrowich.university.repository.LecturerRepository;
+import ru.petrowich.university.repository.CourseRepository;
+import ru.petrowich.university.repository.LessonRepository;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.model.Lesson;
@@ -66,13 +66,13 @@ class LecturerServiceImplTest {
     }
 
     @Mock
-    private LecturerDAO mockLecturerDAO;
+    private LecturerRepository mockLecturerRepository;
 
     @Mock
-    private CourseDAO mockCourseDAO;
+    private CourseRepository mockCourseRepository;
 
     @Mock
-    private LessonDAO mockLessonDAO;
+    private LessonRepository mockLessonRepository;
 
     @InjectMocks
     private LecturerServiceImpl lecturerServiceImpl;
@@ -89,77 +89,73 @@ class LecturerServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnLecturerWhenLecturerIdPassed() {
-        when(mockLecturerDAO.getById(PERSON_ID_50005)).thenReturn(firstLecturer);
-        when(mockCourseDAO.getByAuthorId(PERSON_ID_50005)).thenReturn(firstLecturerCourses);
-        when(mockLessonDAO.getByLecturerId(PERSON_ID_50005)).thenReturn(firstLecturerLessons);
+        when(mockLecturerRepository.findById(PERSON_ID_50005)).thenReturn(firstLecturer);
 
         Lecturer actual = lecturerServiceImpl.getById(PERSON_ID_50005);
 
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50005);
-        verify(mockCourseDAO, times(1)).getByAuthorId(PERSON_ID_50005);
-        verify(mockLessonDAO, times(1)).getByLecturerId(PERSON_ID_50005);
+        verify(mockLecturerRepository, times(1)).findById(PERSON_ID_50005);
 
         assertThatObject(actual).isEqualToComparingFieldByField(firstLecturer);
     }
 
     @Test
     void testGetByIdShouldReturnNullWhenWhenNonexistentIdPassed() {
-        when(mockLecturerDAO.getById(-1)).thenReturn(null);
+        when(mockLecturerRepository.findById(-1)).thenReturn(null);
         Lecturer actual = lecturerServiceImpl.getById(-1);
 
-        verify(mockLecturerDAO, times(1)).getById(-1);
+        verify(mockLecturerRepository, times(1)).findById(-1);
         assertNull(actual, "null should be returned");
     }
 
     @Test
     void testGetByIdShouldReturnNullWhenWhenNullPassed() {
-        when(mockLecturerDAO.getById(null)).thenReturn(null);
+        when(mockLecturerRepository.findById(null)).thenReturn(null);
         Lecturer actual = lecturerServiceImpl.getById(null);
 
-        verify(mockLecturerDAO, times(1)).getById(null);
+        verify(mockLecturerRepository, times(1)).findById(null);
         assertNull(actual, "null should be returned");
     }
 
     @Test
-    void testAddShouldInvokeDaoUpdateWithPassedLecturer() {
-        doNothing().when(mockLecturerDAO).add(firstLecturer);
+    void testAddShouldInvokeRepositoryUpdateWithPassedLecturer() {
+        doNothing().when(mockLecturerRepository).save(firstLecturer);
         lecturerServiceImpl.add(firstLecturer);
-        verify(mockLecturerDAO, times(1)).add(firstLecturer);
+        verify(mockLecturerRepository, times(1)).save(firstLecturer);
     }
 
     @Test
-    void testAddShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockLecturerDAO).add(null);
+    void testAddShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockLecturerRepository).save(null);
         lecturerServiceImpl.add(null);
-        verify(mockLecturerDAO, times(1)).add(null);
+        verify(mockLecturerRepository, times(1)).save(null);
     }
 
     @Test
-    void testUpdateShouldInvokeDaoUpdateWithPassedLecturer() {
-        doNothing().when(mockLecturerDAO).update(firstLecturer);
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedLecturer() {
+        doNothing().when(mockLecturerRepository).update(firstLecturer);
         lecturerServiceImpl.update(firstLecturer);
-        verify(mockLecturerDAO, times(1)).update(firstLecturer);
+        verify(mockLecturerRepository, times(1)).update(firstLecturer);
     }
 
     @Test
-    void testUpdateShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockLecturerDAO).update(null);
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockLecturerRepository).update(null);
         lecturerServiceImpl.update(null);
-        verify(mockLecturerDAO, times(1)).update(null);
+        verify(mockLecturerRepository, times(1)).update(null);
     }
 
     @Test
-    void testDeleteShouldInvokeDaoUpdateWithPassedLecturer() {
-        doNothing().when(mockLecturerDAO).delete(firstLecturer);
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedLecturer() {
+        doNothing().when(mockLecturerRepository).delete(firstLecturer);
         lecturerServiceImpl.delete(firstLecturer);
-        verify(mockLecturerDAO, times(1)).delete(firstLecturer);
+        verify(mockLecturerRepository, times(1)).delete(firstLecturer);
     }
 
     @Test
-    void testDeleteShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockLecturerDAO).delete(null);
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockLecturerRepository).delete(null);
         lecturerServiceImpl.delete(null);
-        verify(mockLecturerDAO, times(1)).delete(null);
+        verify(mockLecturerRepository, times(1)).delete(null);
     }
 
     @Test
@@ -168,19 +164,11 @@ class LecturerServiceImplTest {
         expected.add(firstLecturer);
         expected.add(secondLecturer);
 
-        when(mockLecturerDAO.getAll()).thenReturn(expected);
-        when(mockCourseDAO.getByAuthorId(PERSON_ID_50005)).thenReturn(firstLecturerCourses);
-        when(mockCourseDAO.getByAuthorId(PERSON_ID_50006)).thenReturn(new ArrayList<>());
-        when(mockLessonDAO.getByLecturerId(PERSON_ID_50005)).thenReturn(firstLecturerLessons);
-        when(mockLessonDAO.getByLecturerId(PERSON_ID_50006)).thenReturn(new ArrayList<>());
+        when(mockLecturerRepository.findAll()).thenReturn(expected);
 
         List<Lecturer> actual = lecturerServiceImpl.getAll();
 
-        verify(mockLecturerDAO, times(1)).getAll();
-        verify(mockCourseDAO, times(1)).getByAuthorId(PERSON_ID_50005);
-        verify(mockCourseDAO, times(1)).getByAuthorId(PERSON_ID_50006);
-        verify(mockLessonDAO, times(1)).getByLecturerId(PERSON_ID_50005);
-        verify(mockLessonDAO, times(1)).getByLecturerId(PERSON_ID_50006);
+        verify(mockLecturerRepository, times(1)).findAll();
 
         assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
     }

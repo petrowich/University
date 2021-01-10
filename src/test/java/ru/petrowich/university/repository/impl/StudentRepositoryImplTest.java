@@ -1,33 +1,35 @@
-package ru.petrowich.university.dao.impl;
+package ru.petrowich.university.repository.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
-import ru.petrowich.university.dao.DaoException;
-import ru.petrowich.university.dao.LecturerDAO;
-import ru.petrowich.university.dao.StudentDAO;
-import ru.petrowich.university.model.Student;
-import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.model.Group;
+import ru.petrowich.university.model.Student;
+import ru.petrowich.university.model.Course;
+import ru.petrowich.university.model.Lecturer;
+import ru.petrowich.university.model.Lesson;
+import ru.petrowich.university.repository.LecturerRepository;
+import ru.petrowich.university.repository.StudentRepository;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringJUnitConfig(classes = {AppConfigurationTest.class})
-class StudentDAOImplTest {
+@Transactional
+class StudentRepositoryImplTest {
+    private static final String POPULATE_DB_SQL = "classpath:populateDbTest.sql";
     private static final Integer NONEXISTENT_PERSON_ID = 99999;
     private static final String NEW_PERSON_FIRST_NAME = "Улов";
     private static final String NEW_PERSON_LAST_NAME = "Налимов";
@@ -57,25 +59,22 @@ class StudentDAOImplTest {
     private static final String EXISTENT_PERSON_COMMENT_50003 = "";
     private static final String EXISTENT_PERSON_COMMENT_50004 = "expelled";
     private static final String EXISTENT_PERSON_COMMENT_50005 = "";
+    private static final Integer EXISTENT_GROUP_ID_501 = 501;
+    private static final Integer EXISTENT_COURSE_ID_51 = 51;
+    private static final Integer EXISTENT_COURSE_ID_52 = 52;
+    private static final Long EXISTENT_LESSON_ID_5000001 = 5000001L;
+    private static final Long EXISTENT_LESSON_ID_5000002 = 5000002L;
+    private static final Long EXISTENT_LESSON_ID_5000003 = 5000003L;
+    private static final Long EXISTENT_LESSON_ID_5000004 = 5000004L;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private StudentRepository studentRepository;
 
     @Autowired
-    private LecturerDAO lecturerDAOImpl;
-
-    @Autowired
-    private StudentDAO studentDAOImpl;
-
-    @Autowired
-    private String populateDbSql;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.execute(populateDbSql);
-    }
+    private LecturerRepository lecturerRepository;
 
     @Test
+    @Sql(POPULATE_DB_SQL)
     void testGetByIdShouldReturnExistentStudent() {
         Student expected = new Student()
                 .setId(EXISTENT_PERSON_ID_50001)
@@ -86,27 +85,32 @@ class StudentDAOImplTest {
                 .setGroup(new Group().setId(501))
                 .setActive(true);
 
-        Student actual = studentDAOImpl.getById(EXISTENT_PERSON_ID_50001);
+        Student actual = studentRepository.findById(EXISTENT_PERSON_ID_50001);
         assertThatObject(actual).isEqualToComparingFieldByField(expected);
     }
 
     @Test
-    void testGetByIdShouldThrowDaoExceptionWhenAnotherRolePersonIdPassed() {
-        assertThrows(DaoException.class, () -> studentDAOImpl.getById(EXISTENT_PERSON_ID_50005), "DaoException throw is expected");
+    @Sql(POPULATE_DB_SQL)
+    void testFindByIdShouldReturnNullWhenNonexistentIdPassed() {
+        Student actual = studentRepository.findById(NONEXISTENT_PERSON_ID);
+        assertNull(actual, "null is expected when nonexistent person id passed");
     }
 
     @Test
-    void testGetByIdShouldThrowDaoExceptionWhenNonexistentIdPassed() {
-        assertThrows(DaoException.class, () -> studentDAOImpl.getById(NONEXISTENT_PERSON_ID), "DaoException throw is expected");
+    @Sql(POPULATE_DB_SQL)
+    void testFindByIdShouldReturnNullWhenAnotherRolePersonIdPassed() {
+        Student actual = studentRepository.findById(EXISTENT_PERSON_ID_50005);
+        assertNull(actual, "null is expected when not student role person id passed");
     }
 
     @Test
-    void testGetByIdShouldThrowDaoExceptionWhenNullPassed() {
-        assertThrows(DaoException.class, () -> studentDAOImpl.getById(null), "DaoException throw is expected");
+    void testFindByIdShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> studentRepository.findById(null), "IllegalArgumentException throw is expected");
     }
 
     @Test
-    void testAddShouldAddNewStudentAndSetItsNewId() {
+    @Sql(POPULATE_DB_SQL)
+    void testSaveShouldAddNewStudentAndSetItsNewId() {
         Student expected = new Student()
                 .setFirstName(NEW_PERSON_FIRST_NAME)
                 .setLastName(NEW_PERSON_LAST_NAME)
@@ -115,21 +119,22 @@ class StudentDAOImplTest {
                 .setGroup(new Group().setId(502))
                 .setActive(true);
 
-        studentDAOImpl.add(expected);
+        studentRepository.save(expected);
         assertNotNull(expected.getId(), "add() should set new id to the student, new id cannot be null");
 
-        Student actual = studentDAOImpl.getById(expected.getId());
+        Student actual = studentRepository.findById(expected.getId());
         assertThatObject(actual).isEqualToComparingFieldByField(expected);
     }
 
     @Test
-    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> studentDAOImpl.add(null), "add(null) should throw NullPointerException");
+    void testSaveShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> studentRepository.save(null), "add(null) should throw IllegalArgumentException");
     }
 
     @Test
+    @Sql(POPULATE_DB_SQL)
     void testUpdateShouldUpdateExistentStudent() {
-        Student actual = studentDAOImpl.getById(EXISTENT_PERSON_ID_50001);
+        Student actual = studentRepository.findById(EXISTENT_PERSON_ID_50001);
 
         actual.setFirstName(NEW_PERSON_FIRST_NAME)
                 .setLastName(NEW_PERSON_LAST_NAME)
@@ -138,20 +143,22 @@ class StudentDAOImplTest {
                 .setGroup(new Group().setId(502))
                 .setActive(false);
 
-        studentDAOImpl.update(actual);
+        studentRepository.update(actual);
 
-        Student expected = studentDAOImpl.getById(EXISTENT_PERSON_ID_50001);
+        Student expected = studentRepository.findById(EXISTENT_PERSON_ID_50001);
         assertThatObject(actual).isEqualToComparingFieldByField(expected);
     }
 
     @Test
+    @Sql(POPULATE_DB_SQL)
     void testUpdateShouldNotUpdateExistentNonStudent() {
-        Student student = studentDAOImpl.getById(EXISTENT_PERSON_ID_50001);
+        Student student = studentRepository.findById(EXISTENT_PERSON_ID_50001);
         student.setId(EXISTENT_PERSON_ID_50005);
-        studentDAOImpl.update(student);
+        studentRepository.update(student);
 
-        Lecturer actual = lecturerDAOImpl.getById(EXISTENT_PERSON_ID_50005);
-        Lecturer expected = new Lecturer()
+        Lecturer actualLecturer = lecturerRepository.findById(EXISTENT_PERSON_ID_50005);
+
+        Lecturer expectedLecturer = new Lecturer()
                 .setId(EXISTENT_PERSON_ID_50005)
                 .setFirstName(EXISTENT_PERSON_FIRST_NAME_50005)
                 .setLastName(EXISTENT_PERSON_LAST_NAME_50005)
@@ -159,114 +166,118 @@ class StudentDAOImplTest {
                 .setComment(EXISTENT_PERSON_COMMENT_50005)
                 .setActive(true);
 
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+        List<Course> expectedCourses = new ArrayList<>();
+        expectedCourses.add(new Course().setId(EXISTENT_COURSE_ID_51));
+        expectedCourses.add(new Course().setId(EXISTENT_COURSE_ID_52));
+        expectedLecturer.setCourses(expectedCourses);
+
+        List<Lesson> expectedLessons = new ArrayList<>();
+        expectedLessons.add(new Lesson().setId(EXISTENT_LESSON_ID_5000001));
+        expectedLessons.add(new Lesson().setId(EXISTENT_LESSON_ID_5000002));
+        expectedLessons.add(new Lesson().setId(EXISTENT_LESSON_ID_5000003));
+        expectedLessons.add(new Lesson().setId(EXISTENT_LESSON_ID_5000004));
+        expectedLecturer.setLessons(expectedLessons);
+
+        assertThatObject(actualLecturer).isEqualToComparingOnlyGivenFields(expectedLecturer, "id", "firstName", "firstName", "lastName", "email", "comment", "active");
+        assertEquals(expectedLecturer.getCourses(), actualLecturer.getCourses(), "courses list should be filled");
+        assertEquals(expectedLecturer.getLessons(), actualLecturer.getLessons(), "lessons list should be filled");
     }
 
     @Test
-    void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> studentDAOImpl.add(null), "update(null) should throw NullPointerException");
+    void testUpdateShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> studentRepository.save(null), "update(null) should throw IllegalArgumentException");
     }
 
     @Test
+    @Sql(POPULATE_DB_SQL)
     void testDeleteShouldDeactivateExistentStudent() {
-        Student student = studentDAOImpl.getById(EXISTENT_PERSON_ID_50001);
-        studentDAOImpl.delete(student);
+        Student student = studentRepository.findById(EXISTENT_PERSON_ID_50001);
+        studentRepository.delete(student);
 
-        Student actual = studentDAOImpl.getById(EXISTENT_PERSON_ID_50001);
+        Student actual = studentRepository.findById(EXISTENT_PERSON_ID_50001);
         assertFalse(actual.isActive(), "actual should not be active");
     }
 
     @Test
+    @Sql(POPULATE_DB_SQL)
     void testDeleteShouldNotDeactivateExistentNonStudent() {
-        Student student = studentDAOImpl.getById(EXISTENT_PERSON_ID_50001);
+        Student student = studentRepository.findById(EXISTENT_PERSON_ID_50001);
         student.setId(EXISTENT_PERSON_ID_50005);
-        studentDAOImpl.delete(student);
+        studentRepository.delete(student);
 
-        Lecturer actual = lecturerDAOImpl.getById(EXISTENT_PERSON_ID_50005);
+        Lecturer actual = lecturerRepository.findById(EXISTENT_PERSON_ID_50005);
         assertTrue(actual.isActive(), "actual should be active");
     }
 
     @Test
     void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> studentDAOImpl.delete(null), "delete(null) should throw NullPointerException");
+        assertThrows(NullPointerException.class, () -> studentRepository.delete(null), "delete(null) should throw NullPointerException");
     }
 
     @Test
-    void testGetAllShouldReturnAllStudentsList() {
+    @Sql(POPULATE_DB_SQL)
+    void testFindAllShouldReturnAllStudentsList() {
         List<Student> expected = new ArrayList<>();
         expected.add(new Student().setId(EXISTENT_PERSON_ID_50001).setFirstName(EXISTENT_PERSON_FIRST_NAME_50001).setLastName(EXISTENT_PERSON_LAST_NAME_50001).setEmail(EXISTENT_PERSON_EMAIL_50001).setComment(EXISTENT_PERSON_COMMENT_50001).setGroup(new Group().setId(501)).setActive(true));
         expected.add(new Student().setId(EXISTENT_PERSON_ID_50002).setFirstName(EXISTENT_PERSON_FIRST_NAME_50002).setLastName(EXISTENT_PERSON_LAST_NAME_50002).setEmail(EXISTENT_PERSON_EMAIL_50002).setComment(null).setGroup(new Group().setId(501)).setActive(true));
         expected.add(new Student().setId(EXISTENT_PERSON_ID_50003).setFirstName(EXISTENT_PERSON_FIRST_NAME_50003).setLastName(EXISTENT_PERSON_LAST_NAME_50003).setEmail(EXISTENT_PERSON_EMAIL_50003).setComment(EXISTENT_PERSON_COMMENT_50003).setGroup(new Group().setId(502)).setActive(true));
         expected.add(new Student().setId(EXISTENT_PERSON_ID_50004).setFirstName(EXISTENT_PERSON_FIRST_NAME_50004).setLastName(EXISTENT_PERSON_LAST_NAME_50004).setEmail(EXISTENT_PERSON_EMAIL_50004).setComment(EXISTENT_PERSON_COMMENT_50004).setGroup(new Group()).setActive(false));
 
-        List<Student> actual = studentDAOImpl.getAll();
+        List<Student> actual = studentRepository.findAll();
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<Student> expectedSet = new HashSet<>(expected);
-        Set<Student> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
     }
 
     @Test
-    void testGetByGroupIdShouldReturnGroupStudentsListWhenGroupIdPassed() {
+    @Sql(POPULATE_DB_SQL)
+    void testFindByGroupIdShouldReturnGroupStudentsListWhenGroupIdPassed() {
         List<Student> expected = new ArrayList<>();
         expected.add(new Student().setId(EXISTENT_PERSON_ID_50001).setFirstName(EXISTENT_PERSON_FIRST_NAME_50001).setLastName(EXISTENT_PERSON_LAST_NAME_50001).setEmail(EXISTENT_PERSON_EMAIL_50001).setComment(EXISTENT_PERSON_COMMENT_50001).setGroup(new Group().setId(501)).setActive(true));
         expected.add(new Student().setId(EXISTENT_PERSON_ID_50002).setFirstName(EXISTENT_PERSON_FIRST_NAME_50002).setLastName(EXISTENT_PERSON_LAST_NAME_50002).setEmail(EXISTENT_PERSON_EMAIL_50002).setComment(null).setGroup(new Group().setId(501)).setActive(true));
 
-        List<Student> actual = studentDAOImpl.getByGroupId(501);
+        List<Student> actual = studentRepository.findByGroupId(EXISTENT_GROUP_ID_501);
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<Student> expectedSet = new HashSet<>(expected);
-        Set<Student> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
     }
 
     @Test
-    void testGetByGroupIdShouldReturnEmptyStudentsListWhenNullPassed() {
+    void testFindByGroupIdShouldReturnEmptyStudentsListWhenNullPassed() {
         List<Student> expected = new ArrayList<>();
-        List<Student> actual = studentDAOImpl.getByGroupId(null);
+        List<Student> actual = studentRepository.findByGroupId(null);
         assertEquals(expected, actual, "empty courses list is expected");
     }
 
     @Test
-    void testGetByCourseIdShouldReturnCourseStudentsListWhenCourseIdPassed() {
+    @Sql(POPULATE_DB_SQL)
+    void testFindByCourseIdShouldReturnCourseStudentsListWhenCourseIdPassed() {
         List<Student> expected = new ArrayList<>();
         expected.add(new Student().setId(EXISTENT_PERSON_ID_50003).setFirstName(EXISTENT_PERSON_FIRST_NAME_50003).setLastName(EXISTENT_PERSON_LAST_NAME_50003).setEmail(EXISTENT_PERSON_EMAIL_50003).setComment(EXISTENT_PERSON_COMMENT_50003).setGroup(new Group().setId(502)).setActive(true));
 
-        List<Student> actual = studentDAOImpl.getByCourseId(53);
+        List<Student> actual = studentRepository.findByCourseId(53);
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<Student> expectedSet = new HashSet<>(expected);
-        Set<Student> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
     }
 
     @Test
-    void testGetByCourseIdShouldReturnEmptyStudentsListWhenNullPassed() {
+    void testFindByCourseIdShouldReturnEmptyStudentsListWhenNullPassed() {
         List<Student> expected = new ArrayList<>();
-        List<Student> actual = studentDAOImpl.getByCourseId(null);
+        List<Student> actual = studentRepository.findByCourseId(null);
         assertEquals(expected, actual, "empty courses list is expected");
     }
 
     @Test
-    void testGetByLessonIdShouldReturnLessonStudentsListWhenLessonIdPassed() {
+    @Sql(POPULATE_DB_SQL)
+    void testFindByLessonIdShouldReturnLessonStudentsListWhenLessonIdPassed() {
         List<Student> expected = new ArrayList<>();
         expected.add(new Student().setId(EXISTENT_PERSON_ID_50001).setFirstName(EXISTENT_PERSON_FIRST_NAME_50001).setLastName(EXISTENT_PERSON_LAST_NAME_50001).setEmail(EXISTENT_PERSON_EMAIL_50001).setComment(EXISTENT_PERSON_COMMENT_50001).setGroup(new Group().setId(501)).setActive(true));
         expected.add(new Student().setId(EXISTENT_PERSON_ID_50002).setFirstName(EXISTENT_PERSON_FIRST_NAME_50002).setLastName(EXISTENT_PERSON_LAST_NAME_50002).setEmail(EXISTENT_PERSON_EMAIL_50002).setComment(null).setGroup(new Group().setId(501)).setActive(true));
         expected.add(new Student().setId(EXISTENT_PERSON_ID_50003).setFirstName(EXISTENT_PERSON_FIRST_NAME_50003).setLastName(EXISTENT_PERSON_LAST_NAME_50003).setEmail(EXISTENT_PERSON_EMAIL_50003).setComment("").setGroup(new Group().setId(502)).setActive(true));
 
-        List<Student> actual = studentDAOImpl.getByLessonId(5000001L);
+        List<Student> actual = studentRepository.findByLessonId(EXISTENT_LESSON_ID_5000001);
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<Student> expectedSet = new HashSet<>(expected);
-        Set<Student> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
     }
 
     @Test
-    void testGetByLessonIdShouldReturnEmptyStudentsListWhenNullPassed() {
+    void testFindByLessonIdShouldReturnEmptyStudentsListWhenNullPassed() {
         List<Student> expected = new ArrayList<>();
-        List<Student> actual = studentDAOImpl.getByLessonId(null);
+        List<Student> actual = studentRepository.findByLessonId(null);
         assertEquals(expected, actual, "empty courses list is expected");
     }
 }

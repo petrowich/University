@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.petrowich.university.dao.GroupDAO;
-import ru.petrowich.university.dao.StudentDAO;
+import ru.petrowich.university.repository.GroupRepository;
+import ru.petrowich.university.repository.StudentRepository;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Student;
 
@@ -47,10 +47,10 @@ class GroupServiceImplTest {
     private AutoCloseable autoCloseable;
 
     @Mock
-    private GroupDAO mockGroupDAO;
+    private GroupRepository mockGroupRepository;
 
     @Mock
-    private StudentDAO mockStudentDAO;
+    private StudentRepository mockStudentRepository;
 
     @InjectMocks
     private GroupServiceImpl groupServiceImpl;
@@ -73,75 +73,73 @@ class GroupServiceImplTest {
         students.add(thirdStudent);
         firstGroup.setStudents(students);
 
-        when(mockGroupDAO.getById(GROUP_ID_501)).thenReturn(firstGroup);
-        when(mockStudentDAO.getByGroupId(GROUP_ID_501)).thenReturn(students);
+        when(mockGroupRepository.findById(GROUP_ID_501)).thenReturn(firstGroup);
 
         Group actual = groupServiceImpl.getById(GROUP_ID_501);
 
-        verify(mockGroupDAO, times(1)).getById(GROUP_ID_501);
-        verify(mockStudentDAO, times(1)).getByGroupId(GROUP_ID_501);
+        verify(mockGroupRepository, times(1)).findById(GROUP_ID_501);
 
         assertThatObject(actual).isEqualToComparingFieldByField(firstGroup);
     }
 
     @Test
     void testGetByIdShouldReturnNullWhenWhenNonexistentIdPassed() {
-        when(mockGroupDAO.getById(-1)).thenReturn(null);
+        when(mockGroupRepository.findById(-1)).thenReturn(null);
         Group actual = groupServiceImpl.getById(-1);
 
-        verify(mockGroupDAO, times(1)).getById(-1);
+        verify(mockGroupRepository, times(1)).findById(-1);
         assertNull(actual, "null should be returned");
     }
 
     @Test
     void testGetByIdShouldReturnNullWhenWhenNullPassed() {
-        when(mockGroupDAO.getById(null)).thenReturn(null);
+        when(mockGroupRepository.findById(null)).thenReturn(null);
         Group actual = groupServiceImpl.getById(null);
 
-        verify(mockGroupDAO, times(1)).getById(null);
+        verify(mockGroupRepository, times(1)).findById(null);
         assertNull(actual, "null should be returned");
     }
 
     @Test
-    void testAddShouldInvokeDaoUpdateWithPassedCourse() {
-        doNothing().when(mockGroupDAO).add(firstGroup);
+    void testAddShouldInvokeRepositoryUpdateWithPassedCourse() {
+        doNothing().when(mockGroupRepository).save(firstGroup);
         groupServiceImpl.add(firstGroup);
-        verify(mockGroupDAO, times(1)).add(firstGroup);
+        verify(mockGroupRepository, times(1)).save(firstGroup);
     }
 
     @Test
-    void testAddShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockGroupDAO).add(null);
+    void testAddShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockGroupRepository).save(null);
         groupServiceImpl.add(null);
-        verify(mockGroupDAO, times(1)).add(null);
+        verify(mockGroupRepository, times(1)).save(null);
     }
 
     @Test
-    void testUpdateShouldInvokeDaoUpdateWithPassedCourse() {
-        doNothing().when(mockGroupDAO).update(firstGroup);
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedCourse() {
+        doNothing().when(mockGroupRepository).update(firstGroup);
         groupServiceImpl.update(firstGroup);
-        verify(mockGroupDAO, times(1)).update(firstGroup);
+        verify(mockGroupRepository, times(1)).update(firstGroup);
     }
 
     @Test
-    void testUpdateShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockGroupDAO).update(null);
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockGroupRepository).update(null);
         groupServiceImpl.update(null);
-        verify(mockGroupDAO, times(1)).update(null);
+        verify(mockGroupRepository, times(1)).update(null);
     }
 
     @Test
-    void testDeleteShouldInvokeDaoUpdateWithPassedCourse() {
-        doNothing().when(mockGroupDAO).delete(firstGroup);
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedCourse() {
+        doNothing().when(mockGroupRepository).delete(firstGroup);
         groupServiceImpl.delete(firstGroup);
-        verify(mockGroupDAO, times(1)).delete(firstGroup);
+        verify(mockGroupRepository, times(1)).delete(firstGroup);
     }
 
     @Test
-    void testDeleteShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockGroupDAO).delete(null);
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockGroupRepository).delete(null);
         groupServiceImpl.delete(null);
-        verify(mockGroupDAO, times(1)).delete(null);
+        verify(mockGroupRepository, times(1)).delete(null);
     }
 
     @Test
@@ -160,17 +158,17 @@ class GroupServiceImplTest {
         expected.add(secondGroup);
         expected.add(thirdGroup);
 
-        when(mockGroupDAO.getAll()).thenReturn(expected);
-        when(mockStudentDAO.getByGroupId(GROUP_ID_501)).thenReturn(firstGroupStudents);
-        when(mockStudentDAO.getByGroupId(GROUP_ID_502)).thenReturn(secondGroupStudents);
-        when(mockStudentDAO.getByGroupId(GROUP_ID_503)).thenReturn(new ArrayList<>());
+        when(mockGroupRepository.findAll()).thenReturn(expected);
+        when(mockStudentRepository.findByGroupId(GROUP_ID_501)).thenReturn(firstGroupStudents);
+        when(mockStudentRepository.findByGroupId(GROUP_ID_502)).thenReturn(secondGroupStudents);
+        when(mockStudentRepository.findByGroupId(GROUP_ID_503)).thenReturn(new ArrayList<>());
 
         List<Group> actual = groupServiceImpl.getAll();
 
-        verify(mockGroupDAO, times(1)).getAll();
-        verify(mockStudentDAO, times(1)).getByGroupId(GROUP_ID_501);
-        verify(mockStudentDAO, times(1)).getByGroupId(GROUP_ID_502);
-        verify(mockStudentDAO, times(1)).getByGroupId(GROUP_ID_503);
+        verify(mockGroupRepository, times(1)).findAll();
+        verify(mockStudentRepository, times(1)).findByGroupId(GROUP_ID_501);
+        verify(mockStudentRepository, times(1)).findByGroupId(GROUP_ID_502);
+        verify(mockStudentRepository, times(1)).findByGroupId(GROUP_ID_503);
 
         assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
     }

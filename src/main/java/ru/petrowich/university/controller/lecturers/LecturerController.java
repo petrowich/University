@@ -54,6 +54,7 @@ public class LecturerController {
     @GetMapping("/lecturer")
     public String lecturer(@RequestParam("id") Integer lecturerId, Model model) {
         LOGGER.info("getting lecturer id={}", lecturerId);
+
         Lecturer lecturer = lecturerService.getById(lecturerId);
         model.addAttribute(ATTRIBUTE_LECTURER, lecturer);
         LOGGER.debug("lecturer: {} {}", lecturer.getId(), lecturer.getFullName());
@@ -64,6 +65,7 @@ public class LecturerController {
     @GetMapping("/lecturer/edit")
     public String edit(@RequestParam("id") Integer lecturerId, Model model) {
         LOGGER.info("getting lecturer id={}", lecturerId);
+
         Lecturer lecturer = lecturerService.getById(lecturerId);
         model.addAttribute(ATTRIBUTE_LECTURER, lecturer);
         LOGGER.debug("lecturer: {} {}", lecturer.getId(), lecturer.getFullName());
@@ -73,7 +75,7 @@ public class LecturerController {
 
     @PostMapping("/lecturer/update")
     public String update(Lecturer lecturer, BindingResult bindingResult, Model model, HttpServletResponse httpServletResponse) {
-        LOGGER.info("submit update of lecturer id={}", lecturer.getId());
+        LOGGER.info("submitting the changes of lecturer id={}", lecturer.getId());
 
         if (bindingResult.hasErrors()) {
             LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, bindingResult.getErrorCount());

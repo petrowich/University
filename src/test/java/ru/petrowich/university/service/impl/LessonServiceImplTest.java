@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.petrowich.university.dao.LessonDAO;
-import ru.petrowich.university.dao.CourseDAO;
-import ru.petrowich.university.dao.LecturerDAO;
-import ru.petrowich.university.dao.TimeSlotDAO;
-import ru.petrowich.university.dao.GroupDAO;
-import ru.petrowich.university.dao.StudentDAO;
+import ru.petrowich.university.repository.LessonRepository;
+import ru.petrowich.university.repository.CourseRepository;
+import ru.petrowich.university.repository.LecturerRepository;
+import ru.petrowich.university.repository.TimeSlotRepository;
+import ru.petrowich.university.repository.GroupRepository;
+import ru.petrowich.university.repository.StudentRepository;
 import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Group;
@@ -92,22 +92,22 @@ class LessonServiceImplTest {
     }
 
     @Mock
-    private LessonDAO mockLessonDAO;
+    private LessonRepository mockLessonRepository;
 
     @Mock
-    private CourseDAO mockCourseDAO;
+    private CourseRepository mockCourseRepository;
 
     @Mock
-    private LecturerDAO mockLecturerDAO;
+    private LecturerRepository mockLecturerRepository;
 
     @Mock
-    private TimeSlotDAO mockTimeSlotDAO;
+    private TimeSlotRepository mockTimeSlotRepository;
 
     @Mock
-    private GroupDAO mockGroupDAO;
+    private GroupRepository mockGroupRepository;
 
     @Mock
-    private StudentDAO mockStudentDAO;
+    private StudentRepository mockStudentRepository;
 
     @InjectMocks
     private LessonServiceImpl lessonServiceImpl;
@@ -124,83 +124,77 @@ class LessonServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnLessonWhenLessonIdPassed() {
-        when(mockLessonDAO.getById(LESSON_ID_5000001)).thenReturn(firstLesson);
-        when(mockGroupDAO.getByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonGroups);
-        when(mockStudentDAO.getByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonStudents);
-        when(mockTimeSlotDAO.getById(TIME_SLOT_ID)).thenReturn(timeSlot);
-        when(mockLecturerDAO.getById(PERSON_ID_50005)).thenReturn(lecturer);
-        when(mockCourseDAO.getById(COURSE_ID_51)).thenReturn(firstCourse);
+        when(mockLessonRepository.findById(LESSON_ID_5000001)).thenReturn(firstLesson);
+        when(mockGroupRepository.findByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonGroups);
+        when(mockStudentRepository.findByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonStudents);
 
         Lesson actual = lessonServiceImpl.getById(LESSON_ID_5000001);
 
-        verify(mockLessonDAO, times(1)).getById(LESSON_ID_5000001);
-        verify(mockGroupDAO, times(1)).getByLessonId(LESSON_ID_5000001);
-        verify(mockStudentDAO, times(1)).getByLessonId(LESSON_ID_5000001);
-        verify(mockTimeSlotDAO, times(1)).getById(TIME_SLOT_ID);
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50005);
-        verify(mockCourseDAO, times(1)).getById(COURSE_ID_51);
+        verify(mockLessonRepository, times(1)).findById(LESSON_ID_5000001);
+        verify(mockGroupRepository, times(1)).findByLessonId(LESSON_ID_5000001);
+        verify(mockStudentRepository, times(1)).findByLessonId(LESSON_ID_5000001);
 
         assertThatObject(actual).isEqualToComparingFieldByField(firstLesson);
     }
 
     @Test
     void testGetByIdShouldReturnNullWhenNonexistentIdPassed() {
-        when(mockLessonDAO.getById(-1L)).thenReturn(null);
+        when(mockLessonRepository.findById(-1L)).thenReturn(null);
         Lesson actual = lessonServiceImpl.getById(-1L);
 
-        verify(mockLessonDAO, times(1)).getById(-1L);
+        verify(mockLessonRepository, times(1)).findById(-1L);
         assertNull(actual, "null should be returned");
     }
 
     @Test
     void testGetByIdShouldReturnNullWhenNullPassed() {
-        when(mockLessonDAO.getById(null)).thenReturn(null);
+        when(mockLessonRepository.findById(null)).thenReturn(null);
         Lesson actual = lessonServiceImpl.getById(null);
 
-        verify(mockLessonDAO, times(1)).getById(null);
+        verify(mockLessonRepository, times(1)).findById(null);
         assertNull(actual, "null should be returned");
     }
 
     @Test
-    void testAddShouldInvokeDaoUpdateWithPassedLesson() {
-        doNothing().when(mockLessonDAO).add(firstLesson);
+    void testAddShouldInvokeRepositoryUpdateWithPassedLesson() {
+        doNothing().when(mockLessonRepository).save(firstLesson);
         lessonServiceImpl.add(firstLesson);
-        verify(mockLessonDAO, times(1)).add(firstLesson);
+        verify(mockLessonRepository, times(1)).save(firstLesson);
     }
 
     @Test
-    void testAddShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockLessonDAO).add(null);
+    void testAddShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockLessonRepository).save(null);
         lessonServiceImpl.add(null);
-        verify(mockLessonDAO, times(1)).add(null);
+        verify(mockLessonRepository, times(1)).save(null);
     }
 
     @Test
-    void testUpdateShouldInvokeDaoUpdateWithPassedLesson() {
-        doNothing().when(mockLessonDAO).update(firstLesson);
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedLesson() {
+        doNothing().when(mockLessonRepository).update(firstLesson);
         lessonServiceImpl.update(firstLesson);
-        verify(mockLessonDAO, times(1)).update(firstLesson);
+        verify(mockLessonRepository, times(1)).update(firstLesson);
     }
 
     @Test
-    void testUpdateShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockLessonDAO).update(null);
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockLessonRepository).update(null);
         lessonServiceImpl.update(null);
-        verify(mockLessonDAO, times(1)).update(null);
+        verify(mockLessonRepository, times(1)).update(null);
     }
 
     @Test
-    void testDeleteShouldInvokeDaoUpdateWithPassedLesson() {
-        doNothing().when(mockLessonDAO).delete(firstLesson);
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedLesson() {
+        doNothing().when(mockLessonRepository).delete(firstLesson);
         lessonServiceImpl.delete(firstLesson);
-        verify(mockLessonDAO, times(1)).delete(firstLesson);
+        verify(mockLessonRepository, times(1)).delete(firstLesson);
     }
 
     @Test
-    void testDeleteShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockLessonDAO).delete(null);
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockLessonRepository).delete(null);
         lessonServiceImpl.delete(null);
-        verify(mockLessonDAO, times(1)).delete(null);
+        verify(mockLessonRepository, times(1)).delete(null);
     }
 
     @Test
@@ -210,41 +204,27 @@ class LessonServiceImplTest {
         expected.add(secondLesson);
         expected.add(thirdLesson);
 
-        when(mockLessonDAO.getAll()).thenReturn(expected);
-        when(mockGroupDAO.getByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonGroups);
-        when(mockGroupDAO.getByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonGroups);
-        when(mockGroupDAO.getByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
-        when(mockGroupDAO.getByLessonId(null)).thenReturn(null);
-        when(mockStudentDAO.getByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonStudents);
-        when(mockStudentDAO.getByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonStudents);
-        when(mockStudentDAO.getByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
-        when(mockStudentDAO.getByLessonId(null)).thenReturn(null);
-        when(mockCourseDAO.getById(COURSE_ID_51)).thenReturn(firstCourse);
-        when(mockCourseDAO.getById(COURSE_ID_52)).thenReturn(secondCourse);
-        when(mockCourseDAO.getById(null)).thenReturn(null);
-        when(mockLecturerDAO.getById(PERSON_ID_50005)).thenReturn(lecturer);
-        when(mockLecturerDAO.getById(null)).thenReturn(null);
-        when(mockTimeSlotDAO.getById(TIME_SLOT_ID)).thenReturn(timeSlot);
-        when(mockTimeSlotDAO.getById(null)).thenReturn(null);
+        when(mockLessonRepository.findAll()).thenReturn(expected);
+        when(mockGroupRepository.findByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonGroups);
+        when(mockGroupRepository.findByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonGroups);
+        when(mockGroupRepository.findByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
+        when(mockGroupRepository.findByLessonId(null)).thenReturn(null);
+        when(mockStudentRepository.findByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonStudents);
+        when(mockStudentRepository.findByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonStudents);
+        when(mockStudentRepository.findByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
+        when(mockStudentRepository.findByLessonId(null)).thenReturn(null);
 
         List<Lesson> actual = lessonServiceImpl.getAll();
 
-        verify(mockLessonDAO, times(1)).getAll();
-        verify(mockGroupDAO, times(1)).getByLessonId(LESSON_ID_5000001);
-        verify(mockGroupDAO, times(1)).getByLessonId(LESSON_ID_5000002);
-        verify(mockGroupDAO, times(1)).getByLessonId(LESSON_ID_5000003);
-        verify(mockGroupDAO, times(0)).getByLessonId(null);
-        verify(mockStudentDAO, times(1)).getByLessonId(LESSON_ID_5000001);
-        verify(mockStudentDAO, times(1)).getByLessonId(LESSON_ID_5000002);
-        verify(mockStudentDAO, times(1)).getByLessonId(LESSON_ID_5000003);
-        verify(mockStudentDAO, times(0)).getByLessonId(null);
-        verify(mockCourseDAO, times(1)).getById(COURSE_ID_51);
-        verify(mockCourseDAO, times(1)).getById(COURSE_ID_52);
-        verify(mockCourseDAO, times(0)).getById(null);
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50005);
-        verify(mockLecturerDAO, times(0)).getById(null);
-        verify(mockTimeSlotDAO, times(1)).getById(TIME_SLOT_ID);
-        verify(mockTimeSlotDAO, times(0)).getById(null);
+        verify(mockLessonRepository, times(1)).findAll();
+        verify(mockGroupRepository, times(1)).findByLessonId(LESSON_ID_5000001);
+        verify(mockGroupRepository, times(1)).findByLessonId(LESSON_ID_5000002);
+        verify(mockGroupRepository, times(1)).findByLessonId(LESSON_ID_5000003);
+        verify(mockGroupRepository, times(0)).findByLessonId(null);
+        verify(mockStudentRepository, times(1)).findByLessonId(LESSON_ID_5000001);
+        verify(mockStudentRepository, times(1)).findByLessonId(LESSON_ID_5000002);
+        verify(mockStudentRepository, times(1)).findByLessonId(LESSON_ID_5000003);
+        verify(mockStudentRepository, times(0)).findByLessonId(null);
 
         assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
     }
@@ -256,41 +236,27 @@ class LessonServiceImplTest {
         expected.add(secondLesson);
         expected.add(thirdLesson);
 
-        when(mockLessonDAO.getByLecturerId(PERSON_ID_50005)).thenReturn(expected);
-        when(mockGroupDAO.getByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonGroups);
-        when(mockGroupDAO.getByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonGroups);
-        when(mockGroupDAO.getByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
-        when(mockGroupDAO.getByLessonId(null)).thenReturn(null);
-        when(mockStudentDAO.getByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonStudents);
-        when(mockStudentDAO.getByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonStudents);
-        when(mockStudentDAO.getByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
-        when(mockStudentDAO.getByLessonId(null)).thenReturn(null);
-        when(mockCourseDAO.getById(COURSE_ID_51)).thenReturn(firstCourse);
-        when(mockCourseDAO.getById(COURSE_ID_52)).thenReturn(secondCourse);
-        when(mockCourseDAO.getById(null)).thenReturn(null);
-        when(mockLecturerDAO.getById(PERSON_ID_50005)).thenReturn(lecturer);
-        when(mockLecturerDAO.getById(null)).thenReturn(null);
-        when(mockTimeSlotDAO.getById(TIME_SLOT_ID)).thenReturn(timeSlot);
-        when(mockTimeSlotDAO.getById(null)).thenReturn(null);
+        when(mockLessonRepository.findByLecturerId(PERSON_ID_50005)).thenReturn(expected);
+        when(mockGroupRepository.findByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonGroups);
+        when(mockGroupRepository.findByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonGroups);
+        when(mockGroupRepository.findByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
+        when(mockGroupRepository.findByLessonId(null)).thenReturn(null);
+        when(mockStudentRepository.findByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonStudents);
+        when(mockStudentRepository.findByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonStudents);
+        when(mockStudentRepository.findByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
+        when(mockStudentRepository.findByLessonId(null)).thenReturn(null);
 
         List<Lesson> actual = lessonServiceImpl.getByLecturerId(PERSON_ID_50005);
 
-        verify(mockLessonDAO, times(1)).getByLecturerId(PERSON_ID_50005);
-        verify(mockGroupDAO, times(1)).getByLessonId(LESSON_ID_5000001);
-        verify(mockGroupDAO, times(1)).getByLessonId(LESSON_ID_5000002);
-        verify(mockGroupDAO, times(1)).getByLessonId(LESSON_ID_5000003);
-        verify(mockGroupDAO, times(0)).getByLessonId(null);
-        verify(mockStudentDAO, times(1)).getByLessonId(LESSON_ID_5000001);
-        verify(mockStudentDAO, times(1)).getByLessonId(LESSON_ID_5000002);
-        verify(mockStudentDAO, times(1)).getByLessonId(LESSON_ID_5000003);
-        verify(mockStudentDAO, times(0)).getByLessonId(null);
-        verify(mockCourseDAO, times(1)).getById(COURSE_ID_51);
-        verify(mockCourseDAO, times(1)).getById(COURSE_ID_52);
-        verify(mockCourseDAO, times(0)).getById(null);
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50005);
-        verify(mockLecturerDAO, times(0)).getById(null);
-        verify(mockTimeSlotDAO, times(1)).getById(TIME_SLOT_ID);
-        verify(mockTimeSlotDAO, times(0)).getById(null);
+        verify(mockLessonRepository, times(1)).findByLecturerId(PERSON_ID_50005);
+        verify(mockGroupRepository, times(1)).findByLessonId(LESSON_ID_5000001);
+        verify(mockGroupRepository, times(1)).findByLessonId(LESSON_ID_5000002);
+        verify(mockGroupRepository, times(1)).findByLessonId(LESSON_ID_5000003);
+        verify(mockGroupRepository, times(0)).findByLessonId(null);
+        verify(mockStudentRepository, times(1)).findByLessonId(LESSON_ID_5000001);
+        verify(mockStudentRepository, times(1)).findByLessonId(LESSON_ID_5000002);
+        verify(mockStudentRepository, times(1)).findByLessonId(LESSON_ID_5000003);
+        verify(mockStudentRepository, times(0)).findByLessonId(null);
 
         assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
     }
@@ -298,11 +264,11 @@ class LessonServiceImplTest {
     @Test
     void testGetByLecturerIdShouldReturnLessonsListWhenNullPassed() {
         List<Lesson> expected = new ArrayList<>();
-        when(mockLessonDAO.getByLecturerId(null)).thenReturn(expected);
+        when(mockLessonRepository.findByLecturerId(null)).thenReturn(expected);
 
         List<Lesson> actual = lessonServiceImpl.getByLecturerId(null);
 
-        verify(mockLessonDAO, times(1)).getByLecturerId(null);
+        verify(mockLessonRepository, times(1)).findByLecturerId(null);
         assertEquals(expected, actual, "empty lesson list should be returned");
     }
 
@@ -313,41 +279,28 @@ class LessonServiceImplTest {
         expected.add(secondLesson);
         expected.add(thirdLesson);
 
-        when(mockLessonDAO.getByStudentId(PERSON_ID_50001)).thenReturn(expected);
-        when(mockGroupDAO.getByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonGroups);
-        when(mockGroupDAO.getByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonGroups);
-        when(mockGroupDAO.getByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
-        when(mockGroupDAO.getByLessonId(null)).thenReturn(null);
-        when(mockStudentDAO.getByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonStudents);
-        when(mockStudentDAO.getByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonStudents);
-        when(mockStudentDAO.getByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
-        when(mockStudentDAO.getByLessonId(null)).thenReturn(null);
-        when(mockCourseDAO.getById(COURSE_ID_51)).thenReturn(firstCourse);
-        when(mockCourseDAO.getById(COURSE_ID_52)).thenReturn(secondCourse);
-        when(mockCourseDAO.getById(null)).thenReturn(null);
-        when(mockLecturerDAO.getById(PERSON_ID_50005)).thenReturn(lecturer);
-        when(mockLecturerDAO.getById(null)).thenReturn(null);
-        when(mockTimeSlotDAO.getById(TIME_SLOT_ID)).thenReturn(timeSlot);
-        when(mockTimeSlotDAO.getById(null)).thenReturn(null);
+        when(mockLessonRepository.findByStudentId(PERSON_ID_50001)).thenReturn(expected);
+        when(mockGroupRepository.findByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonGroups);
+        when(mockGroupRepository.findByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonGroups);
+        when(mockGroupRepository.findByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
+        when(mockGroupRepository.findByLessonId(null)).thenReturn(null);
+        when(mockStudentRepository.findByLessonId(LESSON_ID_5000001)).thenReturn(firstLessonStudents);
+        when(mockStudentRepository.findByLessonId(LESSON_ID_5000002)).thenReturn(secondLessonStudents);
+        when(mockStudentRepository.findByLessonId(LESSON_ID_5000003)).thenReturn(new ArrayList<>());
+        when(mockStudentRepository.findByLessonId(null)).thenReturn(null);
 
         List<Lesson> actual = lessonServiceImpl.getByStudentId(PERSON_ID_50001);
 
-        verify(mockLessonDAO, times(1)).getByStudentId(PERSON_ID_50001);
-        verify(mockGroupDAO, times(1)).getByLessonId(LESSON_ID_5000001);
-        verify(mockGroupDAO, times(1)).getByLessonId(LESSON_ID_5000002);
-        verify(mockGroupDAO, times(1)).getByLessonId(LESSON_ID_5000003);
-        verify(mockGroupDAO, times(0)).getByLessonId(null);
-        verify(mockStudentDAO, times(1)).getByLessonId(LESSON_ID_5000001);
-        verify(mockStudentDAO, times(1)).getByLessonId(LESSON_ID_5000002);
-        verify(mockStudentDAO, times(1)).getByLessonId(LESSON_ID_5000003);
-        verify(mockStudentDAO, times(0)).getByLessonId(null);
-        verify(mockCourseDAO, times(1)).getById(COURSE_ID_51);
-        verify(mockCourseDAO, times(1)).getById(COURSE_ID_52);
-        verify(mockCourseDAO, times(0)).getById(null);
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50005);
-        verify(mockLecturerDAO, times(0)).getById(null);
-        verify(mockTimeSlotDAO, times(1)).getById(TIME_SLOT_ID);
-        verify(mockTimeSlotDAO, times(0)).getById(null);
+        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50001);
+        verify(mockGroupRepository, times(1)).findByLessonId(LESSON_ID_5000001);
+        verify(mockGroupRepository, times(1)).findByLessonId(LESSON_ID_5000002);
+        verify(mockGroupRepository, times(1)).findByLessonId(LESSON_ID_5000003);
+        verify(mockGroupRepository, times(0)).findByLessonId(null);
+
+        verify(mockStudentRepository, times(1)).findByLessonId(LESSON_ID_5000001);
+        verify(mockStudentRepository, times(1)).findByLessonId(LESSON_ID_5000002);
+        verify(mockStudentRepository, times(1)).findByLessonId(LESSON_ID_5000003);
+        verify(mockStudentRepository, times(0)).findByLessonId(null);
 
         assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
     }
@@ -355,11 +308,11 @@ class LessonServiceImplTest {
     @Test
     void testGetByStudentIdShouldReturnLessonsListWhenNullPassed() {
         List<Lesson> expected = new ArrayList<>();
-        when(mockLessonDAO.getByStudentId(null)).thenReturn(expected);
+        when(mockLessonRepository.findByStudentId(null)).thenReturn(expected);
 
         List<Lesson> actual = lessonServiceImpl.getByStudentId(null);
 
-        verify(mockLessonDAO, times(1)).getByStudentId(null);
+        verify(mockLessonRepository, times(1)).findByStudentId(null);
         assertEquals(expected, actual, "empty lesson list should be returned");
     }
 }

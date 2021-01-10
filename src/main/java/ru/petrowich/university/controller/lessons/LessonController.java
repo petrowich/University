@@ -87,7 +87,7 @@ public class LessonController {
 
     @PostMapping("/lesson/add")
     public String add(Lesson lesson, BindingResult result, Model model) {
-        LOGGER.info("add new lesson");
+        LOGGER.info("adding new lesson");
 
         if (result.hasErrors()) {
             LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, result.getErrorCount());
@@ -136,13 +136,21 @@ public class LessonController {
 
     @PostMapping("/lesson/update")
     public String update(Lesson lesson, BindingResult bindingResult, Model model, HttpServletResponse httpServletResponse) {
-        LOGGER.info("submit update of lesson id={}", lesson.getId());
+        LOGGER.info("submitting the changes of lesson id={}", lesson.getId());
 
         if (bindingResult.hasErrors()) {
             LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, bindingResult.getErrorCount());
             bindingResult.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return lessons(model);
+        }
+
+        if (lesson.getLecturer() != null && lesson.getLecturer().getId() == null) {
+            lesson.setLecturer(null);
+        }
+
+        if (lesson.getTimeSlot() != null && lesson.getTimeSlot().getId() == null) {
+            lesson.setTimeSlot(null);
         }
 
         lessonService.update(lesson);
@@ -152,7 +160,7 @@ public class LessonController {
 
     @PostMapping("/lesson/delete")
     public String delete(Lesson lesson, BindingResult bindingResult, Model model, HttpServletResponse httpServletResponse) {
-        LOGGER.info("delete lesson id={}", lesson.getId());
+        LOGGER.info("deleting lesson id={}", lesson.getId());
 
         if (bindingResult.hasErrors()) {
             LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, bindingResult.getErrorCount());

@@ -1,22 +1,20 @@
-package ru.petrowich.university.dao.impl;
+package ru.petrowich.university.repository.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
-import ru.petrowich.university.dao.CourseDAO;
-import ru.petrowich.university.dao.DaoException;
-import ru.petrowich.university.dao.GroupDAO;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Lecturer;
+import ru.petrowich.university.model.Student;
+import ru.petrowich.university.repository.CourseRepository;
 
-import java.util.List;
-import java.util.Set;
+import javax.transaction.Transactional;
+
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatObject;
@@ -24,9 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringJUnitConfig(classes = {AppConfigurationTest.class})
-class CourseDAOImplTest {
+@Transactional
+class CourseRepositoryImplTest {
+    private static final String POPULATE_DB_SQL = "classpath:populateDbTest.sql";
     private static final String NEW_COURSE_NAME = "Some Course Name";
     private static final String NEW_COURSE_DESCRIPTION = "Some Description";
     private static final Integer NONEXISTENT_COURSE_ID = 99;
@@ -50,30 +52,18 @@ class CourseDAOImplTest {
     private static final String EXISTENT_COURSE_DESCRIPTION_56 = "sport";
     private static final Integer EXISTENT_GROUP_ID_501 = 501;
     private static final Integer EXISTENT_GROUP_ID_502 = 502;
-    private static final Integer EXISTENT_GROUP_ID_503 = 503;
     private static final Integer NONEXISTENT_GROUP_ID = 999;
     private static final Integer EXISTENT_STUDENT_ID_50001 = 50001;
+    private static final Integer EXISTENT_STUDENT_ID_50002 = 50002;
+    private static final Integer EXISTENT_STUDENT_ID_50003 = 50003;
     private static final Integer NONEXISTENT_STUDENT_ID = 99999;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private CourseDAO courseDAOImpl;
-
-    @Autowired
-    private GroupDAO groupDAOImpl;
-
-    @Autowired
-    private String populateDbSql;
-
-    @BeforeEach
-    private void setUp() {
-        jdbcTemplate.execute(populateDbSql);
-    }
+    private CourseRepository courseRepository;
 
     @Test
-    void testGetByIdShouldReturnExistentCourse() {
+    @Sql(POPULATE_DB_SQL)
+    void testFindByIdShouldReturnExistentCourse() {
         Course expected = new Course()
                 .setId(EXISTENT_COURSE_ID_51)
                 .setName(EXISTENT_COURSE_NAME_51)
@@ -81,232 +71,184 @@ class CourseDAOImplTest {
                 .setAuthor(new Lecturer().setId(50005))
                 .setActive(true);
 
-        Course actual = courseDAOImpl.getById(EXISTENT_COURSE_ID_51);
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+        List<Group> groups = new ArrayList<>();
+        groups.add(new Group().setId(EXISTENT_GROUP_ID_501));
+        groups.add(new Group().setId(EXISTENT_GROUP_ID_502));
+        expected.setGroups(groups);
+
+        List<Student> students = new ArrayList<>();
+        students.add(new Student().setId(EXISTENT_STUDENT_ID_50002));
+        students.add(new Student().setId(EXISTENT_STUDENT_ID_50003));
+        students.add(new Student().setId(EXISTENT_STUDENT_ID_50001));
+        expected.setStudents(students);
+
+        Course actual = courseRepository.findById(EXISTENT_COURSE_ID_51);
+        assertThatObject(actual).isEqualToIgnoringGivenFields(expected, "groups", "students");
+        assertTrue(actual.getGroups().size() == expected.getGroups().size() && actual.getGroups().containsAll(expected.getGroups()) && expected.getGroups().containsAll(actual.getGroups()));
     }
 
     @Test
-    void testGetByIdShouldThrowDaoExceptionWhenNonexistentIdPassed() {
-        assertThrows(DaoException.class, () -> courseDAOImpl.getById(NONEXISTENT_COURSE_ID), "DaoException throw is expected");
+    @Sql(POPULATE_DB_SQL)
+    void testFindByIdShouldReturnNullWhenNonexistentIdPassed() {
+        Course actual = courseRepository.findById(NONEXISTENT_COURSE_ID);
+        assertNull(actual, "null is expected when nonexistent id passed");
     }
 
     @Test
-    void testGetByIdShouldThrowDaoExceptionWhenNullPassed() {
-        assertThrows(DaoException.class, () -> courseDAOImpl.getById(null), "DaoException throw is expected");
+    void testFindByIdShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> courseRepository.findById(null), "findById(null) should throw IllegalArgumentException");
     }
 
     @Test
-    void testAddShouldAddNewCourseAndSetItsNewId() {
+    @Sql(POPULATE_DB_SQL)
+    void testSaveShouldAddNewCourseAndSetItsNewId() {
         Course expected = new Course()
                 .setName(NEW_COURSE_NAME)
                 .setDescription(NEW_COURSE_DESCRIPTION)
                 .setAuthor(new Lecturer().setId(50005))
                 .setActive(true);
 
-        courseDAOImpl.add(expected);
+        List<Group> groups = new ArrayList<>();
+        groups.add(new Group().setId(EXISTENT_GROUP_ID_501));
+        groups.add(new Group().setId(EXISTENT_GROUP_ID_502));
+        expected.setGroups(groups);
+
+        List<Student> students = new ArrayList<>();
+        students.add(new Student().setId(EXISTENT_STUDENT_ID_50002));
+        students.add(new Student().setId(EXISTENT_STUDENT_ID_50003));
+        students.add(new Student().setId(EXISTENT_STUDENT_ID_50001));
+        expected.setStudents(students);
+
+        courseRepository.save(expected);
         assertNotNull(expected.getId(), "add() should set new id to the course, new id cannot be null");
 
-        Course actual = courseDAOImpl.getById(expected.getId());
+        Course actual = courseRepository.findById(expected.getId());
         assertThatObject(actual).isEqualToComparingFieldByField(expected);
     }
 
     @Test
-    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> courseDAOImpl.add(null), "add(null) should throw NullPointerException");
+    void testSaveShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> courseRepository.save(null), "add(null) should throw IllegalArgumentException");
     }
 
     @Test
+    @Sql(POPULATE_DB_SQL)
     void testUpdateShouldUpdateExistentCourse() {
-        Course actual = courseDAOImpl.getById(EXISTENT_COURSE_ID_51);
+        Course actual = courseRepository.findById(EXISTENT_COURSE_ID_51);
 
         actual.setName(NEW_COURSE_NAME)
                 .setDescription(NEW_COURSE_DESCRIPTION)
                 .setAuthor(new Lecturer().setId(50006))
                 .setActive(false);
 
-        courseDAOImpl.update(actual);
+        courseRepository.update(actual);
 
-        Course expected = courseDAOImpl.getById(EXISTENT_COURSE_ID_51);
+        Course expected = courseRepository.findById(EXISTENT_COURSE_ID_51);
         assertThatObject(actual).isEqualToComparingFieldByField(expected);
     }
 
     @Test
     void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> courseDAOImpl.update(null), "update(null) should throw NullPointerException");
+        assertThrows(IllegalArgumentException.class, () -> courseRepository.update(null), "update(null) should throw IllegalArgumentException");
     }
 
     @Test
     void testDeleteShouldDeactivateExistentCourse() {
         Course course = new Course().setActive(true);
-        courseDAOImpl.add(course);
-        courseDAOImpl.delete(course);
+        courseRepository.save(course);
+        courseRepository.delete(course);
 
-        Course actual = courseDAOImpl.getById(course.getId());
+        Course actual = courseRepository.findById(course.getId());
         assertFalse(actual.isActive(), "actual should not be active");
     }
 
     @Test
     void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> courseDAOImpl.delete(null), "delete(null) should throw NullPointerException");
+        assertThrows(NullPointerException.class, () -> courseRepository.delete(null), "delete(null) should throw NullPointerException");
     }
 
     @Test
-    void testGetAllShouldReturnAllCoursesList() {
+    @Sql(POPULATE_DB_SQL)
+    void testFindAllShouldReturnAllCoursesList() {
         List<Course> expected = new ArrayList<>();
         expected.add(new Course().setId(EXISTENT_COURSE_ID_51).setName(EXISTENT_COURSE_NAME_51).setDescription(EXISTENT_COURSE_DESCRIPTION_51).setAuthor(new Lecturer().setId(50005)).setActive(true));
         expected.add(new Course().setId(EXISTENT_COURSE_ID_52).setName(EXISTENT_COURSE_NAME_52).setDescription(EXISTENT_COURSE_DESCRIPTION_52).setAuthor(new Lecturer().setId(50005)).setActive(true));
         expected.add(new Course().setId(EXISTENT_COURSE_ID_53).setName(EXISTENT_COURSE_NAME_53).setDescription(EXISTENT_COURSE_DESCRIPTION_53).setAuthor(new Lecturer().setId(50006)).setActive(true));
         expected.add(new Course().setId(EXISTENT_COURSE_ID_55).setName(EXISTENT_COURSE_NAME_55).setDescription(EXISTENT_COURSE_DESCRIPTION_55).setAuthor(new Lecturer().setId(50006)).setActive(false));
-        expected.add(new Course().setId(EXISTENT_COURSE_ID_56).setName(EXISTENT_COURSE_NAME_56).setDescription(EXISTENT_COURSE_DESCRIPTION_56).setAuthor(new Lecturer().setId(50003)).setActive(true));
+        expected.add(new Course().setId(EXISTENT_COURSE_ID_56).setName(EXISTENT_COURSE_NAME_56).setDescription(EXISTENT_COURSE_DESCRIPTION_56).setAuthor(new Lecturer().setId(null)).setActive(true));
         expected.add(new Course().setId(EXISTENT_COURSE_ID_54).setName(EXISTENT_COURSE_NAME_54).setDescription(EXISTENT_COURSE_DESCRIPTION_54).setAuthor(new Lecturer()).setActive(true));
 
-        List<Course> actual = courseDAOImpl.getAll();
+        List<Course> actual = courseRepository.findAll();
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<Course> expectedSet = new HashSet<>(expected);
-        Set<Course> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
     }
 
     @Test
-    void testGetByAuthorIdShouldReturnAuthorCoursesListWhenAuthorIdPassed() {
+    @Sql(POPULATE_DB_SQL)
+    void testFindByAuthorIdShouldReturnAuthorCoursesListWhenAuthorIdPassed() {
         List<Course> expected = new ArrayList<>();
         expected.add(new Course().setId(EXISTENT_COURSE_ID_51).setName(EXISTENT_COURSE_NAME_51).setDescription(EXISTENT_COURSE_DESCRIPTION_51).setAuthor(new Lecturer().setId(50005)).setActive(true));
         expected.add(new Course().setId(EXISTENT_COURSE_ID_52).setName(EXISTENT_COURSE_NAME_52).setDescription(EXISTENT_COURSE_DESCRIPTION_52).setAuthor(new Lecturer().setId(50005)).setActive(true));
 
-        List<Course> actual = courseDAOImpl.getByAuthorId(50005);
+        List<Course> actual = courseRepository.findByAuthorId(50005);
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<Course> expectedSet = new HashSet<>(expected);
-        Set<Course> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
     }
 
     @Test
-    void testGetByAuthorIdShouldReturnEmptyCoursesListWhenNullPassed() {
+    void testFindByAuthorIdShouldReturnEmptyCoursesListWhenNullPassed() {
         List<Course> expected = new ArrayList<>();
-        List<Course> actual = courseDAOImpl.getByAuthorId(null);
+        List<Course> actual = courseRepository.findByAuthorId(null);
         assertEquals(expected, actual, "empty courses list is expected");
     }
 
     @Test
-    void testGetByStudentIdShouldReturnStudentCoursesListWhenStudentIdPassed() {
+    @Sql(POPULATE_DB_SQL)
+    void testFindByStudentIdShouldReturnStudentCoursesListWhenStudentIdPassed() {
         List<Course> expected = new ArrayList<>();
         expected.add(new Course().setId(EXISTENT_COURSE_ID_51).setName(EXISTENT_COURSE_NAME_51).setDescription(EXISTENT_COURSE_DESCRIPTION_51).setAuthor(new Lecturer().setId(50005)).setActive(true));
         expected.add(new Course().setId(EXISTENT_COURSE_ID_54).setName(EXISTENT_COURSE_NAME_54).setDescription(EXISTENT_COURSE_DESCRIPTION_54).setAuthor(new Lecturer()).setActive(true));
         expected.add(new Course().setId(EXISTENT_COURSE_ID_52).setName(EXISTENT_COURSE_NAME_52).setDescription(EXISTENT_COURSE_DESCRIPTION_52).setAuthor(new Lecturer().setId(50005)).setActive(true));
 
-        List<Course> actual = courseDAOImpl.getByStudentId(EXISTENT_STUDENT_ID_50001);
+        List<Course> actual = courseRepository.findByStudentId(EXISTENT_STUDENT_ID_50001);
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<Course> expectedSet = new HashSet<>(expected);
-        Set<Course> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
     }
 
     @Test
-    void testGetByCourseIdShouldReturnEmptyCoursesListWhenNonexistentCourseIdPassed() {
+    void testFindByCourseIdShouldReturnEmptyCoursesListWhenNonexistentCourseIdPassed() {
         List<Course> expected = new ArrayList<>();
-        List<Course> actual = courseDAOImpl.getByStudentId(NONEXISTENT_STUDENT_ID);
+        List<Course> actual = courseRepository.findByStudentId(NONEXISTENT_STUDENT_ID);
         assertEquals(expected, actual, "empty courses list is expected");
     }
 
     @Test
-    void testGetByStudentIdShouldReturnEmptyCoursesListWhenNullPassed() {
+    void testFindByStudentIdShouldReturnEmptyCoursesListWhenNullPassed() {
         List<Course> expected = new ArrayList<>();
-        List<Course> actual = courseDAOImpl.getByStudentId(null);
+        List<Course> actual = courseRepository.findByStudentId(null);
         assertEquals(expected, actual, "empty courses list is expected");
     }
 
     @Test
-    void testGetByGroupIdShouldReturnGroupCoursesListWhenGroupIdPassed() {
+    @Sql(POPULATE_DB_SQL)
+    void testFindByGroupIdShouldReturnGroupCoursesListWhenGroupIdPassed() {
         List<Course> expected = new ArrayList<>();
         expected.add(new Course().setId(EXISTENT_COURSE_ID_51).setName(EXISTENT_COURSE_NAME_51).setDescription(EXISTENT_COURSE_DESCRIPTION_51).setAuthor(new Lecturer().setId(50005)).setActive(true));
         expected.add(new Course().setId(EXISTENT_COURSE_ID_54).setName(EXISTENT_COURSE_NAME_54).setDescription(EXISTENT_COURSE_DESCRIPTION_54).setAuthor(new Lecturer()).setActive(true));
         expected.add(new Course().setId(EXISTENT_COURSE_ID_52).setName(EXISTENT_COURSE_NAME_52).setDescription(EXISTENT_COURSE_DESCRIPTION_52).setAuthor(new Lecturer().setId(50005)).setActive(true));
 
-        List<Course> actual = courseDAOImpl.getByGroupId(EXISTENT_GROUP_ID_501);
+        List<Course> actual = courseRepository.findByGroupId(EXISTENT_GROUP_ID_501);
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<Course> expectedSet = new HashSet<>(expected);
-        Set<Course> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
     }
 
     @Test
-    void testGetByGroupIdShouldReturnEmptyCoursesListWhenNonexistentGroupIdPassed() {
+    void testFindByGroupIdShouldReturnEmptyCoursesListWhenNonexistentGroupIdPassed() {
         List<Course> expected = new ArrayList<>();
-        List<Course> actual = courseDAOImpl.getByGroupId(NONEXISTENT_GROUP_ID);
+        List<Course> actual = courseRepository.findByGroupId(NONEXISTENT_GROUP_ID);
         assertEquals(expected, actual, "empty courses list is expected");
     }
 
     @Test
-    void testGetByGroupIdShouldReturnEmptyCoursesListWhenNullPassed() {
+    void testFindByGroupIdShouldReturnEmptyCoursesListWhenNullPassed() {
         List<Course> expected = new ArrayList<>();
-        List<Course> actual = courseDAOImpl.getByGroupId(null);
+        List<Course> actual = courseRepository.findByGroupId(null);
         assertEquals(expected, actual, "empty courses list is expected");
-    }
-
-    @Test
-    void testAssignGroupToCourseShouldAddExistentGroupToCourse() {
-        Course course = courseDAOImpl.getById(EXISTENT_COURSE_ID_51);
-        Group group = groupDAOImpl.getById(EXISTENT_GROUP_ID_503);
-
-        List<Group> expected = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
-        expected.add(new Group().setId(EXISTENT_GROUP_ID_503));
-
-        courseDAOImpl.assignGroupToCourse(group, course);
-        List<Group> actual = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
-
-        assertEquals(expected, actual, "list of 3 groups is expected");
-    }
-
-    @Test
-    void testRemoveGroupFromCourseShouldAddExistentGroupToCourse() {
-        Course course = courseDAOImpl.getById(EXISTENT_COURSE_ID_51);
-        Group group = groupDAOImpl.getById(EXISTENT_GROUP_ID_502);
-
-        List<Group> expected = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
-        expected.remove(group);
-
-        courseDAOImpl.removeGroupFromCourse(group, course);
-        List<Group> actual = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
-
-        assertEquals(expected, actual, "list of 1 group is expected");
-    }
-
-    @Test
-    void testAssignGroupsToCourseShouldAddExistentGroupToCourse() {
-        Course course = courseDAOImpl.getById(EXISTENT_COURSE_ID_51);
-
-        List<Group> groups = new ArrayList<>();
-        groups.add(new Group().setId(EXISTENT_GROUP_ID_501));
-        groups.add(new Group().setId(EXISTENT_GROUP_ID_502));
-        groups.add(new Group().setId(EXISTENT_GROUP_ID_503));
-
-        List<Group> expected = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
-        expected.add(new Group().setId(EXISTENT_GROUP_ID_503));
-
-        courseDAOImpl.assignGroupsToCourse(groups, course);
-        List<Group> actual = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
-
-        assertEquals(expected, actual, "list of 3 groups is expected");
-    }
-
-    @Test
-    void testRemoveGroupsFromCourseShouldAddExistentGroupToCourse() {
-        Course course = courseDAOImpl.getById(EXISTENT_COURSE_ID_51);
-        Group group = groupDAOImpl.getById(EXISTENT_GROUP_ID_502);
-
-        List<Group> groups = new ArrayList<>();
-        groups.add(new Group().setId(EXISTENT_GROUP_ID_502));
-
-        List<Group> expected = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
-        expected.remove(group);
-
-        courseDAOImpl.removeGroupsFromCourse(groups, course);
-        List<Group> actual = groupDAOImpl.getByCourseId(EXISTENT_COURSE_ID_51);
-
-        assertEquals(expected, actual, "list of 1 group is expected");
     }
 }

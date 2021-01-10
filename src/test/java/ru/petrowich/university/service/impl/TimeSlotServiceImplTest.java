@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.petrowich.university.dao.TimeSlotDAO;
+import ru.petrowich.university.repository.TimeSlotRepository;
 import ru.petrowich.university.model.TimeSlot;
 
 import java.time.LocalTime;
@@ -31,7 +31,7 @@ class TimeSlotServiceImplTest {
     private AutoCloseable autoCloseable;
 
     @Mock
-    private TimeSlotDAO mockTimeSlotDAO;
+    private TimeSlotRepository mockTimeSlotRepository;
 
     @InjectMocks
     TimeSlotServiceImpl timeSlotServiceImpl;
@@ -48,82 +48,82 @@ class TimeSlotServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnTimeSlotWhenTimeSlotIdPassed() {
-        when(mockTimeSlotDAO.getById(TIME_SLOT_ID)).thenReturn(timeSlot);
+        when(mockTimeSlotRepository.findById(TIME_SLOT_ID)).thenReturn(timeSlot);
 
         TimeSlot actual = timeSlotServiceImpl.getById(TIME_SLOT_ID);
 
-        verify(mockTimeSlotDAO, times(1)).getById(TIME_SLOT_ID);
+        verify(mockTimeSlotRepository, times(1)).findById(TIME_SLOT_ID);
         assertEquals(timeSlot, actual, "expected timeslot should be returned");
     }
 
     @Test
     void testGetByIdShouldReturnNullWhenNonexistentTimeSlotIdPassed() {
-        when(mockTimeSlotDAO.getById(-1)).thenReturn(null);
+        when(mockTimeSlotRepository.findById(-1)).thenReturn(null);
         TimeSlot actual = timeSlotServiceImpl.getById(-1);
 
-        verify(mockTimeSlotDAO, times(1)).getById(-1);
+        verify(mockTimeSlotRepository, times(1)).findById(-1);
         assertNull(actual, "null should be returned");
     }
 
     @Test
     void testGetByIdShouldReturnNullWhenNullPassed() {
-        when(mockTimeSlotDAO.getById(null)).thenReturn(null);
+        when(mockTimeSlotRepository.findById(null)).thenReturn(null);
         TimeSlot actual = timeSlotServiceImpl.getById(null);
-        verify(mockTimeSlotDAO, times(1)).getById(null);
+        verify(mockTimeSlotRepository, times(1)).findById(null);
         assertNull(actual, "null should be returned");
     }
 
     @Test
-    void testAddShouldInvokeDaoAddWithPassedTimeSlot() {
-        doNothing().when(mockTimeSlotDAO).add(timeSlot);
+    void testAddShouldInvokeRepositoryAddWithPassedTimeSlot() {
+        doNothing().when(mockTimeSlotRepository).save(timeSlot);
         timeSlotServiceImpl.add(timeSlot);
-        verify(mockTimeSlotDAO, times(1)).add(timeSlot);
+        verify(mockTimeSlotRepository, times(1)).save(timeSlot);
     }
 
     @Test
-    void testAddShouldInvokeDaoAddWithPassedNull() {
-        doNothing().when(mockTimeSlotDAO).add(null);
+    void testAddShouldInvokeRepositoryAddWithPassedNull() {
+        doNothing().when(mockTimeSlotRepository).save(null);
         timeSlotServiceImpl.add(null);
-        verify(mockTimeSlotDAO, times(1)).add(null);
+        verify(mockTimeSlotRepository, times(1)).save(null);
     }
 
     @Test
-    void testUpdateShouldInvokeDaoAddWithPassedTimeSlot() {
-        doNothing().when(mockTimeSlotDAO).update(timeSlot);
+    void testUpdateShouldInvokeRepositoryAddWithPassedTimeSlot() {
+        doNothing().when(mockTimeSlotRepository).update(timeSlot);
         timeSlotServiceImpl.update(timeSlot);
-        verify(mockTimeSlotDAO, times(1)).update(timeSlot);
+        verify(mockTimeSlotRepository, times(1)).update(timeSlot);
     }
 
     @Test
-    void testUpdateShouldInvokeDaoAddWithPassedNull() {
-        doNothing().when(mockTimeSlotDAO).update(null);
+    void testUpdateShouldInvokeRepositoryAddWithPassedNull() {
+        doNothing().when(mockTimeSlotRepository).update(null);
         timeSlotServiceImpl.update(null);
-        verify(mockTimeSlotDAO, times(1)).update(null);
+        verify(mockTimeSlotRepository, times(1)).update(null);
     }
 
     @Test
-    void testDeleteShouldInvokeDaoAddWithPassedTimeSlot() {
-        doNothing().when(mockTimeSlotDAO).delete(timeSlot);
+    void testDeleteShouldInvokeRepositoryAddWithPassedTimeSlot() {
+        doNothing().when(mockTimeSlotRepository).delete(timeSlot);
         timeSlotServiceImpl.delete(timeSlot);
-        verify(mockTimeSlotDAO, times(1)).delete(timeSlot);
+        verify(mockTimeSlotRepository, times(1)).delete(timeSlot);
     }
 
     @Test
-    void testDeleteShouldInvokeDaoAddWithPassedNull() {
-        doNothing().when(mockTimeSlotDAO).delete(null);
+    void testDeleteShouldInvokeRepositoryAddWithPassedNull() {
+        doNothing().when(mockTimeSlotRepository).delete(null);
         timeSlotServiceImpl.delete(null);
-        verify(mockTimeSlotDAO, times(1)).delete(null);
+        verify(mockTimeSlotRepository, times(1)).delete(null);
     }
 
     @Test
     void testGetAllShouldReturnTimeSlotList() {
         List<TimeSlot> expected = new ArrayList<>();
         expected.add(timeSlot);
-        when(mockTimeSlotDAO.getAll()).thenReturn(expected);
+        when(mockTimeSlotRepository.findAll()).thenReturn(expected);
 
         List<TimeSlot> actual = timeSlotServiceImpl.getAll();
 
-        verify(mockTimeSlotDAO, times(1)).getAll();
+        verify(mockTimeSlotRepository, times(1)).findAll();
         assertEquals(expected, actual, "expected timeslot list should be returned");
     }
 }

@@ -1,32 +1,30 @@
-package ru.petrowich.university.dao.impl;
+package ru.petrowich.university.repository.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
-import ru.petrowich.university.dao.DaoException;
-import ru.petrowich.university.dao.LessonDAO;
-import ru.petrowich.university.dao.TimeSlotDAO;
 import ru.petrowich.university.model.TimeSlot;
 import ru.petrowich.university.model.Lesson;
+import ru.petrowich.university.repository.LessonRepository;
+import ru.petrowich.university.repository.TimeSlotRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringJUnitConfig(classes = {AppConfigurationTest.class})
-class TimeSlotDAOImplTest {
+@Transactional
+class TimeSlotRepositoryImplTest {
+    private static final String POPULATE_DB_SQL = "classpath:populateDbTest.sql";
     private static final Integer NONEXISTENT_TIME_SLOT_ID = 0;
     private static final String NEW_TIME_SLOT_NAME = "ninth lesson";
     private static final LocalTime NEW_TIME_SLOT_START_TIME = LocalTime.of(21, 40);
@@ -63,103 +61,86 @@ class TimeSlotDAOImplTest {
     private static final LocalTime EXISTENT_TIME_SLOT_END_TIME_6 = LocalTime.of(18, 10);
     private static final LocalTime EXISTENT_TIME_SLOT_END_TIME_7 = LocalTime.of(19, 50);
     private static final LocalTime EXISTENT_TIME_SLOT_END_TIME_8 = LocalTime.of(21, 30);
+    private static final Long EXISTENT_LESSON_ID_5000001 = 5000001L;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private TimeSlotRepository timeSlotRepository;
 
     @Autowired
-    private TimeSlotDAO timeSlotDAOImpl;
-
-    @Autowired
-    private LessonDAO lessonDAOImpl;
-
-    @Autowired
-    private String populateDbSql;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.execute(populateDbSql);
-    }
-
+    private LessonRepository lessonRepository;
+    
     @Test
-    void testGetByIdShouldReturnExistentLesson() {
+    void testFindByIdShouldReturnExistentLesson() {
         TimeSlot expected = new TimeSlot()
                 .setId(EXISTENT_TIME_SLOT_ID_1)
                 .setName(EXISTENT_TIME_SLOT_NAME_1)
                 .setStartTime(EXISTENT_TIME_SLOT_START_TIME_1)
                 .setEndTime(EXISTENT_TIME_SLOT_END_TIME_1);
 
-        TimeSlot actual = timeSlotDAOImpl.getById(EXISTENT_TIME_SLOT_ID_1);
+        TimeSlot actual = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
         assertThatObject(actual).isEqualToComparingFieldByField(expected);
     }
 
     @Test
-    void testGetByIdShouldShouldThrowDaoExceptionWhenNonexistentIdPassed() {
-        assertThrows(DaoException.class, () -> timeSlotDAOImpl.getById(NONEXISTENT_TIME_SLOT_ID), "DaoException throw is expected");
+    void testFindByIdShouldShouldReturnNullWhenNonexistentIdPassed() {
+        TimeSlot actual = timeSlotRepository.findById(NONEXISTENT_TIME_SLOT_ID);
+        assertNull(actual, "null is expected when nonexistent timeslot id passed");
     }
 
     @Test
-    void testGetByIdShouldShouldThrowDaoExceptionWhenNullPassed() {
-        assertThrows(DaoException.class, () -> timeSlotDAOImpl.getById(null), "DaoException throw is expected");
+    void testFindByIdShouldShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> timeSlotRepository.findById(null), "IllegalArgumentException throw is expected");
     }
 
     @Test
-    void testAddShouldAddNewTimeSlot() {
+    void testSaveShouldAddNewTimeSlot() {
         TimeSlot expected = new TimeSlot()
                 .setName(NEW_TIME_SLOT_NAME)
                 .setStartTime(NEW_TIME_SLOT_START_TIME)
                 .setEndTime(NEW_TIME_SLOT_END_TIME);
 
-        timeSlotDAOImpl.add(expected);
+        timeSlotRepository.save(expected);
         assertNotNull(expected.getId(), "add() should set new id to the timeslot, new id cannot be null");
 
-        TimeSlot actual = timeSlotDAOImpl.getById(expected.getId());
+        TimeSlot actual = timeSlotRepository.findById(expected.getId());
         assertThatObject(actual).isEqualToComparingFieldByField(expected);
     }
 
     @Test
-    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> timeSlotDAOImpl.add(null), "add(null) should throw NullPointerException");
+    void testSaveShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> timeSlotRepository.save(null), "save null should throw IllegalArgumentException");
     }
 
     @Test
     void testUpdateShouldUpdateExistentTimeSlot() {
-        TimeSlot actual = timeSlotDAOImpl.getById(EXISTENT_TIME_SLOT_ID_1);
+        TimeSlot actual = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
 
         actual.setName(NEW_TIME_SLOT_NAME)
                 .setStartTime(NEW_TIME_SLOT_START_TIME)
                 .setEndTime(NEW_TIME_SLOT_END_TIME);
 
-        timeSlotDAOImpl.update(actual);
+        timeSlotRepository.update(actual);
 
-        TimeSlot expected = timeSlotDAOImpl.getById(EXISTENT_TIME_SLOT_ID_1);
+        TimeSlot expected = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
         assertThatObject(actual).isEqualToComparingFieldByField(expected);
     }
 
     @Test
-    void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> timeSlotDAOImpl.update(null), "update(null) should throw NullPointerException");
+    void testUpdateShouldThrowNIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> timeSlotRepository.update(null), "update null should throw IllegalArgumentException");
     }
 
     @Test
+    @Sql(POPULATE_DB_SQL)
     void testDeleteShouldDeleteTimeSlotWhenExistentTimeSlotPassed() {
-        TimeSlot timeSlot = timeSlotDAOImpl.getById(EXISTENT_TIME_SLOT_ID_1);
-        List<Lesson> allLessonsBefore = lessonDAOImpl.getAll();
-        timeSlotDAOImpl.delete(timeSlot);
+        TimeSlot timeSlot = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
+        timeSlotRepository.delete(timeSlot);
 
-        assertThrows(DaoException.class, () -> timeSlotDAOImpl.getById(EXISTENT_TIME_SLOT_ID_1), "DaoException throw is expected");
+        TimeSlot actual = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
+        assertNull(actual, "null is expected when deleted timeslot id passed");
 
-
-        List<Lesson> allLessonsAfter = lessonDAOImpl.getAll();
-
-        Set<Lesson> allLessonsBeforeSet = new HashSet<>(allLessonsBefore);
-        Set<Lesson> allLessonsAfterSet = new HashSet<>(allLessonsAfter);
-        assertThat(allLessonsBeforeSet).usingElementComparatorIgnoringFields().isNotEqualTo(allLessonsAfterSet);
-
-        List<Lesson> deletedTimeSlotLessons = allLessonsAfter.stream()
-                .filter(lesson -> lesson.getTimeSlot().equals(timeSlot))
-                .collect(Collectors.toList());
-        assertEquals(0, deletedTimeSlotLessons.size(), "empty lessons list with deleted is expected");
+        Lesson lesson = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
+        assertNotNull(lesson, "timeslot deletion should not delete its lessons");
     }
 
     @Test
@@ -174,11 +155,7 @@ class TimeSlotDAOImplTest {
         expected.add(new TimeSlot().setId(EXISTENT_TIME_SLOT_ID_7).setName(EXISTENT_TIME_SLOT_NAME_7).setStartTime(EXISTENT_TIME_SLOT_START_TIME_7).setEndTime(EXISTENT_TIME_SLOT_END_TIME_7));
         expected.add(new TimeSlot().setId(EXISTENT_TIME_SLOT_ID_8).setName(EXISTENT_TIME_SLOT_NAME_8).setStartTime(EXISTENT_TIME_SLOT_START_TIME_8).setEndTime(EXISTENT_TIME_SLOT_END_TIME_8));
 
-        List<TimeSlot> actual = timeSlotDAOImpl.getAll();
+        List<TimeSlot> actual = timeSlotRepository.findAll();
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<TimeSlot> expectedSet = new HashSet<>(expected);
-        Set<TimeSlot> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
     }
 }

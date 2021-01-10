@@ -1,23 +1,51 @@
 package ru.petrowich.university.model;
 
+import org.hibernate.annotations.CascadeType;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Entity(name = "Lesson")
+@Table(name = "t_lessons")
 public class Lesson implements Comparable<Lesson> {
+
+    @Id
+    @SequenceGenerator(name = "seq_lessons", sequenceName = "seq_lessons", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_lessons")
+    @Column(name = "lesson_id")
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "course_id", referencedColumnName = "course_id")
     private Course course = new Course();
+
+    @ManyToOne
+    @JoinColumn(name = "lecturer_id", referencedColumnName = "person_id")
     private Lecturer lecturer = new Lecturer();
+
+    @Column(name = "lesson_date")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date;
+
+    @ManyToOne
+    @JoinColumn(name = "timeslot_id", referencedColumnName = "timeslot_id")
     private TimeSlot timeSlot = new TimeSlot();
+
+    @Column(name = "lesson_start_time")
     private LocalTime startTime;
+
+    @Column(name = "lesson_end_time")
     private LocalTime endTime;
+
+    @Transient
     private List<Group> groups = new ArrayList<>();
+
+    @Transient
     private List<Student> students = new ArrayList<>();
 
     public Long getId() {
@@ -39,6 +67,10 @@ public class Lesson implements Comparable<Lesson> {
     }
 
     public Lecturer getLecturer() {
+        if (lecturer == null) {
+            return new Lecturer();
+        }
+
         return lecturer;
     }
 
@@ -93,6 +125,9 @@ public class Lesson implements Comparable<Lesson> {
     }
 
     public List<Student> getStudents() {
+        if (students==null){
+            return new ArrayList<>();
+        }
         return new ArrayList<>(students);
     }
 
@@ -122,22 +157,22 @@ public class Lesson implements Comparable<Lesson> {
     }
 
     @Override
-    public int compareTo(Lesson lesson){
+    public int compareTo(Lesson lesson) {
         int compare = this.date.compareTo(lesson.date);
 
-        if (compare!=0) {
+        if (compare != 0) {
             return compare;
         }
 
         compare = this.startTime.compareTo(lesson.startTime);
 
-        if (compare!=0) {
+        if (compare != 0) {
             return compare;
         }
 
         compare = lesson.endTime.compareTo(this.endTime);
 
-        if (compare!=0) {
+        if (compare != 0) {
             return compare;
         }
 

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Group;
-import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.service.CourseService;
 import ru.petrowich.university.service.GroupService;
 

@@ -48,7 +48,7 @@ public class CourseController {
     @GetMapping("")
     public String courses(Model model) {
         LOGGER.info("listing courses");
-        List<Course> courses = courseService.getAll().stream()
+         List<Course> courses = courseService.getAll().stream()
                 .sorted(Comparator.comparing(Course::isActive).reversed())
                 .collect(Collectors.toList());
         model.addAttribute(ATTRIBUTE_ALL_COURSES, courses);
@@ -59,7 +59,8 @@ public class CourseController {
 
     @GetMapping("/course")
     public String course(@RequestParam("id") Integer courseId, Model model) {
-        LOGGER.info("getting course id={}", courseId);
+        LOGGER.info("getting course for view id={}", courseId);
+
         Course course = courseService.getById(courseId);
         model.addAttribute(ATTRIBUTE_COURSE, course);
         LOGGER.debug("received course: {} {}", course.getId(), course.getName());
@@ -85,7 +86,8 @@ public class CourseController {
 
     @GetMapping("/course/edit")
     public String edit(@RequestParam("id") Integer courseId, Model model) {
-        LOGGER.info("getting course id={}", courseId);
+        LOGGER.info("getting course for update by id={}", courseId);
+
         Course course = courseService.getById(courseId);
         model.addAttribute(ATTRIBUTE_COURSE, course);
 
@@ -114,6 +116,10 @@ public class CourseController {
             bindingResult.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return courses(model);
+        }
+
+        if (course.getAuthor() != null && course.getAuthor().getId() == null) {
+            course.setAuthor(null);
         }
 
         courseService.update(course);

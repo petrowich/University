@@ -25,7 +25,7 @@
                 </thead>
                 <tbody>
                     <tr th:each="course : ${lecturer.courses}">
-                        <td scope="row"><a href="#" th:href="@{/courses/course(courseId=${course.id})}" th:text="${course.name}">course name</a><td>
+                        <td scope="row"><a href="#" th:href="@{/courses/course(id=${course.id})}" th:text="${course.name}">course name</a><td>
                     </tr>
                 </tbody>
             </table>

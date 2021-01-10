@@ -1,14 +1,43 @@
 package ru.petrowich.university.model;
 
+import javax.persistence.Id;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Inheritance;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.InheritanceType;
+import javax.persistence.DiscriminatorType;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+@Entity
+@Table(name = "t_persons")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "person_role_id", discriminatorType = DiscriminatorType.INTEGER)
 public abstract class AbstractPerson {
+    @Id
+    @SequenceGenerator(name="seq_persons", sequenceName="seq_persons", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_persons")
+    @Column(name = "person_id", nullable = false, unique = true)
     private Integer id;
+
+    @Column(name = "person_first_name")
     private String firstName;
+
+    @Column(name = "person_last_name")
     private String lastName;
+
+    @Column(name = "person_email")
     private String email;
+
+    @Column(name = "person_comment")
     private String comment;
+
+    @Column(name = "person_active")
     private boolean active;
 
     public Integer getId() {
