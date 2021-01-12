@@ -54,22 +54,4 @@ public class LessonRepositoryImpl implements LessonRepository {
         LOGGER.debug("find all lessona");
         return entityManager.createQuery("FROM Lesson", Lesson.class).getResultList();
     }
-
-    @Override
-    public List<Lesson> findByLecturerId(Integer lecturerId) {
-        LOGGER.debug("find lesson by lecturerId {}", lecturerId);
-        return entityManager.createQuery("SELECT ls FROM Lesson AS ls INNER JOIN ls.lecturer AS lc WHERE lc.id = :lecturerId AND lc.active = :active", Lesson.class)
-                .setParameter("lecturerId", lecturerId)
-                .setParameter("active", true)
-                .getResultList();
-    }
-
-    @Override
-    public List<Lesson> findByStudentId(Integer studentId) {
-        LOGGER.debug("find lesson by studentId {}", studentId);
-        return entityManager.createQuery("SELECT ls FROM Lesson AS ls INNER JOIN ls.course As c INNER JOIN c.groups AS g INNER JOIN g.students as s WHERE s.id = :studentId AND s.active = :active", Lesson.class)
-                .setParameter("studentId", studentId)
-                .setParameter("active", true)
-                .getResultList();
-    }
 }

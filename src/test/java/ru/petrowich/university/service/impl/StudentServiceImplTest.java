@@ -6,9 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.petrowich.university.repository.CourseRepository;
 import ru.petrowich.university.repository.GroupRepository;
-import ru.petrowich.university.repository.LessonRepository;
 import ru.petrowich.university.repository.StudentRepository;
 import ru.petrowich.university.model.Student;
 import ru.petrowich.university.model.Lesson;
@@ -21,7 +19,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatObject;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -49,14 +46,7 @@ class StudentServiceImplTest {
     private static final Long LESSON_ID_5000002 = 5000002L;
     private static final Long LESSON_ID_5000003 = 5000003L;
 
-    private final Lesson firstLesson = new Lesson().setId(LESSON_ID_5000001);
-    private final Lesson secondLesson = new Lesson().setId(LESSON_ID_5000002);
-    private final Lesson thirdLesson = new Lesson().setId(LESSON_ID_5000003);
-
     private final Lecturer lecturer = new Lecturer().setId(PERSON_ID_50005).setEmail(PERSON_EMAIL_50005).setActive(true);
-
-    private final Course firstCourse = new Course().setId(COURSE_ID_51).setName(COURSE_NAME_51).setAuthor(lecturer).setActive(true);
-    private final Course secondCourse = new Course().setId(COURSE_ID_52).setName(COURSE_NAME_52).setAuthor(lecturer).setActive(true);
 
     private final Group firstGroup = new Group().setId(GROUP_ID_501).setName(GROUP_NAME_501).setActive(true);
     private final Group secondGroup = new Group().setId(GROUP_ID_502).setName(GROUP_NAME_502).setActive(true);
@@ -65,42 +55,13 @@ class StudentServiceImplTest {
     private final Student secondStudent = new Student().setId(PERSON_ID_50002).setGroup(firstGroup).setEmail(PERSON_EMAIL_50002).setActive(true);
     private final Student thirdStudent = new Student().setId(PERSON_ID_50003).setGroup(secondGroup).setEmail(PERSON_EMAIL_50003).setActive(false);
 
-    private final List<Course> firstStudentCourses = new ArrayList<>();
-    private final List<Course> secondStudentCourses = new ArrayList<>();
-
-    private final List<Lesson> firstStudentLessons = new ArrayList<>();
-    private final List<Lesson> secondStudentLessons = new ArrayList<>();
-
     private AutoCloseable autoCloseable;
-
-    {
-        firstStudentCourses.add(firstCourse);
-        firstStudentCourses.add(secondCourse);
-        firstStudent.setCourses(firstStudentCourses);
-
-        firstStudentLessons.add(firstLesson);
-        firstStudentLessons.add(secondLesson);
-        secondStudentLessons.add(thirdLesson);
-        firstStudent.setLessons(firstStudentLessons);
-
-        secondStudentCourses.add(secondCourse);
-        secondStudent.setCourses(secondStudentCourses);
-
-        secondStudentLessons.add(thirdLesson);
-        firstStudent.setLessons(firstStudentLessons);
-    }
 
     @Mock
     private StudentRepository mockStudentRepository;
 
     @Mock
     private GroupRepository mockGroupRepository;
-
-    @Mock
-    private CourseRepository mockCourseRepository;
-
-    @Mock
-    private LessonRepository mockLessonRepository;
 
     @InjectMocks
     private StudentServiceImpl studentServiceImpl;
@@ -119,14 +80,10 @@ class StudentServiceImplTest {
     void testGetByIdShouldReturnStudentWhenStudentIdPassed() {
         when(mockStudentRepository.findById(PERSON_ID_50001)).thenReturn(firstStudent);
         when(mockGroupRepository.findById(GROUP_ID_501)).thenReturn(firstGroup);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50001)).thenReturn(firstStudentCourses);
-        when(mockLessonRepository.findByStudentId(PERSON_ID_50001)).thenReturn(firstStudentLessons);
 
         Student actual = studentServiceImpl.getById(PERSON_ID_50001);
 
         verify(mockStudentRepository, times(1)).findById(PERSON_ID_50001);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50001);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50001);
 
         assertThatObject(actual).isEqualToComparingFieldByField(firstStudent);
     }
@@ -199,140 +156,11 @@ class StudentServiceImplTest {
         expected.add(thirdStudent);
 
         when(mockStudentRepository.findAll()).thenReturn(expected);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50001)).thenReturn(firstStudentCourses);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50002)).thenReturn(secondStudentCourses);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50003)).thenReturn(new ArrayList<>());
-        when(mockLessonRepository.findByStudentId(PERSON_ID_50001)).thenReturn(firstStudentLessons);
-        when(mockLessonRepository.findByStudentId(PERSON_ID_50002)).thenReturn(secondStudentLessons);
-        when(mockLessonRepository.findByLecturerId(PERSON_ID_50003)).thenReturn(new ArrayList<>());
 
         List<Student> actual = studentServiceImpl.getAll();
 
         verify(mockStudentRepository, times(1)).findAll();
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50001);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50002);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50003);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50001);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50002);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50003);
 
         assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
-    }
-
-    @Test
-    void testSetGetByGroupIdShouldReturnStudentsListWhenGroupIdPassed() {
-        List<Student> expected = new ArrayList<>();
-        expected.add(firstStudent);
-        expected.add(secondStudent);
-        expected.add(thirdStudent);
-
-        when(mockStudentRepository.findByGroupId(GROUP_ID_502)).thenReturn(expected);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50001)).thenReturn(firstStudentCourses);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50002)).thenReturn(secondStudentCourses);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50003)).thenReturn(new ArrayList<>());
-        when(mockLessonRepository.findByStudentId(PERSON_ID_50001)).thenReturn(firstStudentLessons);
-        when(mockLessonRepository.findByStudentId(PERSON_ID_50002)).thenReturn(secondStudentLessons);
-        when(mockLessonRepository.findByLecturerId(PERSON_ID_50003)).thenReturn(new ArrayList<>());
-
-        List<Student> actual = studentServiceImpl.getByGroupId(GROUP_ID_502);
-
-        verify(mockStudentRepository, times(1)).findByGroupId(GROUP_ID_502);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50001);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50002);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50003);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50001);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50002);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50003);
-
-        assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
-    }
-
-    @Test
-    void testGetByGroupIdShouldReturnEmptyStudentsListWhenNullPassed() {
-        List<Student> expected = new ArrayList<>();
-        when(mockStudentRepository.findByGroupId(null)).thenReturn(expected);
-
-        List<Student> actual = studentServiceImpl.getByGroupId(null);
-
-        verify(mockStudentRepository, times(1)).findByGroupId(null);
-        assertEquals(expected, actual, "empty student list should be returned");
-    }
-
-    @Test
-    void testGetByCourseIdShouldReturnStudentsListWhenCourseIdPassed() {
-        List<Student> expected = new ArrayList<>();
-        expected.add(firstStudent);
-        expected.add(secondStudent);
-        expected.add(thirdStudent);
-
-        when(mockStudentRepository.findByGroupId(COURSE_ID_51)).thenReturn(expected);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50001)).thenReturn(firstStudentCourses);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50002)).thenReturn(secondStudentCourses);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50003)).thenReturn(new ArrayList<>());
-        when(mockLessonRepository.findByStudentId(PERSON_ID_50001)).thenReturn(firstStudentLessons);
-        when(mockLessonRepository.findByStudentId(PERSON_ID_50002)).thenReturn(secondStudentLessons);
-        when(mockLessonRepository.findByLecturerId(PERSON_ID_50003)).thenReturn(new ArrayList<>());
-
-        List<Student> actual = studentServiceImpl.getByGroupId(COURSE_ID_51);
-
-        verify(mockStudentRepository, times(1)).findByGroupId(COURSE_ID_51);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50001);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50002);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50003);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50001);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50002);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50003);
-
-        assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
-    }
-
-    @Test
-    void testGetByCourseIdShouldReturnEmptyStudentsListWhenNullPassed() {
-        List<Student> expected = new ArrayList<>();
-        when(mockStudentRepository.findByCourseId(null)).thenReturn(expected);
-
-        List<Student> actual = studentServiceImpl.getByCourseId(null);
-
-        verify(mockStudentRepository, times(1)).findByCourseId(null);
-        assertEquals(expected, actual, "empty student list should be returned");
-    }
-
-    @Test
-    void testGetByLessonIdShouldReturnStudentsListWhenLessonIdPassed() {
-        List<Student> expected = new ArrayList<>();
-        expected.add(firstStudent);
-        expected.add(secondStudent);
-        expected.add(thirdStudent);
-
-        when(mockStudentRepository.findByLessonId(LESSON_ID_5000001)).thenReturn(expected);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50001)).thenReturn(firstStudentCourses);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50002)).thenReturn(secondStudentCourses);
-        when(mockCourseRepository.findByStudentId(PERSON_ID_50003)).thenReturn(new ArrayList<>());
-        when(mockLessonRepository.findByStudentId(PERSON_ID_50001)).thenReturn(firstStudentLessons);
-        when(mockLessonRepository.findByStudentId(PERSON_ID_50002)).thenReturn(secondStudentLessons);
-        when(mockLessonRepository.findByLecturerId(PERSON_ID_50003)).thenReturn(new ArrayList<>());
-
-        List<Student> actual = studentServiceImpl.getByLessonId(LESSON_ID_5000001);
-
-        verify(mockStudentRepository, times(1)).findByLessonId(LESSON_ID_5000001);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50001);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50002);
-        verify(mockCourseRepository, times(1)).findByStudentId(PERSON_ID_50003);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50001);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50002);
-        verify(mockLessonRepository, times(1)).findByStudentId(PERSON_ID_50003);
-
-        assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
-    }
-
-    @Test
-    void testGetByLessonIdShouldReturnEmptyStudentsListWhenNullPassed() {
-        List<Student> expected = new ArrayList<>();
-        when(mockStudentRepository.findByLessonId(null)).thenReturn(expected);
-
-        List<Student> actual = studentServiceImpl.getByLessonId(null);
-
-        verify(mockStudentRepository, times(1)).findByLessonId(null);
-        assertEquals(expected, actual, "empty student list should be returned");
     }
 }

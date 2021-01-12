@@ -8,7 +8,6 @@ import java.util.List;
 @Service
 @Transactional
 public interface GenericService<T, I> {
-
     T getById(I id);
 
     @Transactional

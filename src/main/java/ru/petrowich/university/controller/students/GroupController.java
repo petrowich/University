@@ -64,7 +64,7 @@ public class GroupController {
         LOGGER.debug("group: {} {}", group.getId(), group.getName());
 
         LOGGER.info("listing lecturers of group id={}", groupId);
-        List<Course> courses = courseService.getByGroupId(groupId).stream()
+        List<Course> courses = group.getCourses().stream()
                 .sorted(Comparator.comparing(Course::getName))
                 .collect(Collectors.toList());
         model.addAttribute(ATTRIBUTE_COURSES, courses);
@@ -95,6 +95,9 @@ public class GroupController {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return groups(model);
         }
+
+        List<Course> courses = groupService.getById(group.getId()).getCourses();
+        group.setCourses(courses);
 
         groupService.update(group);
 

@@ -7,8 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import ru.petrowich.university.repository.LecturerRepository;
-import ru.petrowich.university.repository.CourseRepository;
-import ru.petrowich.university.repository.LessonRepository;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.model.Lesson;
@@ -47,9 +45,6 @@ class LecturerServiceImplTest {
     private final Course firstCourse = new Course().setId(COURSE_ID_51).setName(COURSE_NAME_51).setAuthor(firstLecturer).setActive(true);
     private final Course secondCourse = new Course().setId(COURSE_ID_52).setName(COURSE_NAME_52).setAuthor(firstLecturer).setActive(true);
 
-    private final List<Course> firstLecturerCourses = new ArrayList<>();
-    private final List<Lesson> firstLecturerLessons = new ArrayList<>();
-
     private AutoCloseable autoCloseable;
 
     {
@@ -67,12 +62,6 @@ class LecturerServiceImplTest {
 
     @Mock
     private LecturerRepository mockLecturerRepository;
-
-    @Mock
-    private CourseRepository mockCourseRepository;
-
-    @Mock
-    private LessonRepository mockLessonRepository;
 
     @InjectMocks
     private LecturerServiceImpl lecturerServiceImpl;

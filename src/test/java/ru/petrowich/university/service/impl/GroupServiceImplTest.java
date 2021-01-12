@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import ru.petrowich.university.repository.GroupRepository;
-import ru.petrowich.university.repository.StudentRepository;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Student;
 
@@ -48,9 +47,6 @@ class GroupServiceImplTest {
 
     @Mock
     private GroupRepository mockGroupRepository;
-
-    @Mock
-    private StudentRepository mockStudentRepository;
 
     @InjectMocks
     private GroupServiceImpl groupServiceImpl;
@@ -159,16 +155,10 @@ class GroupServiceImplTest {
         expected.add(thirdGroup);
 
         when(mockGroupRepository.findAll()).thenReturn(expected);
-        when(mockStudentRepository.findByGroupId(GROUP_ID_501)).thenReturn(firstGroupStudents);
-        when(mockStudentRepository.findByGroupId(GROUP_ID_502)).thenReturn(secondGroupStudents);
-        when(mockStudentRepository.findByGroupId(GROUP_ID_503)).thenReturn(new ArrayList<>());
 
         List<Group> actual = groupServiceImpl.getAll();
 
         verify(mockGroupRepository, times(1)).findAll();
-        verify(mockStudentRepository, times(1)).findByGroupId(GROUP_ID_501);
-        verify(mockStudentRepository, times(1)).findByGroupId(GROUP_ID_502);
-        verify(mockStudentRepository, times(1)).findByGroupId(GROUP_ID_503);
 
         assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
     }

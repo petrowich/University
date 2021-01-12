@@ -1,6 +1,5 @@
 package ru.petrowich.university.model;
 
-import org.hibernate.annotations.CascadeType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -43,9 +42,6 @@ public class Lesson implements Comparable<Lesson> {
     private LocalTime endTime;
 
     @Transient
-    private List<Group> groups = new ArrayList<>();
-
-    @Transient
     private List<Student> students = new ArrayList<>();
 
     public Long getId() {
@@ -63,6 +59,7 @@ public class Lesson implements Comparable<Lesson> {
 
     public Lesson setCourse(Course course) {
         this.course = course;
+        course.getGroups().forEach(group -> students.addAll(group.getStudents()));
         return this;
     }
 
@@ -115,27 +112,6 @@ public class Lesson implements Comparable<Lesson> {
         return this;
     }
 
-    public List<Group> getGroups() {
-        return groups;
-    }
-
-    public Lesson setGroups(List<Group> groups) {
-        this.groups = groups;
-        return this;
-    }
-
-    public List<Student> getStudents() {
-        if (students==null){
-            return new ArrayList<>();
-        }
-        return new ArrayList<>(students);
-    }
-
-    public Lesson setStudents(List<Student> students) {
-        this.students = students;
-        return this;
-    }
-
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -149,6 +125,12 @@ public class Lesson implements Comparable<Lesson> {
         Lesson lesson = (Lesson) object;
 
         return Objects.equals(id, lesson.id);
+    }
+
+    public List<Student> getStudents() {
+        students = new ArrayList<>();
+        course.getGroups().forEach(group -> students.addAll(group.getStudents()));
+        return students;
     }
 
     @Override

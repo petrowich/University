@@ -1,6 +1,5 @@
 package ru.petrowich.university;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
@@ -19,9 +18,6 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class HibernateConfiguration {
 
-    @Autowired
-    private Properties hibernateProperties;
-
     @Bean(name = "dataSource")
     public DataSource dataSource() throws NamingException {
         JndiTemplate jndiTemplate = new JndiTemplate();
@@ -34,7 +30,7 @@ public class HibernateConfiguration {
         localContainerEntityManagerFactoryBean.setDataSource(dataSource());
         localContainerEntityManagerFactoryBean.setPackagesToScan("ru.petrowich.university.model");
         localContainerEntityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        localContainerEntityManagerFactoryBean.setJpaProperties(hibernateProperties);
+        localContainerEntityManagerFactoryBean.setJpaProperties(hibernateProperties());
         return localContainerEntityManagerFactoryBean;
     }
 
@@ -42,7 +38,7 @@ public class HibernateConfiguration {
     public PlatformTransactionManager transactionManager() throws NamingException {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-        transactionManager.setJpaProperties(hibernateProperties);
+        transactionManager.setJpaProperties(hibernateProperties());
         return transactionManager;
     }
 

@@ -30,9 +30,7 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public Lesson getById(Long lessonId) {
         LOGGER.debug("getById {}", lessonId);
-        Lesson lesson = lessonRepository.findById(lessonId);
-        fillTransients(lesson);
-        return lesson;
+        return lessonRepository.findById(lessonId);
     }
 
     @Override
@@ -56,31 +54,6 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public List<Lesson> getAll() {
         LOGGER.debug("getAll");
-        List<Lesson> lessons = lessonRepository.findAll();
-        lessons.forEach(this::fillTransients);
-        return lessons;
-    }
-
-    @Override
-    public List<Lesson> getByLecturerId(Integer lecturerId) {
-        LOGGER.debug("getByLecturer {}", lecturerId);
-        List<Lesson> lessons = lessonRepository.findByLecturerId(lecturerId);
-        lessons.forEach(this::fillTransients);
-        return lessons;
-    }
-
-    @Override
-    public List<Lesson> getByStudentId(Integer studentId) {
-        LOGGER.debug("getByStudent {}", studentId);
-        List<Lesson> lessons = lessonRepository.findByStudentId(studentId);
-        lessons.forEach(this::fillTransients);
-        return lessons;
-    }
-
-    private void fillTransients(Lesson lesson) {
-        if (lesson != null) {
-            lesson.setGroups(groupRepository.findByLessonId(lesson.getId()));
-            lesson.setStudents(studentRepository.findByLessonId(lesson.getId()));
-        }
+        return lessonRepository.findAll();
     }
 }

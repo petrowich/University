@@ -10,7 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinTable;
-import javax.persistence.Transient;
 import javax.persistence.GenerationType;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +40,6 @@ public class Course {
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     List<Group> groups = new ArrayList<>();
-
-    @Transient
-    private List<Student> students = new ArrayList<>();
 
     @Column(name = "course_active")
     private boolean active;
@@ -100,16 +96,9 @@ public class Course {
         return groups;
     }
 
-    public void setGroups(List<Group> groups) {
+    public Course setGroups(List<Group> groups) {
         this.groups = groups;
-    }
-
-    public List<Student> getStudents() {
-        return students;
-    }
-
-    public void setStudents(List<Student> students) {
-        this.students = students;
+        return this;
     }
 
     @Override

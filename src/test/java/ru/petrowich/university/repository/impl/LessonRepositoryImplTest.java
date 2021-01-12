@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
+import ru.petrowich.university.model.Group;
+import ru.petrowich.university.model.Student;
 import ru.petrowich.university.model.Course;
-import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.model.Lesson;
+import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.model.TimeSlot;
 import ru.petrowich.university.repository.LessonRepository;
 
@@ -20,7 +22,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatObject;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -42,9 +43,13 @@ class LessonRepositoryImplTest {
     private static final Integer EXISTENT_COURSE_ID_54 = 54;
     private static final Integer EXISTENT_COURSE_ID_55 = 55;
     private static final Integer EXISTENT_COURSE_ID_56 = 56;
-    private static final Integer EXISTENT_PERSON_ID_50001 = 50001;
+    private static final Integer EXISTENT_GROUP_ID_501 = 501;
+    private static final Integer EXISTENT_GROUP_ID_502 = 502;
     private static final Integer EXISTENT_PERSON_ID_50005 = 50005;
     private static final Integer EXISTENT_PERSON_ID_50006 = 50006;
+    private static final Integer EXISTENT_PERSON_ID_50001 = 50001;
+    private static final Integer EXISTENT_PERSON_ID_50002 = 50002;
+    private static final Integer EXISTENT_PERSON_ID_50003 = 50003;
     private static final Integer TIME_SLOT_ID_1 = 1;
     private static final Integer TIME_SLOT_ID_2 = 2;
     private static final Integer TIME_SLOT_ID_3 = 3;
@@ -74,9 +79,22 @@ class LessonRepositoryImplTest {
     @Test
     @Sql(POPULATE_DB_SQL)
     void testFindByIdShouldReturnExistentLesson() {
+        List<Student> students1 = new ArrayList<>();
+        students1.add(new Student().setId(EXISTENT_PERSON_ID_50001));
+        students1.add(new Student().setId(EXISTENT_PERSON_ID_50002));
+        Group group1 = new Group().setId(EXISTENT_GROUP_ID_501).setStudents(students1);
+
+        List<Student> students2 = new ArrayList<>();
+        students2.add(new Student().setId(EXISTENT_PERSON_ID_50003));
+        Group group2 = new Group().setId(EXISTENT_GROUP_ID_502).setStudents(students2);
+
+        List<Group> groups = new ArrayList<>();
+        groups.add(group1);
+        groups.add(group2);
+
         Lesson expected = new Lesson()
                 .setId(EXISTENT_LESSON_ID_5000001)
-                .setCourse(new Course().setId(EXISTENT_COURSE_ID_51))
+                .setCourse(new Course().setId(EXISTENT_COURSE_ID_51).setGroups(groups))
                 .setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005))
                 .setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_1))
                 .setDate(EXISTENT_LESSON_DATE_5000001)
@@ -171,53 +189,5 @@ class LessonRepositoryImplTest {
 
         List<Lesson> actual = lessonRepository.findAll();
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-    }
-
-    @Test
-    @Sql(POPULATE_DB_SQL)
-    void testFindByLecturerIdShouldReturnLecturerLessonsListWhenLecturerIdPassed() {
-        List<Lesson> expected = new ArrayList<>();
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000001).setCourse(new Course().setId(EXISTENT_COURSE_ID_51)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_1)).setDate(EXISTENT_LESSON_DATE_5000001).setStartTime(EXISTENT_LESSON_START_TIME_5000001).setEndTime(EXISTENT_LESSON_END_TIME_5000001));
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000002).setCourse(new Course().setId(EXISTENT_COURSE_ID_52)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_2)).setDate(EXISTENT_LESSON_DATE_5000002).setStartTime(EXISTENT_LESSON_START_TIME_5000002).setEndTime(EXISTENT_LESSON_END_TIME_5000002));
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000003).setCourse(new Course().setId(EXISTENT_COURSE_ID_53)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_3)).setDate(EXISTENT_LESSON_DATE_5000003).setStartTime(EXISTENT_LESSON_START_TIME_5000003).setEndTime(EXISTENT_LESSON_END_TIME_5000003));
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000004).setCourse(new Course().setId(EXISTENT_COURSE_ID_56)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(null)).setDate(EXISTENT_LESSON_DATE_5000004).setStartTime(EXISTENT_LESSON_START_TIME_5000004).setEndTime(EXISTENT_LESSON_END_TIME_5000004));
-
-        List<Lesson> actual = lessonRepository.findByLecturerId(EXISTENT_PERSON_ID_50005);
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-    }
-
-    @Test
-    @Sql(POPULATE_DB_SQL)
-    void testFindByLecturerIdShouldReturnEmptyLessonsListWhenNonexistentPersonIdPassed() {
-        List<Lesson> expected = new ArrayList<>();
-        List<Lesson> actual = lessonRepository.findByLecturerId(EXISTENT_PERSON_ID_50001);
-        assertEquals(expected, actual, "empty courses list is expected");
-    }
-
-    @Test
-    @Sql(POPULATE_DB_SQL)
-    void testFindByLecturerIdShouldReturnEmptyLessonsListWhenNullPassed() {
-        List<Lesson> expected = new ArrayList<>();
-        List<Lesson> actual = lessonRepository.findByLecturerId(null);
-        assertEquals(expected, actual, "empty courses list is expected");
-    }
-
-    @Test
-    @Sql(POPULATE_DB_SQL)
-    void testFindByStudentIdShouldReturnStudentLessonsListWhenStudentIdPassed() {
-        List<Lesson> expected = new ArrayList<>();
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000001).setCourse(new Course().setId(EXISTENT_COURSE_ID_51)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_1)).setDate(EXISTENT_LESSON_DATE_5000001).setStartTime(EXISTENT_LESSON_START_TIME_5000001).setEndTime(EXISTENT_LESSON_END_TIME_5000001));
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000002).setCourse(new Course().setId(EXISTENT_COURSE_ID_52)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_2)).setDate(EXISTENT_LESSON_DATE_5000002).setStartTime(EXISTENT_LESSON_START_TIME_5000002).setEndTime(EXISTENT_LESSON_END_TIME_5000002));
-
-        List<Lesson> actual = lessonRepository.findByStudentId(EXISTENT_PERSON_ID_50001);
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-    }
-
-    @Test
-    @Sql(POPULATE_DB_SQL)
-    void testFindByStudentIdShouldReturnEmptyLessonsListWhenNullPassed() {
-        List<Lesson> expected = new ArrayList<>();
-        List<Lesson> actual = lessonRepository.findByStudentId(null);
-        assertEquals(expected, actual, "empty courses list is expected");
     }
 }

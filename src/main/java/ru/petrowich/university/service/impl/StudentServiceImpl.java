@@ -30,9 +30,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student getById(Integer studentId) {
         LOGGER.debug("getById {}", studentId);
-        Student student = studentRepository.findById(studentId);
-        fillTransients(student);
-        return student;
+        return studentRepository.findById(studentId);
     }
 
     @Override
@@ -56,39 +54,6 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Student> getAll() {
         LOGGER.debug("getAll");
-        List<Student> students = studentRepository.findAll();
-        students.forEach(this::fillTransients);
-        return students;
-    }
-
-    @Override
-    public List<Student> getByGroupId(Integer groupId) {
-        LOGGER.debug("getByGroupId {}", groupId);
-        List<Student> students = studentRepository.findByGroupId(groupId);
-        students.forEach(this::fillTransients);
-        return students;
-    }
-
-    @Override
-    public List<Student> getByCourseId(Integer courseId) {
-        LOGGER.debug("getByCourseId {}", courseId);
-        List<Student> students = studentRepository.findByCourseId(courseId);
-        students.forEach(this::fillTransients);
-        return students;
-    }
-
-    @Override
-    public List<Student> getByLessonId(Long lessonId) {
-        LOGGER.debug("getByLessonId {}", lessonId);
-        List<Student> students = studentRepository.findByLessonId(lessonId);
-        students.forEach(this::fillTransients);
-        return students;
-    }
-
-    private void fillTransients(Student student) {
-        if (student != null) {
-            student.setCourses(courseRepository.findByStudentId(student.getId()));
-            student.setLessons(lessonRepository.findByStudentId(student.getId()));
-        }
+        return studentRepository.findAll();
     }
 }

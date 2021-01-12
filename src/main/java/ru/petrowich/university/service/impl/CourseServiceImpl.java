@@ -61,24 +61,6 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> getByAuthorId(Integer authorId) {
-        LOGGER.debug("getByAuthorId {}", authorId);
-        return courseRepository.findByAuthorId(authorId);
-    }
-
-    @Override
-    public List<Course> getByStudentId(Integer studentId) {
-        LOGGER.debug("getByStudentId {}", studentId);
-        return courseRepository.findByStudentId(studentId);
-    }
-
-    @Override
-    public List<Course> getByGroupId(Integer groupId) {
-        LOGGER.debug("getByGroupId {}", groupId);
-        return courseRepository.findByGroupId(groupId);
-    }
-
-    @Override
     public void assignGroupToCourse(Group group, Course course) {
         LOGGER.debug("assign Group {} to Course {}", group, course);
 
@@ -88,7 +70,7 @@ public class CourseServiceImpl implements CourseService {
 
         if (!actualGroups.contains(group)) {
             actualGroups.add(currentGroup);
-            courseRepository.update(course);
+            courseRepository.update(currentCourse);
         }
     }
 
@@ -118,6 +100,6 @@ public class CourseServiceImpl implements CourseService {
 
         currentCourse.setGroups(actualGroups);
 
-        courseRepository.update(course);
+        courseRepository.update(currentCourse);
     }
 }

@@ -48,7 +48,7 @@ public class CourseController {
     @GetMapping("")
     public String courses(Model model) {
         LOGGER.info("listing courses");
-         List<Course> courses = courseService.getAll().stream()
+        List<Course> courses = courseService.getAll().stream()
                 .sorted(Comparator.comparing(Course::isActive).reversed())
                 .collect(Collectors.toList());
         model.addAttribute(ATTRIBUTE_ALL_COURSES, courses);
@@ -66,7 +66,7 @@ public class CourseController {
         LOGGER.debug("received course: {} {}", course.getId(), course.getName());
 
         LOGGER.debug("filling groups of course id={}", courseId);
-        List<Group> courseGroups = groupService.getByCourseId(courseId).stream()
+        List<Group> courseGroups = course.getGroups().stream()
                 .sorted(Comparator.comparing(Group::getName))
                 .collect(Collectors.toList());
 
@@ -118,9 +118,10 @@ public class CourseController {
             return courses(model);
         }
 
-        if (course.getAuthor() != null && course.getAuthor().getId() == null) {
-            course.setAuthor(null);
-        }
+        List<Group> groups = courseService.getById(course.getId()).getGroups();
+        course.setGroups(groups);
+
+        course.setAuthor(getActualAuthor(course.getAuthor()));
 
         courseService.update(course);
 
@@ -151,6 +152,8 @@ public class CourseController {
             bindingResult.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
             return "courses/course_creator";
         }
+
+        course.setAuthor(getActualAuthor(course.getAuthor()));
 
         courseService.add(course.setActive(true));
 
@@ -185,5 +188,12 @@ public class CourseController {
         courseService.removeGroupFromCourse(group, course);
 
         return course(courseId, model);
+    }
+
+    private Lecturer getActualAuthor(Lecturer author) {
+        if (author != null && author.getId() != null) {
+            return lecturerService.getById(author.getId());
+        }
+        return null;
     }
 }

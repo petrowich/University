@@ -148,40 +148,4 @@ class GroupRepositoryImplTest {
         List<Group> actual = groupRepository.findAll();
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
-
-    @Test
-    @Sql(POPULATE_DB_SQL)
-    void testFindByCourseIdShouldReturnCourseGroupsListWhenCourseIdPassed() {
-        List<Group> expected = new ArrayList<>();
-        expected.add(new Group().setId(EXISTENT_GROUP_ID_501).setName(EXISTENT_GROUP_NAME_501).setActive(true));
-        expected.add(new Group().setId(EXISTENT_GROUP_ID_502).setName(EXISTENT_GROUP_NAME_502).setActive(true));
-
-        List<Group> actual = groupRepository.findByCourseId(EXISTENT_COURSE_ID_54);
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-    }
-
-    @Test
-    void testFindByCourseIdShouldReturnEmptyCoursesListWhenNonexistentCourseId() {
-        List<Group> expected = new ArrayList<>();
-        List<Group> actual = groupRepository.findByCourseId(NONEXISTENT_COURSE_ID);
-        assertEquals(expected, actual, "empty courses list is expected");
-    }
-
-    @Test
-    void testFindByCourseIdShouldReturnEmptyCoursesListWhenNullPassed() {
-        List<Group> expected = new ArrayList<>();
-        List<Group> actual = groupRepository.findByCourseId(null);
-        assertEquals(expected, actual, "empty courses list is expected");
-    }
-
-    @Test
-    @Sql(POPULATE_DB_SQL)
-    void testFindByLessonIdShouldReturnCourseGroupsListWhenCourseIdPassed() {
-        List<Group> expected = new ArrayList<>();
-        expected.add(new Group().setId(EXISTENT_GROUP_ID_501).setName(EXISTENT_GROUP_NAME_501).setActive(true));
-        expected.add(new Group().setId(EXISTENT_GROUP_ID_502).setName(EXISTENT_GROUP_NAME_502).setActive(true));
-
-        List<Group> actual = groupRepository.findByLessonId(EXISTENT_LESSON_ID_5000001);
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-    }
 }

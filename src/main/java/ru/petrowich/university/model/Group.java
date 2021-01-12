@@ -10,7 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.JoinTable;
-import javax.persistence.Transient;
 import javax.persistence.GenerationType;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,14 +40,6 @@ public class Group {
     )
     List<Course> courses = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "v_lessons_groups",
-            joinColumns = @JoinColumn(name = "group_id"),
-            inverseJoinColumns = @JoinColumn(name = "lesson_id")
-    )
-    @Transient
-    List<Lesson> lessons = new ArrayList<>();
-
     @Column(name = "group_active")
     private boolean active;
 
@@ -74,8 +65,9 @@ public class Group {
         return this.capacity;
     }
 
-    public void setCapacity(Integer capacity) {
+    public Group setCapacity(Integer capacity) {
         this.capacity = capacity;
+        return this;
     }
 
     public List<Student> getStudents() {
@@ -101,16 +93,9 @@ public class Group {
         return courses;
     }
 
-    public void setCourses(List<Course> courses) {
+    public Group setCourses(List<Course> courses) {
         this.courses = courses;
-    }
-
-    public List<Lesson> getLessons() {
-        return lessons;
-    }
-
-    public void setLessons(List<Lesson> lessons) {
-        this.lessons = lessons;
+        return this;
     }
 
     @Override

@@ -106,9 +106,7 @@ public class StudentController {
             return students(model);
         }
 
-        if (student.getGroup() != null && student.getGroup().getId() == null) {
-            student.setGroup(null);
-        }
+        student.setGroup(getActualGroup(student.getGroup()));
 
         studentService.update(student);
 
@@ -141,8 +139,17 @@ public class StudentController {
             return "students/student_creator";
         }
 
+        student.setGroup(getActualGroup(student.getGroup()));
+
         studentService.add(student.setActive(true));
 
         return students(model);
+    }
+
+    private Group getActualGroup(Group group) {
+        if (group != null && group.getId() != null) {
+            return groupService.getById(group.getId());
+        }
+        return null;
     }
 }

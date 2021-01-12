@@ -7,13 +7,6 @@ import ru.petrowich.university.model.Group;
 import java.util.List;
 
 public interface CourseService extends GenericService<Course, Integer> {
-
-    List<Course> getByAuthorId(Integer authorId);
-
-    List<Course> getByStudentId(Integer studentId);
-
-    List<Course> getByGroupId(Integer groupId);
-
     @Transactional
     void assignGroupToCourse(Group group, Course course);
 

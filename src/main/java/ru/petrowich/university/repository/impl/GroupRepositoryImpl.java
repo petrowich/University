@@ -48,22 +48,4 @@ public class GroupRepositoryImpl implements GroupRepository {
         LOGGER.debug("find all groups");
         return entityManager.createQuery("FROM Group", Group.class).getResultList();
     }
-
-    @Override
-    public List<Group> findByCourseId(Integer courseId) {
-        LOGGER.debug("find groups by courseId {}", courseId);
-        return entityManager.createQuery("SELECT g FROM Group AS g INNER JOIN g.courses AS c WHERE c.id = :courseId AND c.active = :active", Group.class)
-                .setParameter("courseId", courseId)
-                .setParameter("active", true)
-                .getResultList();
-    }
-
-    @Override
-    public List<Group> findByLessonId(Long lessonId) {
-        LOGGER.debug("find groups by lessonId {}", lessonId);
-        return entityManager.createQuery("SELECT g FROM Lesson AS ls INNER JOIN ls.course AS c INNER JOIN c.groups AS g WHERE ls.id = :lessonId AND g.active = :active", Group.class)
-                .setParameter("lessonId", lessonId)
-                .setParameter("active", true)
-                .getResultList();
-    }
 }

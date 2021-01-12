@@ -50,30 +50,4 @@ public class CourseRepositoryImpl implements CourseRepository {
         return entityManager.createQuery("FROM Course", Course.class)
                 .getResultList();
     }
-
-    @Override
-    public List<Course> findByAuthorId(Integer authorId) {
-        LOGGER.debug("find course by authorId {}", authorId);
-        return entityManager.createQuery("FROM Course WHERE author.id = :authorId", Course.class)
-                .setParameter("authorId", authorId)
-                .getResultList();
-    }
-
-    @Override
-    public List<Course> findByStudentId(Integer studentId) {
-        LOGGER.debug("find course by studentId {}", studentId);
-        return entityManager.createQuery("SELECT c FROM Student AS s INNER JOIN s.group AS g INNER JOIN g.courses AS c WHERE s.id = :studentId AND c.active = :active", Course.class)
-                .setParameter("studentId", studentId)
-                .setParameter("active", true)
-                .getResultList();
-    }
-
-    @Override
-    public List<Course> findByGroupId(Integer groupId) {
-        LOGGER.debug("find course by groupId {}", groupId);
-        return entityManager.createQuery("SELECT c FROM Course AS c INNER JOIN c.groups AS g WHERE g.id = :groupId AND g.active = :active", Course.class)
-                .setParameter("groupId", groupId)
-                .setParameter("active", true)
-                .getResultList();
-    }
 }
