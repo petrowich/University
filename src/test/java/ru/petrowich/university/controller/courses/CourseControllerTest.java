@@ -88,11 +88,9 @@ class CourseControllerTest {
         Group thirdGroup = new Group().setId(GROUP_ID_503).setActive(true);
         Group fourthGroup = new Group().setId(GROUP_ID_504).setActive(false);
 
-        Course expectedCourse = new Course().setId(COURSE_ID_51);
-        when(mockCourseService.getById(COURSE_ID_51)).thenReturn(expectedCourse);
-
         List<Group> courseGroups = asList(firstGroup, secondGroup);
-        when(mockGroupService.getByCourseId(COURSE_ID_51)).thenReturn(courseGroups);
+        Course expectedCourse = new Course().setId(COURSE_ID_51).setGroups(courseGroups);
+        when(mockCourseService.getById(COURSE_ID_51)).thenReturn(expectedCourse);
 
         List<Group> expectedGroups = asList(firstGroup, secondGroup, thirdGroup, fourthGroup);
         when(mockGroupService.getAll()).thenReturn(expectedGroups);
@@ -109,7 +107,6 @@ class CourseControllerTest {
                 .andExpect(view().name(expectedViewName));
 
         verify(mockCourseService, times(1)).getById(COURSE_ID_51);
-        verify(mockGroupService, times(1)).getByCourseId(COURSE_ID_51);
         verify(mockGroupService, times(1)).getAll();
     }
 
@@ -166,7 +163,12 @@ class CourseControllerTest {
 
     @Test
     void testUpdate() throws Exception {
-        Course expectedCourse = new Course().setId(COURSE_ID_51);
+        Group firstGroup = new Group().setId(GROUP_ID_501).setActive(false).setName("2");
+        Group secondGroup = new Group().setId(GROUP_ID_502).setActive(true).setName("1");
+
+        List<Group> courseGroups = asList(firstGroup, secondGroup);
+        Course expectedCourse = new Course().setId(COURSE_ID_51).setGroups(courseGroups);
+        when(mockCourseService.getById(COURSE_ID_51)).thenReturn(expectedCourse);
 
         String expectedViewName = "courses/courses";
 

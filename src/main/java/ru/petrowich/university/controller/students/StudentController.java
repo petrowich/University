@@ -46,10 +46,13 @@ public class StudentController {
         Comparator<Student> studentComparator = Comparator.comparing(Student::isActive).reversed()
                 .thenComparing(Student::getFullName);
 
-        List<Student> students = studentService.getAll().stream()
-                .sorted(studentComparator)
-                .collect(Collectors.toList());
-        model.addAttribute(ATTRIBUTE_ALL_STUDENTS, students);
+        List<Student> students = studentService.getAll();
+
+        List<Student> students1 =
+                students.stream()
+                        .sorted(studentComparator)
+                        .collect(Collectors.toList());
+        model.addAttribute(ATTRIBUTE_ALL_STUDENTS, students1);
 
         LOGGER.debug("number of students: {}", students.size());
 
@@ -94,7 +97,7 @@ public class StudentController {
 
     @PostMapping("/student/update")
     public String update(Student student, BindingResult result, Model model, HttpServletResponse httpServletResponse) {
-        LOGGER.info("submit update of student id={}", student.getId());
+        LOGGER.info("submitting the changes of student id={}", student.getId());
 
         if (result.hasErrors()) {
             LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, result.getErrorCount());
@@ -102,6 +105,8 @@ public class StudentController {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return students(model);
         }
+
+        student.setGroup(getActualGroup(student.getGroup()));
 
         studentService.update(student);
 
@@ -126,7 +131,7 @@ public class StudentController {
 
     @PostMapping("/student/add")
     public String add(Student student, BindingResult result, Model model) {
-        LOGGER.info("add new student");
+        LOGGER.info("adding new student");
 
         if (result.hasErrors()) {
             LOGGER.info(ERROR_MSG_FORM_CONTAINS_ERRORS, result.getErrorCount());
@@ -134,8 +139,17 @@ public class StudentController {
             return "students/student_creator";
         }
 
+        student.setGroup(getActualGroup(student.getGroup()));
+
         studentService.add(student.setActive(true));
 
         return students(model);
+    }
+
+    private Group getActualGroup(Group group) {
+        if (group != null && group.getId() != null) {
+            return groupService.getById(group.getId());
+        }
+        return null;
     }
 }

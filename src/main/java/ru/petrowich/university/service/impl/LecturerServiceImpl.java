@@ -3,9 +3,7 @@ package ru.petrowich.university.service.impl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.petrowich.university.dao.CourseDAO;
-import ru.petrowich.university.dao.LecturerDAO;
-import ru.petrowich.university.dao.LessonDAO;
+import ru.petrowich.university.repository.LecturerRepository;
 import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.service.LecturerService;
 
@@ -16,59 +14,40 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Service
 public class LecturerServiceImpl implements LecturerService {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
-    private LecturerDAO lecturerDAO;
-    private CourseDAO courseDAO;
-    private LessonDAO lessonDAO;
+    private final LecturerRepository lecturerRepository;
 
     @Autowired
-    public LecturerServiceImpl(LecturerDAO lecturerDAO, CourseDAO courseDAO, LessonDAO lessonDAO) {
-        this.lecturerDAO = lecturerDAO;
-        this.courseDAO = courseDAO;
-        this.lessonDAO = lessonDAO;
+    public LecturerServiceImpl(LecturerRepository lecturerRepository) {
+        this.lecturerRepository = lecturerRepository;
     }
 
     @Override
     public Lecturer getById(Integer lecturerId) {
         LOGGER.debug("getById {}", lecturerId);
-        Lecturer lecturer = lecturerDAO.getById(lecturerId);
-
-        if (lecturer != null) {
-            lecturer.setCourses(courseDAO.getByAuthorId(lecturerId));
-            lecturer.setLessons(lessonDAO.getByLecturerId(lecturerId));
-        }
-
-        return lecturer;
+        return lecturerRepository.findById(lecturerId);
     }
 
     @Override
     public void add(Lecturer lecturer) {
         LOGGER.debug("add {}", lecturer);
-        lecturerDAO.add(lecturer);
+        lecturerRepository.save(lecturer);
     }
 
     @Override
     public void update(Lecturer lecturer) {
         LOGGER.debug("update {}", lecturer);
-        lecturerDAO.update(lecturer);
+        lecturerRepository.update(lecturer);
     }
 
     @Override
     public void delete(Lecturer lecturer) {
         LOGGER.debug("delete {}", lecturer);
-        lecturerDAO.delete(lecturer);
+        lecturerRepository.delete(lecturer);
     }
 
     @Override
     public List<Lecturer> getAll() {
         LOGGER.debug("getAll");
-        List<Lecturer> lecturers = lecturerDAO.getAll();
-
-        lecturers.forEach((Lecturer lecturer) -> {
-            Integer lecturerId = lecturer.getId();
-            lecturer.setCourses(courseDAO.getByAuthorId(lecturerId));
-            lecturer.setLessons(lessonDAO.getByLecturerId(lecturerId));
-        });
-
-        return lecturers;
+        return lecturerRepository.findAll();
     }
 }

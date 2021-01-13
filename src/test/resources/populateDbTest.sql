@@ -23,7 +23,7 @@ INSERT INTO public.t_timeslots (timeslot_name, timeslot_start_time, timeslot_end
 , ('eighth lesson','20:00:00','21:30:00');
 
 INSERT INTO public.t_groups (group_id, group_name, group_capacity, group_active) VALUES
-  (501, 'AA-01', 3, TRUE)
+  (501, 'AA-01', 2, TRUE)
 , (502, 'BB-02', 1, TRUE)
 , (503, 'CC-03', 0, FALSE);
 
@@ -41,7 +41,7 @@ INSERT INTO public.t_courses (course_id, course_name, course_description, course
 , (53, 'physics', 'exact', 50006, TRUE)
 , (54, 'literature', 'humanities', NULL, TRUE)
 , (55, 'psychology', 'humanities', 50006, FALSE)
-, (56, 'litrball', 'sport', 50003, TRUE);
+, (56, 'litrball', 'sport', NULL, TRUE);
 
 INSERT INTO public.t_groups_courses (group_id, course_id) VALUES
   (501, 51)

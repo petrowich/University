@@ -75,14 +75,12 @@ class GroupControllerTest {
 
     @Test
     void testGroup() throws Exception {
-        Group expectedGroup = new Group().setId(GROUP_ID_501);
-        when(mockGroupService.getById(GROUP_ID_501)).thenReturn(expectedGroup);
-
         Course firstCourse = new Course().setId(COURSE_ID_51).setName("2");
         Course secondCourse = new Course().setId(COURSE_ID_52).setName("1");
-
         List<Course> groupCourses = asList(firstCourse, secondCourse);
-        when(mockCourseService.getByGroupId(GROUP_ID_501)).thenReturn(groupCourses);
+
+        Group expectedGroup = new Group().setId(GROUP_ID_501).setCourses(groupCourses);
+        when(mockGroupService.getById(GROUP_ID_501)).thenReturn(expectedGroup);
 
         List<Course> expectedGroupCourses = asList(secondCourse, firstCourse);
         String expectedViewName = "students/group";
@@ -94,7 +92,6 @@ class GroupControllerTest {
                 .andExpect(view().name(expectedViewName));
 
         verify(mockGroupService, times(1)).getById(GROUP_ID_501);
-        verify(mockCourseService, times(1)).getByGroupId(GROUP_ID_501);
     }
 
     @Test
@@ -114,7 +111,12 @@ class GroupControllerTest {
 
     @Test
     void testUpdate() throws Exception {
-        Group expectedGroup = new Group().setId(GROUP_ID_501);
+        Course firstCourse = new Course().setId(COURSE_ID_51).setName("2");
+        Course secondCourse = new Course().setId(COURSE_ID_52).setName("1");
+        List<Course> groupCourses = asList(firstCourse, secondCourse);
+
+        Group expectedGroup = new Group().setId(GROUP_ID_501).setCourses(groupCourses);
+        when(mockGroupService.getById(GROUP_ID_501)).thenReturn(expectedGroup);
 
         String expectedViewName = "students/groups";
 
@@ -122,6 +124,7 @@ class GroupControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name(expectedViewName));
 
+        verify(mockGroupService, times(1)).getById(GROUP_ID_501);
         verify(mockGroupService, times(1)).update(expectedGroup);
     }
 

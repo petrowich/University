@@ -1,11 +1,19 @@
 package ru.petrowich.university.model;
 
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.DiscriminatorValue;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+@Entity(name = "Lecturer")
+@DiscriminatorValue("2")
 public class Lecturer extends AbstractPerson {
+
+    @OneToMany(mappedBy = "author")
     private List<Course> courses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "lecturer")
     private List<Lesson> lessons = new ArrayList<>();
 
     @Override

@@ -104,7 +104,7 @@ CREATE INDEX ix_groups_students_student_id ON public.t_groups_students (student_
 
 CREATE TABLE public.t_lessons
 (
-  lesson_id     INTEGER DEFAULT public.seq_lessons.nextval PRIMARY KEY,
+  lesson_id     BIGINT DEFAULT public.seq_lessons.nextval PRIMARY KEY,
   course_id     INTEGER NOT NULL,
   lecturer_id     INTEGER NOT NULL,
   timeslot_id     INTEGER NULL,

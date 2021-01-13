@@ -13,6 +13,7 @@
         <maven.version>3.8.0</maven.version>
         <postgresql.version>42.2.5</postgresql.version>
         <spring.version>5.2.5.RELEASE</spring.version>
+        <spring.data.version>2.1.15.RELEASE</spring.data.version>
         <commons-dbcp2.version>2.7.0</commons-dbcp2.version>
         <junit.version>5.4.2</junit.version>
         <h2database.version>1.4.197</h2database.version>
@@ -27,9 +28,8 @@
         <maven-war-plugin.version>3.3.0</maven-war-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <servlet.version>4.0.1</servlet.version>
-        <!--<bootstrap.version>4.5.0</bootstrap.version>-->
-        <!--<jquery.version>3.5.1</jquery.version>-->
-        <!--        <jackson.version>2.11.0</jackson.version>-->
+        <hibernate.version>5.4.18.Final</hibernate.version>
+        <!--<jackson.version>2.11.0</jackson.version>-->
     </properties>
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
@@ -49,7 +49,7 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-<!--            <plugin>
+            <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
@@ -59,7 +59,7 @@
                         <contextPath>/${project.artifactId}</contextPath>
                     </webApp>
                 </configuration>
-            </plugin>-->
+            </plugin>
 <!--            <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
@@ -89,6 +89,11 @@
             <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>${spring.data.version}</version>
+        </dependency>
         <!--
         <dependency>
             <groupId>org.springframework</groupId>
@@ -106,6 +111,11 @@
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -153,11 +163,6 @@
             <version>${hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--        <dependency>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-core</artifactId>
-                    <version>${logback.version}</version>
-                </dependency>-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -173,16 +178,6 @@
             <artifactId>thymeleaf-spring5</artifactId>
             <version>${thymeleaf.version}</version>
         </dependency>
-        <!--        <dependency>
-                    <groupId>org.webjars.bower</groupId>
-                    <artifactId>jquery</artifactId>
-                    <version>${jquery.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.webjars</groupId>
-                    <artifactId>bootstrap</artifactId>
-                    <version>${bootstrap.version}</version>
-                </dependency>-->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -199,5 +194,15 @@
                     <artifactId>jackson-databind</artifactId>
                     <version>${jackson.version}</version>
                 </dependency>-->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
     </dependencies>
 </project>

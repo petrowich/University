@@ -59,13 +59,14 @@ public class CourseController {
 
     @GetMapping("/course")
     public String course(@RequestParam("id") Integer courseId, Model model) {
-        LOGGER.info("getting course id={}", courseId);
+        LOGGER.info("getting course for view id={}", courseId);
+
         Course course = courseService.getById(courseId);
         model.addAttribute(ATTRIBUTE_COURSE, course);
         LOGGER.debug("received course: {} {}", course.getId(), course.getName());
 
         LOGGER.debug("filling groups of course id={}", courseId);
-        List<Group> courseGroups = groupService.getByCourseId(courseId).stream()
+        List<Group> courseGroups = course.getGroups().stream()
                 .sorted(Comparator.comparing(Group::getName))
                 .collect(Collectors.toList());
 
@@ -85,7 +86,8 @@ public class CourseController {
 
     @GetMapping("/course/edit")
     public String edit(@RequestParam("id") Integer courseId, Model model) {
-        LOGGER.info("getting course id={}", courseId);
+        LOGGER.info("getting course for update by id={}", courseId);
+
         Course course = courseService.getById(courseId);
         model.addAttribute(ATTRIBUTE_COURSE, course);
 
@@ -116,6 +118,11 @@ public class CourseController {
             return courses(model);
         }
 
+        List<Group> groups = courseService.getById(course.getId()).getGroups();
+        course.setGroups(groups);
+
+        course.setAuthor(getActualAuthor(course.getAuthor()));
+
         courseService.update(course);
 
         return courses(model);
@@ -145,6 +152,8 @@ public class CourseController {
             bindingResult.getAllErrors().forEach(objectError -> LOGGER.info(objectError.getDefaultMessage()));
             return "courses/course_creator";
         }
+
+        course.setAuthor(getActualAuthor(course.getAuthor()));
 
         courseService.add(course.setActive(true));
 
@@ -179,5 +188,12 @@ public class CourseController {
         courseService.removeGroupFromCourse(group, course);
 
         return course(courseId, model);
+    }
+
+    private Lecturer getActualAuthor(Lecturer author) {
+        if (author != null && author.getId() != null) {
+            return lecturerService.getById(author.getId());
+        }
+        return null;
     }
 }

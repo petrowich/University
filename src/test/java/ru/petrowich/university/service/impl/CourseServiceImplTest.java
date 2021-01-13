@@ -6,9 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import ru.petrowich.university.dao.CourseDAO;
-import ru.petrowich.university.dao.GroupDAO;
-import ru.petrowich.university.dao.LecturerDAO;
+import ru.petrowich.university.repository.CourseRepository;
+import ru.petrowich.university.repository.GroupRepository;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Lecturer;
@@ -40,6 +39,7 @@ class CourseServiceImplTest {
     private static final Integer GROUP_ID_501 = 501;
     private static final Integer GROUP_ID_502 = 502;
     private static final Integer GROUP_ID_503 = 503;
+    private static final Integer NONEXISTENT_GROUP_ID = 666;
 
     private final Lecturer firstLecturer = new Lecturer().setId(PERSON_ID_50005).setEmail(PERSON_EMAIL_50005).setActive(true);
     private final Lecturer secondLecturer = new Lecturer().setId(PERSON_ID_50006).setEmail(PERSON_EMAIL_50006).setActive(false);
@@ -55,13 +55,10 @@ class CourseServiceImplTest {
     private AutoCloseable autoCloseable;
 
     @Mock
-    private CourseDAO mockCourseDAO;
+    private CourseRepository mockCourseRepository;
 
     @Mock
-    private GroupDAO mockGroupDAO;
-
-    @Mock
-    private LecturerDAO mockLecturerDAO;
+    private GroupRepository mockGroupRepository;
 
     @InjectMocks
     private CourseServiceImpl courseServiceImpl;
@@ -78,75 +75,72 @@ class CourseServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnCourseWhenCourseIdPassed() {
-        when(mockCourseDAO.getById(COURSE_ID_51)).thenReturn(firstCourse);
-        when(mockLecturerDAO.getById(PERSON_ID_50005)).thenReturn(firstLecturer);
-
+        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(firstCourse);
         Course actual = courseServiceImpl.getById(COURSE_ID_51);
 
-        verify(mockCourseDAO, times(1)).getById(COURSE_ID_51);
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50005);
+        verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
 
         assertThatObject(actual).isEqualToComparingFieldByField(firstCourse);
     }
 
     @Test
     void testGetByIdShouldReturnNullWhenWhenNonexistentIdPassed() {
-        when(mockCourseDAO.getById(-1)).thenReturn(null);
+        when(mockCourseRepository.findById(-1)).thenReturn(null);
         Course actual = courseServiceImpl.getById(-1);
 
-        verify(mockCourseDAO, times(1)).getById(-1);
+        verify(mockCourseRepository, times(1)).findById(-1);
         assertNull(actual, "null should be returned");
     }
 
     @Test
     void testGetByIdShouldReturnNullWhenWhenNullPassed() {
-        when(mockCourseDAO.getById(null)).thenReturn(null);
+        when(mockCourseRepository.findById(null)).thenReturn(null);
         Course actual = courseServiceImpl.getById(null);
 
-        verify(mockCourseDAO, times(1)).getById(null);
+        verify(mockCourseRepository, times(1)).findById(null);
         assertNull(actual, "null should be returned");
     }
 
     @Test
-    void testAddShouldInvokeDaoUpdateWithPassedCourse() {
-        doNothing().when(mockCourseDAO).add(firstCourse);
+    void testAddShouldInvokeRepositoryUpdateWithPassedCourse() {
+        doNothing().when(mockCourseRepository).save(firstCourse);
         courseServiceImpl.add(firstCourse);
-        verify(mockCourseDAO, times(1)).add(firstCourse);
+        verify(mockCourseRepository, times(1)).save(firstCourse);
     }
 
     @Test
-    void testAddShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockCourseDAO).add(null);
+    void testAddShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockCourseRepository).save(null);
         courseServiceImpl.add(null);
-        verify(mockCourseDAO, times(1)).add(null);
+        verify(mockCourseRepository, times(1)).save(null);
     }
 
     @Test
-    void testUpdateShouldInvokeDaoUpdateWithPassedCourse() {
-        doNothing().when(mockCourseDAO).update(firstCourse);
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedCourse() {
+        doNothing().when(mockCourseRepository).update(firstCourse);
         courseServiceImpl.update(firstCourse);
-        verify(mockCourseDAO, times(1)).update(firstCourse);
+        verify(mockCourseRepository, times(1)).update(firstCourse);
     }
 
     @Test
-    void testUpdateShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockCourseDAO).update(null);
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockCourseRepository).update(null);
         courseServiceImpl.update(null);
-        verify(mockCourseDAO, times(1)).update(null);
+        verify(mockCourseRepository, times(1)).update(null);
     }
 
     @Test
-    void testDeleteShouldInvokeDaoUpdateWithPassedCourse() {
-        doNothing().when(mockCourseDAO).delete(firstCourse);
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedCourse() {
+        doNothing().when(mockCourseRepository).delete(firstCourse);
         courseServiceImpl.delete(firstCourse);
-        verify(mockCourseDAO, times(1)).delete(firstCourse);
+        verify(mockCourseRepository, times(1)).delete(firstCourse);
     }
 
     @Test
-    void testDeleteShouldInvokeDaoUpdateWithPassedNull() {
-        doNothing().when(mockCourseDAO).delete(null);
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockCourseRepository).delete(null);
         courseServiceImpl.delete(null);
-        verify(mockCourseDAO, times(1)).delete(null);
+        verify(mockCourseRepository, times(1)).delete(null);
     }
 
     @Test
@@ -156,158 +150,120 @@ class CourseServiceImplTest {
         expected.add(secondCourse);
         expected.add(thirdCourse);
 
-        when(mockCourseDAO.getAll()).thenReturn(expected);
-        when(mockLecturerDAO.getById(PERSON_ID_50005)).thenReturn(firstLecturer);
-        when(mockLecturerDAO.getById(PERSON_ID_50006)).thenReturn(secondLecturer);
+        when(mockCourseRepository.findAll()).thenReturn(expected);
 
         List<Course> actual = courseServiceImpl.getAll();
 
-        verify(mockCourseDAO, times(1)).getAll();
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50005);
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50006);
+        verify(mockCourseRepository, times(1)).findAll();
 
         assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
     }
 
     @Test
-    void testGetByAuthorIdShouldReturnCourseListWhenAuthorIdPassed() {
-        List<Course> expected = new ArrayList<>();
-        expected.add(firstCourse);
-        expected.add(secondCourse);
-
-        when(mockCourseDAO.getByAuthorId(PERSON_ID_50005)).thenReturn(expected);
-        when(mockLecturerDAO.getById(PERSON_ID_50005)).thenReturn(firstLecturer);
-
-        List<Course> actual = courseServiceImpl.getByAuthorId(PERSON_ID_50005);
-
-        verify(mockCourseDAO, times(1)).getByAuthorId(PERSON_ID_50005);
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50005);
-
-        assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
-    }
-
-    @Test
-    void testGetByAuthorIdShouldReturnEmptyCourseListWhenNullPassed() {
-        List<Course> expected = new ArrayList<>();
-        when(mockCourseDAO.getByAuthorId(null)).thenReturn(expected);
-
-        List<Course> actual = courseServiceImpl.getByAuthorId(null);
-
-        verify(mockCourseDAO, times(1)).getByAuthorId(null);
-        assertEquals(expected, actual, "empty courses list should be returned");
-    }
-
-    @Test
-    void testGetByStudentIdShouldReturnCourseListWhenStudentIdPassed() {
-        List<Course> expected = new ArrayList<>();
-        expected.add(secondCourse);
-        expected.add(thirdCourse);
-
-        when(mockCourseDAO.getByStudentId(PERSON_ID_50001)).thenReturn(expected);
-        when(mockLecturerDAO.getById(PERSON_ID_50005)).thenReturn(firstLecturer);
-        when(mockLecturerDAO.getById(PERSON_ID_50006)).thenReturn(secondLecturer);
-
-        List<Course> actual = courseServiceImpl.getByStudentId(PERSON_ID_50001);
-
-        verify(mockCourseDAO, times(1)).getByStudentId(PERSON_ID_50001);
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50005);
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50006);
-
-        assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
-    }
-
-    @Test
-    void testGetByStudentIdShouldReturnEmptyCourseListWhenNullPassed() {
-        List<Course> expected = new ArrayList<>();
-        when(mockCourseDAO.getByStudentId(null)).thenReturn(expected);
-
-        List<Course> actual = courseServiceImpl.getByStudentId(null);
-
-        verify(mockCourseDAO, times(1)).getByStudentId(null);
-        assertEquals(expected, actual, "empty courses list should be returned");
-    }
-
-    @Test
-    void testGetByGroupIdShouldReturnCourseListWhenGroupIdPassed() {
-        List<Course> expected = new ArrayList<>();
-        expected.add(secondCourse);
-        expected.add(thirdCourse);
-
-        when(mockCourseDAO.getByGroupId(GROUP_ID_501)).thenReturn(expected);
-        when(mockLecturerDAO.getById(PERSON_ID_50005)).thenReturn(firstLecturer);
-        when(mockLecturerDAO.getById(PERSON_ID_50006)).thenReturn(secondLecturer);
-
-        List<Course> actual = courseServiceImpl.getByGroupId(GROUP_ID_501);
-
-        verify(mockCourseDAO, times(1)).getByGroupId(GROUP_ID_501);
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50005);
-        verify(mockLecturerDAO, times(1)).getById(PERSON_ID_50006);
-
-        assertThat(actual).usingElementComparatorIgnoringFields().isEqualTo(expected);
-    }
-
-    @Test
-    void testGetByGroupIdShouldReturnEmptyCourseListWhenNullPassed() {
-        List<Course> expected = new ArrayList<>();
-        when(mockCourseDAO.getByGroupId(null)).thenReturn(expected);
-
-        List<Course> actual = courseServiceImpl.getByGroupId(null);
-
-        verify(mockCourseDAO, times(1)).getByGroupId(null);
-        assertEquals(expected, actual, "empty courses list should be returned");
-    }
-
-    @Test
-    void testAssignGroupToCourseShouldInvokeDaoAssignGroupToCourse(){
+    void testAssignGroupToCourseShouldInvokeRepositoryAssignGroupToCourse(){
         List<Group> currentGroups = new ArrayList<>();
         currentGroups.add(firstGroup);
         currentGroups.add(secondGroup);
 
-        when(mockGroupDAO.getByCourseId(COURSE_ID_51)).thenReturn(currentGroups);
-        doNothing().when(mockCourseDAO).assignGroupToCourse(thirdGroup, firstCourse);
+        firstCourse.setGroups(currentGroups);
+
+        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(firstCourse);
+        when(mockGroupRepository.findById(GROUP_ID_503)).thenReturn(thirdGroup);
+        doNothing().when(mockCourseRepository).update(firstCourse);
 
         courseServiceImpl.assignGroupToCourse(thirdGroup, firstCourse);
 
-        verify(mockCourseDAO, times(1)).assignGroupToCourse(thirdGroup, firstCourse);
+        verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
+        verify(mockGroupRepository, times(1)).findById(GROUP_ID_503);
+        verify(mockCourseRepository, times(1)).update(firstCourse);
+
+        List<Group> expectedGroups = new ArrayList<>();
+        expectedGroups.add(firstGroup);
+        expectedGroups.add(secondGroup);
+        expectedGroups.add(thirdGroup);
+
+        assertEquals(expectedGroups, firstCourse.getGroups(), "list of group should contain thirdGroup");
     }
 
     @Test
-    void testRemoveGroupToCourseShouldInvokeDaoRemoveGroupFromCourse(){
+    void testAssignGroupToCourseShouldNotInvokeRepositoryAssignGroupToCourseWhenAssignedGroupPassed(){
         List<Group> currentGroups = new ArrayList<>();
         currentGroups.add(firstGroup);
         currentGroups.add(secondGroup);
 
-        when(mockGroupDAO.getByCourseId(COURSE_ID_51)).thenReturn(currentGroups);
-        doNothing().when(mockCourseDAO).removeGroupFromCourse(secondGroup, firstCourse);
+        firstCourse.setGroups(currentGroups);
+
+        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(firstCourse);
+        when(mockGroupRepository.findById(GROUP_ID_502)).thenReturn(secondGroup);
+        doNothing().when(mockCourseRepository).update(firstCourse);
+
+        courseServiceImpl.assignGroupToCourse(secondGroup, firstCourse);
+
+        verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
+        verify(mockGroupRepository, times(1)).findById(GROUP_ID_502);
+        verify(mockCourseRepository, times(0)).update(firstCourse);
+
+        List<Group> expectedGroups = new ArrayList<>();
+        expectedGroups.add(firstGroup);
+        expectedGroups.add(secondGroup);
+
+        assertEquals(expectedGroups, firstCourse.getGroups(), "list of groups should be same");
+    }
+
+    @Test
+    void testRemoveGroupToCourseShouldInvokeRepositoryRemoveGroupFromCourse(){
+        List<Group> currentGroups = new ArrayList<>();
+        currentGroups.add(firstGroup);
+        currentGroups.add(secondGroup);
+
+        firstCourse.setGroups(currentGroups);
+
+        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(firstCourse);
+        doNothing().when(mockCourseRepository).update(firstCourse);
 
         courseServiceImpl.removeGroupFromCourse(secondGroup, firstCourse);
+        verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
+        verify(mockCourseRepository, times(1)).update(firstCourse);
 
-        verify(mockCourseDAO, times(1)).removeGroupFromCourse(secondGroup, firstCourse);
+        List<Group> expectedGroups = new ArrayList<>();
+        expectedGroups.add(firstGroup);
+
+        assertEquals(expectedGroups, firstCourse.getGroups(), "list of groups should not contain secondGroup");
     }
 
     @Test
-    void testApplyGroupsToCourseShouldInvokeDaoAssignGroupsAndRemoveGroups() {
+    void testApplyGroupsToCourseShouldInvokeRepositoryAssignGroupsAndRemoveGroups() {
         List<Group> currentGroups = new ArrayList<>();
         currentGroups.add(firstGroup);
         currentGroups.add(secondGroup);
+        firstCourse.setGroups(currentGroups);
 
-        List<Group> newGroupList = new ArrayList<>();
-        newGroupList.add(firstGroup);
-        newGroupList.add(thirdGroup);
+        List<Group> actualGroups = new ArrayList<>();
+        actualGroups.add(firstGroup);
+        actualGroups.add(thirdGroup);
+        actualGroups.add(new Group().setId(NONEXISTENT_GROUP_ID));
+        actualGroups.add(null);
 
-        List<Group> additionalGroups = new ArrayList<>();
-        currentGroups.add(thirdGroup);
+        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(firstCourse);
+        when(mockGroupRepository.findById(GROUP_ID_501)).thenReturn(firstGroup);
+        when(mockGroupRepository.findById(GROUP_ID_502)).thenReturn(secondGroup);
+        when(mockGroupRepository.findById(GROUP_ID_503)).thenReturn(thirdGroup);
+        when(mockGroupRepository.findById(NONEXISTENT_GROUP_ID)).thenReturn(null);
+        doNothing().when(mockCourseRepository).update(firstCourse);
 
-        List<Group> excessGroups = new ArrayList<>();
-        excessGroups.add(secondGroup);
+        courseServiceImpl.applyGroupsToCourse(actualGroups, firstCourse);
 
-        when(mockGroupDAO.getByCourseId(COURSE_ID_51)).thenReturn(currentGroups);
-        doNothing().when(mockCourseDAO).assignGroupsToCourse(additionalGroups, firstCourse);
-        doNothing().when(mockCourseDAO).removeGroupsFromCourse(excessGroups, firstCourse);
+        verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
+        verify(mockGroupRepository, times(1)).findById(GROUP_ID_501);
+        verify(mockGroupRepository, times(0)).findById(GROUP_ID_502);
+        verify(mockGroupRepository, times(1)).findById(GROUP_ID_503);
+        verify(mockGroupRepository, times(1)).findById(NONEXISTENT_GROUP_ID);
+        verify(mockCourseRepository, times(1)).update(firstCourse);
 
-        courseServiceImpl.applyGroupsToCourse(newGroupList, firstCourse);
+        List<Group> expectedGroups = new ArrayList<>();
+        expectedGroups.add(firstGroup);
+        expectedGroups.add(thirdGroup);
 
-        verify(mockCourseDAO, times(1)).assignGroupsToCourse(additionalGroups, firstCourse);
-        verify(mockCourseDAO, times(1)).removeGroupsFromCourse(excessGroups, firstCourse);
+        assertEquals(expectedGroups, firstCourse.getGroups(), "list of group should contain passed existed groups only");
     }
 }

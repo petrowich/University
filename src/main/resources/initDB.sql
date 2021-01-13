@@ -1,3 +1,6 @@
+DROP VIEW IF EXISTS public.v_lessons_students;
+DROP VIEW IF EXISTS public.v_lessons_groups;
+DROP VIEW IF EXISTS public.v_courses_students;
 DROP TABLE IF EXISTS public.t_lessons;
 DROP TABLE IF EXISTS public.t_groups_students;
 DROP TABLE IF EXISTS public.t_groups_courses;

@@ -1,33 +1,36 @@
-package ru.petrowich.university.dao.impl;
+package ru.petrowich.university.repository.impl;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.petrowich.university.AppConfigurationTest;
-import ru.petrowich.university.dao.DaoException;
-import ru.petrowich.university.dao.LessonDAO;
+import ru.petrowich.university.model.Group;
+import ru.petrowich.university.model.Student;
 import ru.petrowich.university.model.Course;
-import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.model.Lesson;
+import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.model.TimeSlot;
+import ru.petrowich.university.repository.LessonRepository;
+
+import javax.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatObject;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 @SpringJUnitConfig(classes = {AppConfigurationTest.class})
-class LessonDAOImplTest {
+@Transactional
+class LessonRepositoryImplTest {
+    private static final String POPULATE_DB_SQL = "classpath:populateDbTest.sql";
     private static final Long NONEXISTENT_LESSON_ID = 9999999L;
     private static final Long EXISTENT_LESSON_ID_5000001 = 5000001L;
     private static final Long EXISTENT_LESSON_ID_5000002 = 5000002L;
@@ -40,9 +43,13 @@ class LessonDAOImplTest {
     private static final Integer EXISTENT_COURSE_ID_54 = 54;
     private static final Integer EXISTENT_COURSE_ID_55 = 55;
     private static final Integer EXISTENT_COURSE_ID_56 = 56;
-    private static final Integer EXISTENT_PERSON_ID_50001 = 50001;
+    private static final Integer EXISTENT_GROUP_ID_501 = 501;
+    private static final Integer EXISTENT_GROUP_ID_502 = 502;
     private static final Integer EXISTENT_PERSON_ID_50005 = 50005;
     private static final Integer EXISTENT_PERSON_ID_50006 = 50006;
+    private static final Integer EXISTENT_PERSON_ID_50001 = 50001;
+    private static final Integer EXISTENT_PERSON_ID_50002 = 50002;
+    private static final Integer EXISTENT_PERSON_ID_50003 = 50003;
     private static final Integer TIME_SLOT_ID_1 = 1;
     private static final Integer TIME_SLOT_ID_2 = 2;
     private static final Integer TIME_SLOT_ID_3 = 3;
@@ -66,48 +73,53 @@ class LessonDAOImplTest {
     private static final LocalTime EXISTENT_LESSON_END_TIME_5000004 = LocalTime.of(21, 30);
     private static final LocalTime EXISTENT_LESSON_END_TIME_5000005 = LocalTime.of(11, 10);
 
-
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private LessonDAO lessonDAOImpl;
-
-    @Autowired
-    private String populateDbSql;
-
-    @BeforeEach
-    void setUp() {
-        jdbcTemplate.execute(populateDbSql);
-    }
+    private LessonRepository lessonRepository;
 
     @Test
-    void testGetByIdShouldReturnExistentLesson() {
+    @Sql(POPULATE_DB_SQL)
+    void testFindByIdShouldReturnExistentLesson() {
+        List<Student> students1 = new ArrayList<>();
+        students1.add(new Student().setId(EXISTENT_PERSON_ID_50001));
+        students1.add(new Student().setId(EXISTENT_PERSON_ID_50002));
+        Group group1 = new Group().setId(EXISTENT_GROUP_ID_501).setStudents(students1);
+
+        List<Student> students2 = new ArrayList<>();
+        students2.add(new Student().setId(EXISTENT_PERSON_ID_50003));
+        Group group2 = new Group().setId(EXISTENT_GROUP_ID_502).setStudents(students2);
+
+        List<Group> groups = new ArrayList<>();
+        groups.add(group1);
+        groups.add(group2);
+
         Lesson expected = new Lesson()
                 .setId(EXISTENT_LESSON_ID_5000001)
-                .setCourse(new Course().setId(EXISTENT_COURSE_ID_51))
+                .setCourse(new Course().setId(EXISTENT_COURSE_ID_51).setGroups(groups))
                 .setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005))
                 .setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_1))
                 .setDate(EXISTENT_LESSON_DATE_5000001)
                 .setStartTime(EXISTENT_LESSON_START_TIME_5000001)
                 .setEndTime(EXISTENT_LESSON_END_TIME_5000001);
 
-        Lesson actual = lessonDAOImpl.getById(EXISTENT_LESSON_ID_5000001);
+        Lesson actual = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
         assertThatObject(actual).isEqualToComparingFieldByField(expected);
     }
 
     @Test
-    void testGetByIdShouldThrowDaoExceptionWhenNonexistentIdPassed() {
-        assertThrows(DaoException.class, () -> lessonDAOImpl.getById(NONEXISTENT_LESSON_ID), "DaoException throw is expected");
+    @Sql(POPULATE_DB_SQL)
+    void testFindByIdShouldReturnNullWhenNonexistentIdPassed() {
+        Lesson actual = lessonRepository.findById(NONEXISTENT_LESSON_ID);
+        assertNull(actual, "null is expected when nonexistent lesson id passed");
     }
 
     @Test
-    void testGetByIdShouldThrowDaoExceptionWhenNullPassed() {
-        assertThrows(DaoException.class, () -> lessonDAOImpl.getById(null), "DaoException throw is expected");
+    void testFindByIdShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> lessonRepository.findById(null), "IllegalArgumentException throw is expected");
     }
 
     @Test
-    void testAddShouldAddNewLessonAndSetItsNewId() {
+    @Sql(POPULATE_DB_SQL)
+    void testSaveShouldAddNewLessonAndSetItsNewId() {
         Lesson expected = new Lesson()
                 .setCourse(new Course().setId(EXISTENT_COURSE_ID_54))
                 .setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50006))
@@ -116,21 +128,22 @@ class LessonDAOImplTest {
                 .setStartTime(NEW_LESSON_START_TIME)
                 .setEndTime(NEW_LESSON_END_TIME);
 
-        lessonDAOImpl.add(expected);
+        lessonRepository.save(expected);
         assertNotNull(expected.getId(), "add() should set new id to the timeslot, new id cannot be null");
 
-        Lesson actual = lessonDAOImpl.getById(expected.getId());
+        Lesson actual = lessonRepository.findById(expected.getId());
         assertThatObject(actual).isEqualToComparingFieldByField(expected);
     }
 
     @Test
-    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> lessonDAOImpl.add(null), "add(null) should throw NullPointerException");
+    void testSaveShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> lessonRepository.save(null), "add(null) should throw IllegalArgumentException");
     }
 
     @Test
+    @Sql(POPULATE_DB_SQL)
     void testUpdateShouldUpdateExistentLesson() {
-        Lesson actual = lessonDAOImpl.getById(EXISTENT_LESSON_ID_5000001);
+        Lesson actual = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
 
         actual.setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50006))
                 .setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_4))
@@ -138,32 +151,35 @@ class LessonDAOImplTest {
                 .setStartTime(NEW_LESSON_START_TIME)
                 .setEndTime(NEW_LESSON_END_TIME);
 
-        lessonDAOImpl.update(actual);
+        lessonRepository.update(actual);
 
-        Lesson expected = lessonDAOImpl.getById(EXISTENT_LESSON_ID_5000001);
+        Lesson expected = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
         assertThatObject(actual).isEqualToComparingFieldByField(expected);
     }
 
     @Test
-    void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> lessonDAOImpl.update(null), "update(null) should throw NullPointerException");
+    void testUpdateShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> lessonRepository.update(null), "update(null) should throw IllegalArgumentException");
     }
 
     @Test
+    @Sql(POPULATE_DB_SQL)
     void testDeleteShouldDeactivateExistentCourse() {
-        Lesson lesson = new Lesson().setId(EXISTENT_LESSON_ID_5000001);
-        lessonDAOImpl.delete(lesson);
+        Lesson lesson = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
+        lessonRepository.delete(lesson);
 
-        assertThrows(DaoException.class, () -> lessonDAOImpl.getById(EXISTENT_LESSON_ID_5000001), "DaoException throw is expected");
+        Lesson actual = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
+        assertNull(actual, "null is expected when deleted lesson id passed");
     }
 
     @Test
-    void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> lessonDAOImpl.delete(null), "delete(null) should throw NullPointerException");
+    void testDeleteShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> lessonRepository.delete(null), "delete(null) should throw IllegalArgumentException");
     }
 
     @Test
-    void testGetAllShouldReturnAllCoursesList() {
+    @Sql(POPULATE_DB_SQL)
+    void testFindAllShouldReturnAllCoursesList() {
         List<Lesson> expected = new ArrayList<>();
         expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000001).setCourse(new Course().setId(EXISTENT_COURSE_ID_51)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_1)).setDate(EXISTENT_LESSON_DATE_5000001).setStartTime(EXISTENT_LESSON_START_TIME_5000001).setEndTime(EXISTENT_LESSON_END_TIME_5000001));
         expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000002).setCourse(new Course().setId(EXISTENT_COURSE_ID_52)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_2)).setDate(EXISTENT_LESSON_DATE_5000002).setStartTime(EXISTENT_LESSON_START_TIME_5000002).setEndTime(EXISTENT_LESSON_END_TIME_5000002));
@@ -171,62 +187,7 @@ class LessonDAOImplTest {
         expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000004).setCourse(new Course().setId(EXISTENT_COURSE_ID_56)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(null)).setDate(EXISTENT_LESSON_DATE_5000004).setStartTime(EXISTENT_LESSON_START_TIME_5000004).setEndTime(EXISTENT_LESSON_END_TIME_5000004));
         expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000005).setCourse(new Course().setId(EXISTENT_COURSE_ID_55)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50006)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_2)).setDate(EXISTENT_LESSON_DATE_5000005).setStartTime(EXISTENT_LESSON_START_TIME_5000005).setEndTime(EXISTENT_LESSON_END_TIME_5000005));
 
-        List<Lesson> actual = lessonDAOImpl.getAll();
+        List<Lesson> actual = lessonRepository.findAll();
         assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<Lesson> expectedSet = new HashSet<>(expected);
-        Set<Lesson> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
-    }
-
-    @Test
-    void testGetByLecturerIdShouldReturnLecturerLessonsListWhenLecturerIdPassed() {
-        List<Lesson> expected = new ArrayList<>();
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000001).setCourse(new Course().setId(EXISTENT_COURSE_ID_51)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_1)).setDate(EXISTENT_LESSON_DATE_5000001).setStartTime(EXISTENT_LESSON_START_TIME_5000001).setEndTime(EXISTENT_LESSON_END_TIME_5000001));
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000002).setCourse(new Course().setId(EXISTENT_COURSE_ID_52)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_2)).setDate(EXISTENT_LESSON_DATE_5000002).setStartTime(EXISTENT_LESSON_START_TIME_5000002).setEndTime(EXISTENT_LESSON_END_TIME_5000002));
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000003).setCourse(new Course().setId(EXISTENT_COURSE_ID_53)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_3)).setDate(EXISTENT_LESSON_DATE_5000003).setStartTime(EXISTENT_LESSON_START_TIME_5000003).setEndTime(EXISTENT_LESSON_END_TIME_5000003));
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000004).setCourse(new Course().setId(EXISTENT_COURSE_ID_56)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(null)).setDate(EXISTENT_LESSON_DATE_5000004).setStartTime(EXISTENT_LESSON_START_TIME_5000004).setEndTime(EXISTENT_LESSON_END_TIME_5000004));
-
-        List<Lesson> actual = lessonDAOImpl.getByLecturerId(EXISTENT_PERSON_ID_50005);
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<Lesson> expectedSet = new HashSet<>(expected);
-        Set<Lesson> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
-    }
-
-    @Test
-    void testGetByLecturerIdShouldReturnEmptyLessonsListWhenNonexistentPersonIdPassed() {
-        List<Lesson> expected = new ArrayList<>();
-        List<Lesson> actual = lessonDAOImpl.getByLecturerId(EXISTENT_PERSON_ID_50001);
-        assertEquals(expected, actual, "empty courses list is expected");
-    }
-
-    @Test
-    void testGetByLecturerIdShouldReturnEmptyLessonsListWhenNullPassed() {
-        List<Lesson> expected = new ArrayList<>();
-        List<Lesson> actual = lessonDAOImpl.getByLecturerId(null);
-        assertEquals(expected, actual, "empty courses list is expected");
-    }
-
-    @Test
-    void testGetByStudentIdShouldReturnStudentLessonsListWhenStudentIdPassed() {
-        List<Lesson> expected = new ArrayList<>();
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000001).setCourse(new Course().setId(EXISTENT_COURSE_ID_51)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_1)).setDate(EXISTENT_LESSON_DATE_5000001).setStartTime(EXISTENT_LESSON_START_TIME_5000001).setEndTime(EXISTENT_LESSON_END_TIME_5000001));
-        expected.add(new Lesson().setId(EXISTENT_LESSON_ID_5000002).setCourse(new Course().setId(EXISTENT_COURSE_ID_52)).setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50005)).setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_2)).setDate(EXISTENT_LESSON_DATE_5000002).setStartTime(EXISTENT_LESSON_START_TIME_5000002).setEndTime(EXISTENT_LESSON_END_TIME_5000002));
-
-        List<Lesson> actual = lessonDAOImpl.getByStudentId(EXISTENT_PERSON_ID_50001);
-        assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
-
-        Set<Lesson> expectedSet = new HashSet<>(expected);
-        Set<Lesson> actualSet = new HashSet<>(actual);
-        assertThat(actualSet).usingElementComparatorIgnoringFields().isEqualTo(expectedSet);
-    }
-
-    @Test
-    void testGetByStudentIdShouldReturnEmptyLessonsListWhenNullPassed() {
-        List<Lesson> expected = new ArrayList<>();
-        List<Lesson> actual = lessonDAOImpl.getByStudentId(null);
-        assertEquals(expected, actual, "empty courses list is expected");
     }
 }
