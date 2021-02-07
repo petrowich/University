@@ -74,7 +74,8 @@ class LessonServiceImplTest {
         Lesson actual = lessonServiceImpl.getById(LESSON_ID_5000001);
 
         verify(mockLessonRepository, times(1)).findById(LESSON_ID_5000001);
-        assertThatObject(actual).isEqualToComparingFieldByField(firstLesson);
+
+        assertThat(actual).usingRecursiveComparison().isEqualTo(firstLesson);
     }
 
     @Test

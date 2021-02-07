@@ -84,7 +84,7 @@ class LecturerServiceImplTest {
 
         verify(mockLecturerRepository, times(1)).findById(PERSON_ID_50005);
 
-        assertThatObject(actual).isEqualToComparingFieldByField(firstLecturer);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(firstLecturer);
     }
 
     @Test

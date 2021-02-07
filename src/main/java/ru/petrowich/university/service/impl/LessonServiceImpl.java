@@ -4,9 +4,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.petrowich.university.model.Lesson;
-import ru.petrowich.university.repository.GroupRepository;
 import ru.petrowich.university.repository.LessonRepository;
-import ru.petrowich.university.repository.StudentRepository;
 import ru.petrowich.university.service.LessonService;
 
 import java.util.List;
@@ -17,14 +15,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class LessonServiceImpl implements LessonService {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final LessonRepository lessonRepository;
-    private final GroupRepository groupRepository;
-    private final StudentRepository studentRepository;
 
     @Autowired
-    public LessonServiceImpl(LessonRepository lessonRepository, GroupRepository groupRepository, StudentRepository studentRepository) {
+    public LessonServiceImpl(LessonRepository lessonRepository) {
         this.lessonRepository = lessonRepository;
-        this.groupRepository = groupRepository;
-        this.studentRepository = studentRepository;
     }
 
     @Override

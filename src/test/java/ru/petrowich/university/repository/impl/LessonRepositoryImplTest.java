@@ -2,9 +2,12 @@ package ru.petrowich.university.repository.impl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.petrowich.university.AppConfigurationTest;
+import ru.petrowich.university.AppTestConfiguration;
+import ru.petrowich.university.University;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Student;
 import ru.petrowich.university.model.Course;
@@ -21,13 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-
-@SpringJUnitConfig(classes = {AppConfigurationTest.class})
+@SpringBootTest(classes = {University.class, AppTestConfiguration.class})
+@ActiveProfiles("test")
 @Transactional
 class LessonRepositoryImplTest {
     private static final String POPULATE_DB_SQL = "classpath:populateDbTest.sql";
@@ -102,7 +104,14 @@ class LessonRepositoryImplTest {
                 .setEndTime(EXISTENT_LESSON_END_TIME_5000001);
 
         Lesson actual = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("students","course","lecturer","timeSlot")
+                .isEqualTo(expected);
+        assertThat(actual.getCourse()).isEqualTo(expected.getCourse());
+        assertThat(actual.getLecturer()).isEqualTo(expected.getLecturer());
+        assertThat(actual.getTimeSlot()).isEqualTo(expected.getTimeSlot());
     }
 
     @Test
@@ -113,8 +122,8 @@ class LessonRepositoryImplTest {
     }
 
     @Test
-    void testFindByIdShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> lessonRepository.findById(null), "IllegalArgumentException throw is expected");
+    void testFindByIdShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> lessonRepository.findById(null), "InvalidDataAccessApiUsageException throw is expected");
     }
 
     @Test
@@ -132,12 +141,18 @@ class LessonRepositoryImplTest {
         assertNotNull(expected.getId(), "add() should set new id to the timeslot, new id cannot be null");
 
         Lesson actual = lessonRepository.findById(expected.getId());
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("students","course","lecturer","timeSlot")
+                .isEqualTo(expected);
+        assertThat(actual.getCourse()).isEqualTo(expected.getCourse());
+        assertThat(actual.getLecturer()).isEqualTo(expected.getLecturer());
+        assertThat(actual.getTimeSlot()).isEqualTo(expected.getTimeSlot());
     }
 
     @Test
-    void testSaveShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> lessonRepository.save(null), "add(null) should throw IllegalArgumentException");
+    void testSaveShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> lessonRepository.save(null), "add(null) should throw InvalidDataAccessApiUsageException");
     }
 
     @Test
@@ -154,12 +169,18 @@ class LessonRepositoryImplTest {
         lessonRepository.update(actual);
 
         Lesson expected = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("students","course","lecturer","timeSlot")
+                .isEqualTo(expected);
+        assertThat(actual.getCourse()).isEqualTo(expected.getCourse());
+        assertThat(actual.getLecturer()).isEqualTo(expected.getLecturer());
+        assertThat(actual.getTimeSlot()).isEqualTo(expected.getTimeSlot());
     }
 
     @Test
-    void testUpdateShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> lessonRepository.update(null), "update(null) should throw IllegalArgumentException");
+    void testUpdateShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> lessonRepository.update(null), "update(null) should throw InvalidDataAccessApiUsageException");
     }
 
     @Test
@@ -173,8 +194,8 @@ class LessonRepositoryImplTest {
     }
 
     @Test
-    void testDeleteShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> lessonRepository.delete(null), "delete(null) should throw IllegalArgumentException");
+    void testDeleteShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> lessonRepository.delete(null), "delete(null) should throw InvalidDataAccessApiUsageException");
     }
 
     @Test

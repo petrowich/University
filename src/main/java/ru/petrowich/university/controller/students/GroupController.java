@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Group;
-import ru.petrowich.university.service.CourseService;
 import ru.petrowich.university.service.GroupService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,12 +30,10 @@ public class GroupController {
 
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final GroupService groupService;
-    private final CourseService courseService;
 
     @Autowired
-    public GroupController(GroupService groupService, CourseService courseService) {
+    public GroupController(GroupService groupService) {
         this.groupService = groupService;
-        this.courseService = courseService;
     }
 
     @GetMapping("/groups")

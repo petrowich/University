@@ -2,9 +2,12 @@ package ru.petrowich.university.repository.impl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.petrowich.university.AppConfigurationTest;
+import ru.petrowich.university.AppTestConfiguration;
+import ru.petrowich.university.University;
 import ru.petrowich.university.model.TimeSlot;
 import ru.petrowich.university.model.Lesson;
 import ru.petrowich.university.repository.LessonRepository;
@@ -16,12 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@SpringJUnitConfig(classes = {AppConfigurationTest.class})
+@SpringBootTest(classes = {University.class, AppTestConfiguration.class})
+@ActiveProfiles("test")
 @Transactional
 class TimeSlotRepositoryImplTest {
     private static final String POPULATE_DB_SQL = "classpath:populateDbTest.sql";
@@ -78,7 +81,8 @@ class TimeSlotRepositoryImplTest {
                 .setEndTime(EXISTENT_TIME_SLOT_END_TIME_1);
 
         TimeSlot actual = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
@@ -88,8 +92,8 @@ class TimeSlotRepositoryImplTest {
     }
 
     @Test
-    void testFindByIdShouldShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> timeSlotRepository.findById(null), "IllegalArgumentException throw is expected");
+    void testFindByIdShouldShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> timeSlotRepository.findById(null), "InvalidDataAccessApiUsageException throw is expected");
     }
 
     @Test
@@ -103,12 +107,13 @@ class TimeSlotRepositoryImplTest {
         assertNotNull(expected.getId(), "add() should set new id to the timeslot, new id cannot be null");
 
         TimeSlot actual = timeSlotRepository.findById(expected.getId());
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
-    void testSaveShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> timeSlotRepository.save(null), "save null should throw IllegalArgumentException");
+    void testSaveShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> timeSlotRepository.save(null), "save null should throw InvalidDataAccessApiUsageException");
     }
 
     @Test
@@ -122,12 +127,13 @@ class TimeSlotRepositoryImplTest {
         timeSlotRepository.update(actual);
 
         TimeSlot expected = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
-    void testUpdateShouldThrowNIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> timeSlotRepository.update(null), "update null should throw IllegalArgumentException");
+    void testUpdateShouldThrowNInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> timeSlotRepository.update(null), "update null should throw InvalidDataAccessApiUsageException");
     }
 
     @Test
