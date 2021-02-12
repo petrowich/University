@@ -2,6 +2,7 @@
 <html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="template :: head">
     <meta charset="utf-8">
+    <title>Lecturers</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
 </head>
@@ -17,12 +18,12 @@
             <tr>
                 <th scope="col">Lecturer</th>
                 <th scope="col">email</th>
-                <th/>
+                <th scope="col"/>
             </tr>
             </thead>
             <tbody>
                 <tr th:each="lecturer : ${allLecturers}" th:classappend="${lecturer.isActive() ? '':'alert alert-danger text-danger'}">
-                    <td scope="row"><a href="#" th:href="@{/lecturers/lecturer(id=${lecturer.id})}" th:text="${lecturer.fullName}" th:classappend="${lecturer.isActive() ? '':'text-danger'}">lecturer name</a></td>
+                    <td><a href="#" th:href="@{/lecturers/lecturer(id=${lecturer.id})}" th:text="${lecturer.fullName}" th:classappend="${lecturer.isActive() ? '':'text-danger'}">lecturer name</a></td>
                     <td><a href="mailto:email@email.com" th:href="'mailto:' + ${lecturer.email}" th:text="${lecturer.email}" th:classappend="${lecturer.isActive() ? '':'text-danger'}">email@email.com</a></td>
                     <td><a th:href="@{/lecturers/lecturer/edit(id=${lecturer.id})}" class="btn btn-light fas fa-user-edit"></a></td>
                 </tr>
@@ -31,7 +32,7 @@
                 <tr>
                     <th scope="col"/>
                     <th scope="col"/>
-                    <td><a th:href="@{/lecturers/lecturer/new}" class="btn btn-success"><i class="fas fa-plus ml-0"/></a></td>
+                    <td><a th:href="@{/lecturers/lecturer/new}" class="btn btn-success"><em class="fas fa-plus ml-0"/></a></td>
                 </tr>
             </tfoot>
         </table>

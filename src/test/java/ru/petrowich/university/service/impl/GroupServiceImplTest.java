@@ -75,7 +75,7 @@ class GroupServiceImplTest {
 
         verify(mockGroupRepository, times(1)).findById(GROUP_ID_501);
 
-        assertThatObject(actual).isEqualToComparingFieldByField(firstGroup);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(firstGroup);
     }
 
     @Test

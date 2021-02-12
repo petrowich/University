@@ -25,7 +25,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doNothing;
 
 class CourseServiceImplTest {
-    private static final Integer PERSON_ID_50001 = 50001;
     private static final Integer PERSON_ID_50005 = 50005;
     private static final Integer PERSON_ID_50006 = 50006;
     private static final String PERSON_EMAIL_50005 = "otryad.kovboev@university.edu";
@@ -80,7 +79,7 @@ class CourseServiceImplTest {
 
         verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
 
-        assertThatObject(actual).isEqualToComparingFieldByField(firstCourse);
+        assertThat(actual).usingRecursiveComparison().isEqualTo(firstCourse);
     }
 
     @Test

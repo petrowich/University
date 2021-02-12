@@ -2,6 +2,7 @@
 <html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="template :: head">
     <meta charset="utf-8">
+    <title>Student</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
 <body>
@@ -10,7 +11,7 @@
 </header>
 <main>
     <div class="jumbotron">
-        <p>student<a class="ml-1" href="#" th:href="@{/students/group(id=${student.group.id})}" th:text="${student.group.name}">group name</a></p>
+        <p>Group:<a class="ml-1" href="#" th:href="@{/students/group(id=${student.group.id})}" th:text="${student.group.name}">group name</a></p>
         <h1 class="display-4" th:text="${student.fullName}">full name</h1>
         <p class="lead" th:text="${student.comment}">description</p>
         <a href="mailto:email@email.com" th:href="'mailto:' + ${student.email}" th:text="${student.email}">email@email.com</a>
@@ -18,15 +19,15 @@
     </div>
     <div class="container-fluid">
         <div class="p-2">
-            <table th:unless="${#lists.isEmpty(student.courses)}">
+            <table th:unless="${#lists.isEmpty(student.group.courses)}">
                 <thead>
                 <tr>
                     <th scope="col" class="w-50"><h5>attending courses:</h5></th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="course : ${student.courses}">
-                    <td scope="row"><a href="#" th:href="@{/courses/course(id=${course.id})}" th:text="${course.name}">course name</a></td>
+                <tr th:each="course : ${student.group.courses}">
+                    <td><a href="#" th:href="@{/courses/course(id=${course.id})}" th:text="${course.name}">course name</a></td>
                 </tr>
                 </tbody>
             </table>

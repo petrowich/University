@@ -2,6 +2,7 @@
 <html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="template :: head">
     <meta charset="utf-8">
+    <title>Lecturer</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
 <body>
@@ -25,7 +26,7 @@
                 </thead>
                 <tbody>
                     <tr th:each="course : ${lecturer.courses}">
-                        <td scope="row"><a href="#" th:href="@{/courses/course(id=${course.id})}" th:text="${course.name}">course name</a><td>
+                        <td><a href="#" th:href="@{/courses/course(id=${course.id})}" th:text="${course.name}">course name</a><td>
                     </tr>
                 </tbody>
             </table>

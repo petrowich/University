@@ -2,18 +2,24 @@
 <html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="template :: head">
     <meta charset="utf-8">
+    <title>Lecturer Editor</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.2.0/css/bootstrap.min.css">
 </head>
-<body>
+<body th:onload="activeForm()">
+<script th:inline="javascript">
+   function activeForm(){
+   activePerson([[${lecturer.active}]]);
+   }
+</script>
 <header>
     <vav th:replace="template :: navbar"/>
 </header>
 <main>
     <div class="container my-5">
-        <h1 class="header">New lecturer</h1>
+        <h1 class="header">Edit lecturer</h1>
         <div class="card edit-card">
             <div class="card-body">
-                <form action="#" th:action="@{/lecturers/lecturer/add}" th:object="${lecturer}" method="post" class="needs-validation" novalidate>
+                <form action="#" th:action="@{/lecturers/lecturer/update(id=${lecturer.id})}" th:object="${lecturer}" method="post" class="needs-validation" novalidate>
                     <div class="row">
                         <div class="form-group col-md-6">
                             <label for="firstName">First Name</label>
@@ -37,6 +43,11 @@
                         <label for="comment" class="col-form-label">comment</label>
                         <textarea type="text" th:field="*{comment}" class="form-control" id="comment" placeholder="Comment" rows="3"></textarea>
                         <span th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}" class="text-danger"></span>
+                    </div>
+                    <div class="form-check p-4">
+                        <input type="checkbox" th:field="*{active}" class="form-check-input" id="active" onClick="activePerson(this.form.active.checked)">
+                        <label class="form-check-label" for="active">active lecturer</label>
+                        <span th:if="${#fields.hasErrors('active')}" th:errors="*{active}" class="text-danger"></span>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>

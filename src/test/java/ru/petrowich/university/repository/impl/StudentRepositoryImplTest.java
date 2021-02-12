@@ -2,9 +2,12 @@ package ru.petrowich.university.repository.impl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.petrowich.university.AppConfigurationTest;
+import ru.petrowich.university.AppTestConfiguration;
+import ru.petrowich.university.University;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Student;
 import ru.petrowich.university.model.Course;
@@ -18,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,7 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringJUnitConfig(classes = {AppConfigurationTest.class})
+@SpringBootTest(classes = {University.class, AppTestConfiguration.class})
+@ActiveProfiles("test")
 @Transactional
 class StudentRepositoryImplTest {
     private static final String POPULATE_DB_SQL = "classpath:populateDbTest.sql";
@@ -85,7 +88,12 @@ class StudentRepositoryImplTest {
                 .setActive(true);
 
         Student actual = studentRepository.findById(EXISTENT_PERSON_ID_50001);
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("group")
+                .isEqualTo(expected);
+        assertThat(actual.getGroup()).isEqualTo(expected.getGroup());
     }
 
     @Test
@@ -103,8 +111,8 @@ class StudentRepositoryImplTest {
     }
 
     @Test
-    void testFindByIdShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> studentRepository.findById(null), "IllegalArgumentException throw is expected");
+    void testFindByIdShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> studentRepository.findById(null), "InvalidDataAccessApiUsageException throw is expected");
     }
 
     @Test
@@ -122,12 +130,16 @@ class StudentRepositoryImplTest {
         assertNotNull(expected.getId(), "add() should set new id to the student, new id cannot be null");
 
         Student actual = studentRepository.findById(expected.getId());
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("group")
+                .isEqualTo(expected);
+        assertThat(actual.getGroup()).isEqualTo(expected.getGroup());
     }
 
     @Test
-    void testSaveShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> studentRepository.save(null), "add(null) should throw IllegalArgumentException");
+    void testSaveShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> studentRepository.save(null), "add(null) should throw InvalidDataAccessApiUsageException");
     }
 
     @Test
@@ -145,7 +157,11 @@ class StudentRepositoryImplTest {
         studentRepository.update(actual);
 
         Student expected = studentRepository.findById(EXISTENT_PERSON_ID_50001);
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("group")
+                .isEqualTo(expected);
+        assertThat(actual.getGroup()).isEqualTo(expected.getGroup());
     }
 
     @Test
@@ -177,14 +193,18 @@ class StudentRepositoryImplTest {
         expectedLessons.add(new Lesson().setId(EXISTENT_LESSON_ID_5000004));
         expectedLecturer.setLessons(expectedLessons);
 
-        assertThatObject(actualLecturer).isEqualToComparingOnlyGivenFields(expectedLecturer, "id", "firstName", "firstName", "lastName", "email", "comment", "active");
+        assertThat(actualLecturer)
+                .usingRecursiveComparison()
+                .ignoringFields("courses", "lessons")
+                .isEqualTo(expectedLecturer);
+
         assertEquals(expectedLecturer.getCourses(), actualLecturer.getCourses(), "courses list should be filled");
         assertEquals(expectedLecturer.getLessons(), actualLecturer.getLessons(), "lessons list should be filled");
     }
 
     @Test
-    void testUpdateShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> studentRepository.save(null), "update(null) should throw IllegalArgumentException");
+    void testUpdateShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> studentRepository.save(null), "update(null) should throw InvalidDataAccessApiUsageException");
     }
 
     @Test

@@ -2,9 +2,12 @@ package ru.petrowich.university.repository.impl;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.petrowich.university.AppConfigurationTest;
+import ru.petrowich.university.AppTestConfiguration;
+import ru.petrowich.university.University;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Student;
 import ru.petrowich.university.model.Group;
@@ -15,14 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@SpringJUnitConfig(classes = {AppConfigurationTest.class})
+@SpringBootTest(classes = {University.class, AppTestConfiguration.class})
+@ActiveProfiles("test")
 @Transactional
 class GroupRepositoryImplTest {
     private static final String POPULATE_DB_SQL = "classpath:populateDbTest.sql";
@@ -36,11 +39,9 @@ class GroupRepositoryImplTest {
     private static final String EXISTENT_GROUP_NAME_501 = "AA-01";
     private static final String EXISTENT_GROUP_NAME_502 = "BB-02";
     private static final String EXISTENT_GROUP_NAME_503 = "CC-03";
-    private static final Integer NONEXISTENT_COURSE_ID = 99;
     private static final Integer EXISTENT_COURSE_ID_51 = 51;
     private static final Integer EXISTENT_COURSE_ID_52 = 52;
     private static final Integer EXISTENT_COURSE_ID_54 = 54;
-    private static final Long EXISTENT_LESSON_ID_5000001 = 5000001L;
 
     @Autowired
     private GroupRepository groupRepository;
@@ -56,18 +57,20 @@ class GroupRepositoryImplTest {
         List<Student> expectedStudents = new ArrayList<>();
         expectedStudents.add(new Student().setId(EXISTENT_STUDENT_ID_50001));
         expectedStudents.add(new Student().setId(EXISTENT_STUDENT_ID_50002));
-
         expected.setStudents(expectedStudents);
 
         List<Course> expectedCourses = new ArrayList<>();
         expectedCourses.add(new Course().setId(EXISTENT_COURSE_ID_51));
         expectedCourses.add(new Course().setId(EXISTENT_COURSE_ID_52));
         expectedCourses.add(new Course().setId(EXISTENT_COURSE_ID_54));
-
         expected.setCourses(expectedCourses);
 
         Group actual = groupRepository.findById(EXISTENT_GROUP_ID_501);
-        assertThatObject(actual).isEqualToComparingOnlyGivenFields(expected, "id", "name", "active");
+
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("students", "courses")
+                .isEqualTo(expected);
         assertEquals(expected.getStudents(), actual.getStudents(), "student list should be filled");
         assertEquals(expected.getCourses(), actual.getCourses(), "course list should be filled");
     }
@@ -81,8 +84,8 @@ class GroupRepositoryImplTest {
     }
 
     @Test
-    void testFindByIdShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> groupRepository.findById(null), "RepositoryException throw is expected");
+    void testFindByIdShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> groupRepository.findById(null), "InvalidDataAccessApiUsageException throw is expected");
     }
 
     @Test
@@ -95,12 +98,15 @@ class GroupRepositoryImplTest {
         assertNotNull(expected.getId(), "add() should set new id to the group, new id cannot be null");
 
         Group actual = groupRepository.findById(expected.getId());
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("students", "courses")
+                .isEqualTo(expected);
     }
 
     @Test
-    void testSaveShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> groupRepository.save(null), "add(null) should throw IllegalArgumentException");
+    void testSaveShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> groupRepository.save(null), "add(null) should throw InvalidDataAccessApiUsageException");
     }
 
     @Test
@@ -114,12 +120,15 @@ class GroupRepositoryImplTest {
         groupRepository.update(actual);
 
         Group expected = groupRepository.findById(EXISTENT_GROUP_ID_501);
-        assertThatObject(actual).isEqualToComparingFieldByField(expected);
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("students", "courses")
+                .isEqualTo(expected);
     }
 
     @Test
-    void testUpdateShouldThrowIllegalArgumentExceptionWhenNullPassed() {
-        assertThrows(IllegalArgumentException.class, () -> groupRepository.update(null), "update(null) should throw IllegalArgumentException");
+    void testUpdateShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> groupRepository.update(null), "update(null) should throw InvalidDataAccessApiUsageException");
     }
 
     @Test

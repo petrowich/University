@@ -2,6 +2,7 @@
 <html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="template :: head">
     <meta charset="utf-8">
+    <title>Lessons</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
 </head>
@@ -28,7 +29,7 @@
             <tr th:each="lesson : ${allLessons}">
                 <td th:text="${lesson.date}">01/01/1900</td>
                 <td th:text="${lesson.startTime} + ' - ' + ${lesson.endTime}">0:00 - 0:00</td>
-                <td scope="row"><a href="#" th:href="@{/courses/course(id=${lesson.course.id})}" th:text="${lesson.course.name}">course name</a></td>
+                <td><a href="#" th:href="@{/courses/course(id=${lesson.course.id})}" th:text="${lesson.course.name}">course name</a></td>
                 <td><a href="#" th:href="@{/lecturers/lecturer(id=${lesson.lecturer.id})}" th:text="${lesson.lecturer.fullName}">lecturer name</a></td>
                 <td class="text-center" th:text="${lesson.students.size()}">10</td>
                 <td><a th:href="@{/lessons/lesson/edit(id=${lesson.id})}" class="btn btn-light fas fa-edit"></a></td>
@@ -40,7 +41,7 @@
             <tfoot>
             <tr>
                 <td colspan="5"/>
-                <td colspan="2"><a th:href="@{/lessons/lesson/new}" class="btn btn-success"><i class="fas fa-plus ml-0"/></a></td>
+                <td colspan="2"><a th:href="@{/lessons/lesson/new}" class="btn btn-success"><em class="fas fa-plus ml-0"/></a></td>
             </tr>
             </tfoot>
         </table>

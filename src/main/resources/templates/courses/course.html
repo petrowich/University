@@ -2,6 +2,7 @@
 <html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="template :: head">
     <meta charset="utf-8">
+    <title>Course</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
 </head>
@@ -24,15 +25,15 @@
                         <tr>
                             <th scope="col" class="w-50"><h5>groups</h5></th>
                             <th scope="col"><small>number of students</small></th>
-                            <th/>
+                            <th scope="col"/>
                         </tr>
                     </thead>
                     <tbody>
                     <form action="#" th:action="@{/courses/course/remove-group(courseId=${course.id})}" th:object="${course}" method="post">
                         <tr th:each="courseGroup : ${courseGroups}">
-                                <td scope="row"><a href="#" th:href="@{/students/group(id=${courseGroup.id})}" th:text="${courseGroup.name}">group name</a></td>
+                                <td><a href="#" th:href="@{/students/group(id=${courseGroup.id})}" th:text="${courseGroup.name}">group name</a></td>
                                 <td class="text-center" th:text="${courseGroup.students.size()}">10</td>
-                                <td><button type="submit" class="btn btn-danger" name="groupId" th:value="${courseGroup.id}"><i class="fas fa-minus ml-0"/></button></td>
+                                <td><button type="submit" class="btn btn-danger" name="groupId" th:value="${courseGroup.id}"><em class="fas fa-minus ml-0"/></button></td>
                         </tr>
                     </form>
                     </tbody>
@@ -45,7 +46,7 @@
                                     <option th:each="group : ${restGroups}" th:value="${group.id}" th:text="${group.id != null} ? ${group.name} : 'no group'"></option>
                                 </select>
                             </td>
-                            <td><button type="submit" class="btn btn-success" id="addGroup" disabled><i class="fas fa-plus ml-0"/></button></td>
+                            <td><button type="submit" class="btn btn-success" id="addGroup" disabled><em class="fas fa-plus ml-0"/></button></td>
                         </tr>
                     </form>
                     </tfoot>

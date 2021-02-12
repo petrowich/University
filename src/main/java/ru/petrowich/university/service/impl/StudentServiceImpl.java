@@ -3,8 +3,6 @@ package ru.petrowich.university.service.impl;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.petrowich.university.repository.CourseRepository;
-import ru.petrowich.university.repository.LessonRepository;
 import ru.petrowich.university.repository.StudentRepository;
 import ru.petrowich.university.model.Student;
 import ru.petrowich.university.service.StudentService;
@@ -17,14 +15,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class StudentServiceImpl implements StudentService {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final StudentRepository studentRepository;
-    private final CourseRepository courseRepository;
-    private final LessonRepository lessonRepository;
 
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository, CourseRepository courseRepository, LessonRepository lessonRepository) {
+    public StudentServiceImpl(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
-        this.courseRepository = courseRepository;
-        this.lessonRepository = lessonRepository;
     }
 
     @Override
