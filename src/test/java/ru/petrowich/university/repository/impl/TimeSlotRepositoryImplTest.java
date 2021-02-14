@@ -72,7 +72,7 @@ class TimeSlotRepositoryImplTest {
 
     @Autowired
     private LessonRepository lessonRepository;
-    
+
     @Test
     void testFindByIdShouldReturnExistentLesson() {
         TimeSlot expected = new TimeSlot()
