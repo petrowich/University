@@ -12,6 +12,7 @@ import ru.petrowich.university.model.TimeSlot;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -48,7 +49,8 @@ class TimeSlotServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnTimeSlotWhenTimeSlotIdPassed() {
-        when(mockTimeSlotRepository.findById(TIME_SLOT_ID)).thenReturn(timeSlot);
+        Optional<TimeSlot> optionalTimeSlot = Optional.of(timeSlot);
+        when(mockTimeSlotRepository.findById(TIME_SLOT_ID)).thenReturn(optionalTimeSlot);
 
         TimeSlot actual = timeSlotServiceImpl.getById(TIME_SLOT_ID);
 
@@ -58,7 +60,7 @@ class TimeSlotServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnNullWhenNonexistentTimeSlotIdPassed() {
-        when(mockTimeSlotRepository.findById(-1)).thenReturn(null);
+        when(mockTimeSlotRepository.findById(-1)).thenReturn(Optional.empty());
         TimeSlot actual = timeSlotServiceImpl.getById(-1);
 
         verify(mockTimeSlotRepository, times(1)).findById(-1);
@@ -67,49 +69,45 @@ class TimeSlotServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnNullWhenNullPassed() {
-        when(mockTimeSlotRepository.findById(null)).thenReturn(null);
+        when(mockTimeSlotRepository.findById(null)).thenReturn(Optional.empty());
         TimeSlot actual = timeSlotServiceImpl.getById(null);
-        verify(mockTimeSlotRepository, times(1)).findById(null);
+
+        verify(mockTimeSlotRepository, times(0)).findById(null);
         assertNull(actual, "null should be returned");
     }
 
     @Test
-    void testAddShouldInvokeRepositoryAddWithPassedTimeSlot() {
-        doNothing().when(mockTimeSlotRepository).save(timeSlot);
+    void testAddShouldInvokeRepositorySaveWithPassedTimeSlot() {
         timeSlotServiceImpl.add(timeSlot);
         verify(mockTimeSlotRepository, times(1)).save(timeSlot);
     }
 
     @Test
-    void testAddShouldInvokeRepositoryAddWithPassedNull() {
-        doNothing().when(mockTimeSlotRepository).save(null);
+    void testAddShouldInvokeRepositorySaveWithPassedNull() {
         timeSlotServiceImpl.add(null);
         verify(mockTimeSlotRepository, times(1)).save(null);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositoryAddWithPassedTimeSlot() {
-        doNothing().when(mockTimeSlotRepository).update(timeSlot);
+    void testUpdateShouldInvokeRepositorySaveWithPassedTimeSlot() {
         timeSlotServiceImpl.update(timeSlot);
-        verify(mockTimeSlotRepository, times(1)).update(timeSlot);
+        verify(mockTimeSlotRepository, times(1)).save(timeSlot);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositoryAddWithPassedNull() {
-        doNothing().when(mockTimeSlotRepository).update(null);
+    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
         timeSlotServiceImpl.update(null);
-        verify(mockTimeSlotRepository, times(1)).update(null);
+        verify(mockTimeSlotRepository, times(1)).save(null);
     }
 
     @Test
-    void testDeleteShouldInvokeRepositoryAddWithPassedTimeSlot() {
-        doNothing().when(mockTimeSlotRepository).delete(timeSlot);
+    void testDeleteShouldInvokeRepositorySaveWithPassedTimeSlot() {
         timeSlotServiceImpl.delete(timeSlot);
         verify(mockTimeSlotRepository, times(1)).delete(timeSlot);
     }
 
     @Test
-    void testDeleteShouldInvokeRepositoryAddWithPassedNull() {
+    void testDeleteShouldInvokeRepositorySaveWithPassedNull() {
         doNothing().when(mockTimeSlotRepository).delete(null);
         timeSlotServiceImpl.delete(null);
         verify(mockTimeSlotRepository, times(1)).delete(null);
