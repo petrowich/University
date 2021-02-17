@@ -19,6 +19,7 @@ import ru.petrowich.university.repository.StudentRepository;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(classes = {University.class, AppTestConfiguration.class})
 @ActiveProfiles("test")
@@ -89,7 +89,7 @@ class LecturerRepositoryImplTest {
         expectedLessons.add(new Lesson().setId(EXISTENT_LESSON_ID_5000004));
         expected.setLessons(expectedLessons);
 
-        Lecturer actual = lecturerRepository.findById(EXISTENT_PERSON_ID_50005);
+        Lecturer actual = lecturerRepository.findById(EXISTENT_PERSON_ID_50005).orElse(new Lecturer());
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("courses", "lessons")
@@ -101,15 +101,15 @@ class LecturerRepositoryImplTest {
     @Test
     @Sql(POPULATE_DB_SQL)
     void testFindByIdShouldReturnNullWhenAnotherRolePersonIdPassed() {
-        Lecturer actual = lecturerRepository.findById(EXISTENT_PERSON_ID_50001);
-        assertNull(actual, "null is expected when not lecturer role person id passed");
+        Optional<Lecturer> actual = lecturerRepository.findById(EXISTENT_PERSON_ID_50001);
+        assertFalse(actual.isPresent(), "null is expected when not lecturer role person id passed");
     }
 
     @Test
     @Sql(POPULATE_DB_SQL)
     void testFindByIdShouldReturnNullWhenNonexistentIdPassed() {
-        Lecturer actual = lecturerRepository.findById(NONEXISTENT_PERSON_ID);
-        assertNull(actual, "null is expected when nonexistent person id passed");
+        Optional<Lecturer> actual = lecturerRepository.findById(NONEXISTENT_PERSON_ID);
+        assertFalse(actual.isPresent(), "null is expected when nonexistent person id passed");
     }
 
     @Test
@@ -130,7 +130,7 @@ class LecturerRepositoryImplTest {
         lecturerRepository.save(expected);
         assertNotNull(expected.getId(), "add() should set new id to the lecturer, new id cannot be null");
 
-        Lecturer actual = lecturerRepository.findById(expected.getId());
+        Lecturer actual = lecturerRepository.findById(expected.getId()).orElse(new Lecturer());
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("courses", "lessons")
@@ -145,7 +145,7 @@ class LecturerRepositoryImplTest {
     @Test
     @Sql(POPULATE_DB_SQL)
     void testUpdateShouldUpdateExistentLecturer() {
-        Lecturer actual = lecturerRepository.findById(EXISTENT_PERSON_ID_50005);
+        Lecturer actual = lecturerRepository.findById(EXISTENT_PERSON_ID_50005).orElse(new Lecturer());
 
         actual.setFirstName(NEW_PERSON_FIRST_NAME)
                 .setLastName(NEW_PERSON_LAST_NAME)
@@ -153,9 +153,9 @@ class LecturerRepositoryImplTest {
                 .setComment(NEW_PERSON_COMMENT)
                 .setActive(false);
 
-        lecturerRepository.update(actual);
+        lecturerRepository.save(actual);
 
-        Lecturer expected = lecturerRepository.findById(EXISTENT_PERSON_ID_50005);
+        Lecturer expected = lecturerRepository.findById(EXISTENT_PERSON_ID_50005).orElse(new Lecturer());
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("courses", "lessons")
@@ -165,11 +165,11 @@ class LecturerRepositoryImplTest {
     @Test
     @Sql(POPULATE_DB_SQL)
     void testUpdateShouldNotUpdateExistentNonLecturer() {
-        Lecturer lecturer = lecturerRepository.findById(EXISTENT_PERSON_ID_50005);
+        Lecturer lecturer = lecturerRepository.findById(EXISTENT_PERSON_ID_50005).orElse(new Lecturer());
         lecturer.setId(EXISTENT_PERSON_ID_50001);
-        lecturerRepository.update(lecturer);
+        lecturerRepository.save(lecturer);
 
-        Student actual = studentRepository.findById(EXISTENT_PERSON_ID_50001);
+        Student actual = studentRepository.findById(EXISTENT_PERSON_ID_50001).orElse(new Student());
         Student expected = new Student()
                 .setId(EXISTENT_PERSON_ID_50001)
                 .setFirstName(EXISTENT_PERSON_FIRST_NAME_50001)
@@ -194,27 +194,27 @@ class LecturerRepositoryImplTest {
     @Test
     @Sql(POPULATE_DB_SQL)
     void testDeleteShouldDeactivateExistentLecturer() {
-        Lecturer lecturer = lecturerRepository.findById(EXISTENT_PERSON_ID_50005);
+        Lecturer lecturer = lecturerRepository.findById(EXISTENT_PERSON_ID_50005).orElse(new Lecturer());
         lecturerRepository.delete(lecturer);
 
-        Lecturer actual = lecturerRepository.findById(EXISTENT_PERSON_ID_50005);
+        Lecturer actual = lecturerRepository.findById(EXISTENT_PERSON_ID_50005).orElse(new Lecturer());
         assertFalse(actual.isActive(), "actual should not be active");
     }
 
     @Test
     @Sql(POPULATE_DB_SQL)
     void testDeleteShouldNotDeactivateExistentNonLecturer() {
-        Lecturer lecturer = lecturerRepository.findById(EXISTENT_PERSON_ID_50005);
+        Lecturer lecturer = lecturerRepository.findById(EXISTENT_PERSON_ID_50005).orElse(new Lecturer());
         lecturer.setId(EXISTENT_PERSON_ID_50005);
         lecturerRepository.delete(lecturer);
 
-        Student actual = studentRepository.findById(EXISTENT_PERSON_ID_50001);
+        Student actual = studentRepository.findById(EXISTENT_PERSON_ID_50001).orElse(new Student());
         assertTrue(actual.isActive(), "actual should be active");
     }
 
     @Test
-    void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> lecturerRepository.delete(null), "delete(null) should throw NullPointerException");
+    void testDeleteShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> lecturerRepository.delete(null), "delete(null) should throw InvalidDataAccessApiUsageException");
     }
 
     @Test

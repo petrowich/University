@@ -9,44 +9,31 @@ import org.mockito.MockitoAnnotations;
 import ru.petrowich.university.repository.GroupRepository;
 import ru.petrowich.university.repository.StudentRepository;
 import ru.petrowich.university.model.Student;
-import ru.petrowich.university.model.Lesson;
-import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.model.Group;
-import ru.petrowich.university.model.Course;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.doNothing;
 
 class StudentServiceImplTest {
     private static final Integer PERSON_ID_50001 = 50001;
     private static final Integer PERSON_ID_50002 = 50002;
     private static final Integer PERSON_ID_50003 = 50003;
-    private static final Integer PERSON_ID_50005 = 50005;
     private static final String PERSON_EMAIL_50001 = "rulon.oboev@university.edu";
     private static final String PERSON_EMAIL_50002 = "obval.zaboev@university.edu";
     private static final String PERSON_EMAIL_50003 = "record.nadoev@university.edu";
-    private static final String PERSON_EMAIL_50005 = "otryad.kovboev@university.edu";
     private static final Integer GROUP_ID_501 = 501;
     private static final Integer GROUP_ID_502 = 502;
     private static final String GROUP_NAME_501 = "AA-01";
     private static final String GROUP_NAME_502 = "BB-02";
-    private static final Integer COURSE_ID_51 = 51;
-    private static final Integer COURSE_ID_52 = 52;
-    private static final String COURSE_NAME_51 = "math";
-    private static final String COURSE_NAME_52 = "biology";
-    private static final Long LESSON_ID_5000001 = 5000001L;
-    private static final Long LESSON_ID_5000002 = 5000002L;
-    private static final Long LESSON_ID_5000003 = 5000003L;
-
-    private final Lecturer lecturer = new Lecturer().setId(PERSON_ID_50005).setEmail(PERSON_EMAIL_50005).setActive(true);
 
     private final Group firstGroup = new Group().setId(GROUP_ID_501).setName(GROUP_NAME_501).setActive(true);
     private final Group secondGroup = new Group().setId(GROUP_ID_502).setName(GROUP_NAME_502).setActive(true);
@@ -78,8 +65,10 @@ class StudentServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnStudentWhenStudentIdPassed() {
-        when(mockStudentRepository.findById(PERSON_ID_50001)).thenReturn(firstStudent);
-        when(mockGroupRepository.findById(GROUP_ID_501)).thenReturn(firstGroup);
+        Optional<Student> optionalFirstStudent = Optional.of(firstStudent);
+        when(mockStudentRepository.findById(PERSON_ID_50001)).thenReturn(optionalFirstStudent);
+        Optional<Group> optionalFirstGroup = Optional.of(firstGroup);
+        when(mockGroupRepository.findById(GROUP_ID_501)).thenReturn(optionalFirstGroup);
 
         Student actual = studentServiceImpl.getById(PERSON_ID_50001);
 
@@ -90,7 +79,7 @@ class StudentServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnNullWhenNonexistentIdPassed() {
-        when(mockStudentRepository.findById(-1)).thenReturn(null);
+        when(mockStudentRepository.findById(-1)).thenReturn(Optional.empty());
         Student actual = studentServiceImpl.getById(-1);
 
         verify(mockStudentRepository, times(1)).findById(-1);
@@ -99,53 +88,55 @@ class StudentServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnNullWhenNullPassed() {
-        when(mockStudentRepository.findById(null)).thenReturn(null);
+        when(mockStudentRepository.findById(null)).thenReturn(Optional.empty());
         Student actual = studentServiceImpl.getById(null);
 
-        verify(mockStudentRepository, times(1)).findById(null);
+        verify(mockStudentRepository, times(0)).findById(null);
         assertNull(actual, "null should be returned");
     }
 
     @Test
-    void testAddShouldInvokeRepositoryUpdateWithPassedStudent() {
-        doNothing().when(mockStudentRepository).save(firstStudent);
+    void testAddShouldInvokeRepositorySaveWithPassedStudent() {
         studentServiceImpl.add(firstStudent);
         verify(mockStudentRepository, times(1)).save(firstStudent);
     }
 
     @Test
-    void testAddShouldInvokeRepositoryUpdateWithPassedNull() {
-        doNothing().when(mockStudentRepository).save(null);
+    void testAddShouldInvokeRepositorySaveWithPassedNull() {
         studentServiceImpl.add(null);
         verify(mockStudentRepository, times(1)).save(null);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositoryUpdateWithPassedStudent() {
-        doNothing().when(mockStudentRepository).update(firstStudent);
+    void testUpdateShouldInvokeRepositorySaveWithPassedStudent() {
         studentServiceImpl.update(firstStudent);
-        verify(mockStudentRepository, times(1)).update(firstStudent);
+        verify(mockStudentRepository, times(1)).save(firstStudent);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositoryUpdateWithPassedNull() {
-        doNothing().when(mockStudentRepository).update(null);
+    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
         studentServiceImpl.update(null);
-        verify(mockStudentRepository, times(1)).update(null);
+        verify(mockStudentRepository, times(1)).save(null);
     }
 
     @Test
     void testDeleteShouldInvokeRepositoryUpdateWithPassedStudent() {
-        doNothing().when(mockStudentRepository).delete(firstStudent);
+        Student actual = new Student().setId(PERSON_ID_50001).setActive(true);
+
+        Optional<Student> optionalFirstStudent = Optional.of(actual);
+        when(mockStudentRepository.findById(PERSON_ID_50001)).thenReturn(optionalFirstStudent);
+
         studentServiceImpl.delete(firstStudent);
+
+        verify(mockStudentRepository, times(1)).findById(PERSON_ID_50001);
+        assertFalse(actual.isActive(),"lecturer should turn inactive");
         verify(mockStudentRepository, times(1)).delete(firstStudent);
     }
 
     @Test
-    void testDeleteShouldInvokeRepositoryUpdateWithPassedNull() {
-        doNothing().when(mockStudentRepository).delete(null);
-        studentServiceImpl.delete(null);
-        verify(mockStudentRepository, times(1)).delete(null);
+    void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> studentServiceImpl.delete(null),"delete(null) should throw NullPointerException");
+        verify(mockStudentRepository, times(0)).save(null);
     }
 
     @Test

@@ -17,11 +17,12 @@ import javax.transaction.Transactional;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest(classes = {University.class, AppTestConfiguration.class})
 @ActiveProfiles("test")
@@ -80,15 +81,15 @@ class TimeSlotRepositoryImplTest {
                 .setStartTime(EXISTENT_TIME_SLOT_START_TIME_1)
                 .setEndTime(EXISTENT_TIME_SLOT_END_TIME_1);
 
-        TimeSlot actual = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
+        TimeSlot actual = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1).orElse(new TimeSlot());
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
     void testFindByIdShouldShouldReturnNullWhenNonexistentIdPassed() {
-        TimeSlot actual = timeSlotRepository.findById(NONEXISTENT_TIME_SLOT_ID);
-        assertNull(actual, "null is expected when nonexistent timeslot id passed");
+        Optional<TimeSlot> actual = timeSlotRepository.findById(NONEXISTENT_TIME_SLOT_ID);
+        assertFalse(actual.isPresent(), "null is expected when nonexistent timeslot id passed");
     }
 
     @Test
@@ -106,7 +107,7 @@ class TimeSlotRepositoryImplTest {
         timeSlotRepository.save(expected);
         assertNotNull(expected.getId(), "add() should set new id to the timeslot, new id cannot be null");
 
-        TimeSlot actual = timeSlotRepository.findById(expected.getId());
+        TimeSlot actual = timeSlotRepository.findById(expected.getId()).orElse(new TimeSlot());
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
@@ -118,34 +119,34 @@ class TimeSlotRepositoryImplTest {
 
     @Test
     void testUpdateShouldUpdateExistentTimeSlot() {
-        TimeSlot actual = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
+        TimeSlot actual = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1).orElse(new TimeSlot());
 
         actual.setName(NEW_TIME_SLOT_NAME)
                 .setStartTime(NEW_TIME_SLOT_START_TIME)
                 .setEndTime(NEW_TIME_SLOT_END_TIME);
 
-        timeSlotRepository.update(actual);
+        timeSlotRepository.save(actual);
 
-        TimeSlot expected = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
+        TimeSlot expected = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1).orElse(new TimeSlot());
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 
     @Test
     void testUpdateShouldThrowNInvalidDataAccessApiUsageExceptionWhenNullPassed() {
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> timeSlotRepository.update(null), "update null should throw InvalidDataAccessApiUsageException");
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> timeSlotRepository.save(null), "update null should throw InvalidDataAccessApiUsageException");
     }
 
     @Test
     @Sql(POPULATE_DB_SQL)
     void testDeleteShouldDeleteTimeSlotWhenExistentTimeSlotPassed() {
-        TimeSlot timeSlot = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
+        TimeSlot timeSlot = new TimeSlot().setId(EXISTENT_TIME_SLOT_ID_1);
         timeSlotRepository.delete(timeSlot);
 
-        TimeSlot actual = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
-        assertNull(actual, "null is expected when deleted timeslot id passed");
+        Optional<TimeSlot> actual = timeSlotRepository.findById(EXISTENT_TIME_SLOT_ID_1);
+        assertFalse(actual.isPresent(), "null is expected when deleted timeslot id passed");
 
-        Lesson lesson = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
+        Lesson lesson = lessonRepository.findById(EXISTENT_LESSON_ID_5000001).orElse(new Lesson());
         assertNotNull(lesson, "timeslot deletion should not delete its lessons");
     }
 

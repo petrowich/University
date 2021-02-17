@@ -8,13 +8,14 @@ import ru.petrowich.university.repository.GroupRepository;
 import ru.petrowich.university.service.GroupService;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class GroupServiceImpl implements GroupService {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
-    private GroupRepository groupRepository;
+    private final GroupRepository groupRepository;
 
     @Autowired
     public GroupServiceImpl(GroupRepository groupRepository) {
@@ -24,7 +25,13 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public Group getById(Integer groupId) {
         LOGGER.debug("getById {}", groupId);
-        return groupRepository.findById(groupId);
+
+        if (groupId == null) {
+            return null;
+        }
+
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        return optionalGroup.orElse(null);
     }
 
     @Override
@@ -36,13 +43,19 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void update(Group group) {
         LOGGER.debug("update {}", group);
-        groupRepository.update(group);
+        groupRepository.save(group);
     }
 
     @Override
     public void delete(Group group) {
         LOGGER.debug("delete {}", group);
-        groupRepository.delete(group);
+        Optional<Group> optionalGroup = groupRepository.findById(group.getId());
+
+        if(optionalGroup.isPresent()) {
+            Group currentGroup = optionalGroup.get();
+            currentGroup.setActive(false);
+            groupRepository.save(currentGroup);
+        }
     }
 
     @Override

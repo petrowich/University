@@ -8,6 +8,7 @@ import ru.petrowich.university.model.Student;
 import ru.petrowich.university.service.StudentService;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -24,7 +25,13 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student getById(Integer studentId) {
         LOGGER.debug("getById {}", studentId);
-        return studentRepository.findById(studentId);
+
+        if (studentId == null) {
+            return null;
+        }
+
+        Optional<Student> studentOptional = studentRepository.findById(studentId);
+        return studentOptional.orElse(null);
     }
 
     @Override
@@ -36,13 +43,19 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void update(Student student) {
         LOGGER.debug("update {}", student);
-        studentRepository.update(student);
+        studentRepository.save(student);
     }
 
     @Override
     public void delete(Student student) {
         LOGGER.debug("delete {}", student);
-        studentRepository.delete(student);
+        Optional<Student> studentOptional = studentRepository.findById(student.getId());
+
+        if (studentOptional.isPresent()) {
+            Student currentStudent = studentOptional.get();
+            currentStudent.setActive(false);
+            studentRepository.delete(student);
+        }
     }
 
     @Override
