@@ -14,16 +14,15 @@ import ru.petrowich.university.model.Lecturer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doNothing;
 
 class CourseServiceImplTest {
     private static final Integer PERSON_ID_50005 = 50005;
@@ -75,8 +74,7 @@ class CourseServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnCourseWhenCourseIdPassed() {
-        Optional<Course> optionalFirstCourse = Optional.of(firstCourse);
-        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(optionalFirstCourse);
+        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(firstCourse);
         Course actual = courseServiceImpl.getById(COURSE_ID_51);
 
         verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
@@ -86,7 +84,7 @@ class CourseServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnNullWhenWhenNonexistentIdPassed() {
-        when(mockCourseRepository.findById(-1)).thenReturn(Optional.empty());
+        when(mockCourseRepository.findById(-1)).thenReturn(null);
         Course actual = courseServiceImpl.getById(-1);
 
         verify(mockCourseRepository, times(1)).findById(-1);
@@ -95,53 +93,53 @@ class CourseServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnNullWhenWhenNullPassed() {
+        when(mockCourseRepository.findById(null)).thenReturn(null);
         Course actual = courseServiceImpl.getById(null);
-        verify(mockCourseRepository, times(0)).findById(null);
+
+        verify(mockCourseRepository, times(1)).findById(null);
         assertNull(actual, "null should be returned");
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedCourse() {
+    void testAddShouldInvokeRepositoryUpdateWithPassedCourse() {
+        doNothing().when(mockCourseRepository).save(firstCourse);
         courseServiceImpl.add(firstCourse);
         verify(mockCourseRepository, times(1)).save(firstCourse);
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedNull() {
+    void testAddShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockCourseRepository).save(null);
         courseServiceImpl.add(null);
         verify(mockCourseRepository, times(1)).save(null);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositorySaveWithPassedCourse() {
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedCourse() {
+        doNothing().when(mockCourseRepository).update(firstCourse);
         courseServiceImpl.update(firstCourse);
-        verify(mockCourseRepository, times(1)).save(firstCourse);
+        verify(mockCourseRepository, times(1)).update(firstCourse);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockCourseRepository).update(null);
         courseServiceImpl.update(null);
-        verify(mockCourseRepository, times(1)).save(null);
+        verify(mockCourseRepository, times(1)).update(null);
     }
 
     @Test
-    void testDeleteShouldInvokeRepositorySaveWithPassedCourse() {
-        Course actual = new Course().setId(COURSE_ID_51).setActive(true);
-
-        Optional<Course> optionalFirstCourse = Optional.of(actual);
-        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(optionalFirstCourse);
-
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedCourse() {
+        doNothing().when(mockCourseRepository).delete(firstCourse);
         courseServiceImpl.delete(firstCourse);
-
-        verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
-        assertFalse(actual.isActive(),"course should turn inactive");
-        verify(mockCourseRepository, times(1)).save(firstCourse);
+        verify(mockCourseRepository, times(1)).delete(firstCourse);
     }
 
     @Test
-    void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> courseServiceImpl.delete(null),"delete(null) should throw NullPointerException");
-        verify(mockCourseRepository, times(0)).save(null);
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockCourseRepository).delete(null);
+        courseServiceImpl.delete(null);
+        verify(mockCourseRepository, times(1)).delete(null);
     }
 
     @Test
@@ -168,16 +166,15 @@ class CourseServiceImplTest {
 
         firstCourse.setGroups(currentGroups);
 
-        Optional<Group> optionalSecondGroup = Optional.of(thirdGroup);
-        when(mockGroupRepository.findById(GROUP_ID_503)).thenReturn(optionalSecondGroup);
-        Optional<Course> optionalFirstCourse = Optional.of(firstCourse);
-        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(optionalFirstCourse);
+        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(firstCourse);
+        when(mockGroupRepository.findById(GROUP_ID_503)).thenReturn(thirdGroup);
+        doNothing().when(mockCourseRepository).update(firstCourse);
 
         courseServiceImpl.assignGroupToCourse(thirdGroup, firstCourse);
 
         verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
         verify(mockGroupRepository, times(1)).findById(GROUP_ID_503);
-        verify(mockCourseRepository, times(1)).save(firstCourse);
+        verify(mockCourseRepository, times(1)).update(firstCourse);
 
         List<Group> expectedGroups = new ArrayList<>();
         expectedGroups.add(firstGroup);
@@ -195,16 +192,15 @@ class CourseServiceImplTest {
 
         firstCourse.setGroups(currentGroups);
 
-        Optional<Group> optionalSecondGroup = Optional.of(secondGroup);
-        when(mockGroupRepository.findById(GROUP_ID_502)).thenReturn(optionalSecondGroup);
-        Optional<Course> optionalFirstCourse = Optional.of(firstCourse);
-        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(optionalFirstCourse);
+        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(firstCourse);
+        when(mockGroupRepository.findById(GROUP_ID_502)).thenReturn(secondGroup);
+        doNothing().when(mockCourseRepository).update(firstCourse);
 
         courseServiceImpl.assignGroupToCourse(secondGroup, firstCourse);
 
         verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
         verify(mockGroupRepository, times(1)).findById(GROUP_ID_502);
-        verify(mockCourseRepository, times(0)).save(firstCourse);
+        verify(mockCourseRepository, times(0)).update(firstCourse);
 
         List<Group> expectedGroups = new ArrayList<>();
         expectedGroups.add(firstGroup);
@@ -221,12 +217,12 @@ class CourseServiceImplTest {
 
         firstCourse.setGroups(currentGroups);
 
-        Optional<Course> optionalFirstCourse = Optional.of(firstCourse);
-        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(optionalFirstCourse);
+        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(firstCourse);
+        doNothing().when(mockCourseRepository).update(firstCourse);
 
         courseServiceImpl.removeGroupFromCourse(secondGroup, firstCourse);
         verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
-        verify(mockCourseRepository, times(1)).save(firstCourse);
+        verify(mockCourseRepository, times(1)).update(firstCourse);
 
         List<Group> expectedGroups = new ArrayList<>();
         expectedGroups.add(firstGroup);
@@ -241,30 +237,27 @@ class CourseServiceImplTest {
         currentGroups.add(secondGroup);
         firstCourse.setGroups(currentGroups);
 
-        List<Integer> groupIds = new ArrayList<>();
-        groupIds.add(GROUP_ID_501);
-        groupIds.add(GROUP_ID_503);
-        groupIds.add(NONEXISTENT_GROUP_ID);
-
-        List<Group> groups = new ArrayList<>();
-        groups.add(firstGroup);
-        groups.add(thirdGroup);
-        groups.add(new Group().setId(NONEXISTENT_GROUP_ID));
-        groups.add(null);
-
         List<Group> actualGroups = new ArrayList<>();
         actualGroups.add(firstGroup);
         actualGroups.add(thirdGroup);
+        actualGroups.add(new Group().setId(NONEXISTENT_GROUP_ID));
+        actualGroups.add(null);
 
-        Optional<Course> optionalFirstCourse = Optional.of(firstCourse);
-        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(optionalFirstCourse);
-        when(mockGroupRepository.findAllById(groupIds)).thenReturn(actualGroups);
+        when(mockCourseRepository.findById(COURSE_ID_51)).thenReturn(firstCourse);
+        when(mockGroupRepository.findById(GROUP_ID_501)).thenReturn(firstGroup);
+        when(mockGroupRepository.findById(GROUP_ID_502)).thenReturn(secondGroup);
+        when(mockGroupRepository.findById(GROUP_ID_503)).thenReturn(thirdGroup);
+        when(mockGroupRepository.findById(NONEXISTENT_GROUP_ID)).thenReturn(null);
+        doNothing().when(mockCourseRepository).update(firstCourse);
 
-        courseServiceImpl.applyGroupsToCourse(groups, firstCourse);
+        courseServiceImpl.applyGroupsToCourse(actualGroups, firstCourse);
 
         verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
-        verify(mockGroupRepository, times(1)).findAllById(groupIds);
-        verify(mockCourseRepository, times(1)).save(firstCourse);
+        verify(mockGroupRepository, times(1)).findById(GROUP_ID_501);
+        verify(mockGroupRepository, times(0)).findById(GROUP_ID_502);
+        verify(mockGroupRepository, times(1)).findById(GROUP_ID_503);
+        verify(mockGroupRepository, times(1)).findById(NONEXISTENT_GROUP_ID);
+        verify(mockCourseRepository, times(1)).update(firstCourse);
 
         List<Group> expectedGroups = new ArrayList<>();
         expectedGroups.add(firstGroup);

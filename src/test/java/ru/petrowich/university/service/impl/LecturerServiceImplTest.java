@@ -13,15 +13,14 @@ import ru.petrowich.university.model.Lesson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doNothing;
 
 class LecturerServiceImplTest {
     private static final Integer PERSON_ID_50005 = 50005;
@@ -79,8 +78,7 @@ class LecturerServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnLecturerWhenLecturerIdPassed() {
-        Optional<Lecturer> optionalFirstLecturer = Optional.of(firstLecturer);
-        when(mockLecturerRepository.findById(PERSON_ID_50005)).thenReturn(optionalFirstLecturer);
+        when(mockLecturerRepository.findById(PERSON_ID_50005)).thenReturn(firstLecturer);
 
         Lecturer actual = lecturerServiceImpl.getById(PERSON_ID_50005);
 
@@ -91,7 +89,7 @@ class LecturerServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnNullWhenWhenNonexistentIdPassed() {
-        when(mockLecturerRepository.findById(-1)).thenReturn(Optional.empty());
+        when(mockLecturerRepository.findById(-1)).thenReturn(null);
         Lecturer actual = lecturerServiceImpl.getById(-1);
 
         verify(mockLecturerRepository, times(1)).findById(-1);
@@ -100,55 +98,53 @@ class LecturerServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnNullWhenWhenNullPassed() {
-        when(mockLecturerRepository.findById(null)).thenReturn(Optional.empty());
+        when(mockLecturerRepository.findById(null)).thenReturn(null);
         Lecturer actual = lecturerServiceImpl.getById(null);
 
-        verify(mockLecturerRepository, times(0)).findById(null);
+        verify(mockLecturerRepository, times(1)).findById(null);
         assertNull(actual, "null should be returned");
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedLecturer() {
+    void testAddShouldInvokeRepositoryUpdateWithPassedLecturer() {
+        doNothing().when(mockLecturerRepository).save(firstLecturer);
         lecturerServiceImpl.add(firstLecturer);
         verify(mockLecturerRepository, times(1)).save(firstLecturer);
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedNull() {
+    void testAddShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockLecturerRepository).save(null);
         lecturerServiceImpl.add(null);
         verify(mockLecturerRepository, times(1)).save(null);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositorySaveWithPassedLecturer() {
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedLecturer() {
+        doNothing().when(mockLecturerRepository).update(firstLecturer);
         lecturerServiceImpl.update(firstLecturer);
-        verify(mockLecturerRepository, times(1)).save(firstLecturer);
+        verify(mockLecturerRepository, times(1)).update(firstLecturer);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
+    void testUpdateShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockLecturerRepository).update(null);
         lecturerServiceImpl.update(null);
-        verify(mockLecturerRepository, times(1)).save(null);
+        verify(mockLecturerRepository, times(1)).update(null);
     }
 
     @Test
-    void testDeleteShouldInvokeRepositorySaveWithPassedLecturer() {
-        Lecturer actual = new Lecturer().setId(PERSON_ID_50005).setActive(true);
-
-        Optional<Lecturer> optionalFirstLecturer = Optional.of(actual);
-        when(mockLecturerRepository.findById(PERSON_ID_50005)).thenReturn(optionalFirstLecturer);
-
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedLecturer() {
+        doNothing().when(mockLecturerRepository).delete(firstLecturer);
         lecturerServiceImpl.delete(firstLecturer);
-
-        verify(mockLecturerRepository, times(1)).findById(PERSON_ID_50005);
-        assertFalse(actual.isActive(),"lecturer should turn inactive");
-        verify(mockLecturerRepository, times(1)).save(firstLecturer);
+        verify(mockLecturerRepository, times(1)).delete(firstLecturer);
     }
 
     @Test
-    void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> lecturerServiceImpl.delete(null),"delete(null) should throw NullPointerException");
-        verify(mockLecturerRepository, times(0)).save(null);
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockLecturerRepository).delete(null);
+        lecturerServiceImpl.delete(null);
+        verify(mockLecturerRepository, times(1)).delete(null);
     }
 
     @Test

@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -31,15 +30,9 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course getById(Integer courseId) {
-        LOGGER.debug("getById {}", courseId);
-
-        if (courseId == null) {
-            return null;
-        }
-
-        Optional<Course> optionalCourse = courseRepository.findById(courseId);
-        return optionalCourse.orElse(null);
+    public Course getById(Integer id) {
+        LOGGER.debug("getById {}", id);
+        return courseRepository.findById(id);
     }
 
     @Override
@@ -52,19 +45,13 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public void update(Course course) {
         LOGGER.debug("update {}", course);
-        courseRepository.save(course);
+        courseRepository.update(course);
     }
 
     @Override
     public void delete(Course course) {
         LOGGER.debug("delete {}", course);
-        Optional<Course> optionalCourse = courseRepository.findById(course.getId());
-
-        if (optionalCourse.isPresent()) {
-            Course currentCourse = optionalCourse.get();
-            currentCourse.setActive(false);
-            courseRepository.save(course);
-        }
+        courseRepository.delete(course);
     }
 
     @Override
@@ -76,47 +63,43 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public void assignGroupToCourse(Group group, Course course) {
         LOGGER.debug("assign Group {} to Course {}", group, course);
-        Optional<Group> optionalCurrentGroup = groupRepository.findById(group.getId());
-        Optional<Course> optionalCurrentCourse = courseRepository.findById(course.getId());
 
-        if (optionalCurrentCourse.isPresent() && optionalCurrentGroup.isPresent()) {
-            Group currentGroup = optionalCurrentGroup.get();
-            Course currentCourse = optionalCurrentCourse.get();
-            List<Group> currentGroups = currentCourse.getGroups();
+        Course currentCourse = courseRepository.findById(course.getId());
+        Group currentGroup = groupRepository.findById(group.getId());
+        List<Group> actualGroups = currentCourse.getGroups();
 
-            if (!currentGroups.contains(group)) {
-                currentGroups.add(currentGroup);
-                courseRepository.save(currentCourse);
-            }
+        if (!actualGroups.contains(group)) {
+            actualGroups.add(currentGroup);
+            courseRepository.update(currentCourse);
         }
     }
 
     @Override
     public void removeGroupFromCourse(Group group, Course course) {
         LOGGER.debug("remove Group {} from Course {}", group, course);
-        Optional<Course> optionalCurrentCourse = courseRepository.findById(course.getId());
 
-        if (optionalCurrentCourse.isPresent()) {
-            Course currentCourse = optionalCurrentCourse.get();
-            currentCourse.getGroups().remove(group);
-            courseRepository.save(currentCourse);
-        }
+        Course currentCourse = courseRepository.findById(course.getId());
+
+        List<Group> currentGroups = currentCourse.getGroups();
+        currentGroups.remove(group);
+
+        courseRepository.update(currentCourse);
     }
 
     @Override
     public void applyGroupsToCourse(List<Group> groups, Course course) {
         LOGGER.debug("apply {} groups to course {}", groups.size(), course);
-        Optional<Course> optionalCurrentCourse = courseRepository.findById(course.getId());
 
-        if (optionalCurrentCourse.isPresent()) {
-            List<Integer> groupIds = groups.stream()
-                    .filter(Objects::nonNull)
-                    .map(Group::getId)
-                    .collect(Collectors.toList());
-            List<Group> actualGroups = groupRepository.findAllById(groupIds);
-            Course currentCourse = optionalCurrentCourse.get();
-            currentCourse.setGroups(actualGroups);
-            courseRepository.save(currentCourse);
-        }
+        List<Group> actualGroups = groups.stream()
+                .filter(Objects::nonNull)
+                .map(group -> groupRepository.findById(group.getId()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        Course currentCourse = courseRepository.findById(course.getId());
+
+        currentCourse.setGroups(actualGroups);
+
+        courseRepository.update(currentCourse);
     }
 }

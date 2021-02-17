@@ -22,13 +22,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @SpringBootTest(classes = {University.class, AppTestConfiguration.class})
 @ActiveProfiles("test")
@@ -105,7 +103,7 @@ class LessonRepositoryImplTest {
                 .setStartTime(EXISTENT_LESSON_START_TIME_5000001)
                 .setEndTime(EXISTENT_LESSON_END_TIME_5000001);
 
-        Lesson actual = lessonRepository.findById(EXISTENT_LESSON_ID_5000001).orElse(new Lesson());
+        Lesson actual = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
 
         assertThat(actual)
                 .usingRecursiveComparison()
@@ -119,7 +117,7 @@ class LessonRepositoryImplTest {
     @Test
     @Sql(POPULATE_DB_SQL)
     void testFindByIdShouldReturnNullWhenNonexistentIdPassed() {
-        Lesson actual = lessonRepository.findById(NONEXISTENT_LESSON_ID).orElse(null);
+        Lesson actual = lessonRepository.findById(NONEXISTENT_LESSON_ID);
         assertNull(actual, "null is expected when nonexistent lesson id passed");
     }
 
@@ -142,7 +140,7 @@ class LessonRepositoryImplTest {
         lessonRepository.save(expected);
         assertNotNull(expected.getId(), "add() should set new id to the timeslot, new id cannot be null");
 
-        Lesson actual = lessonRepository.findById(expected.getId()).orElse(new Lesson());
+        Lesson actual = lessonRepository.findById(expected.getId());
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("students","course","lecturer","timeSlot")
@@ -160,7 +158,7 @@ class LessonRepositoryImplTest {
     @Test
     @Sql(POPULATE_DB_SQL)
     void testUpdateShouldUpdateExistentLesson() {
-        Lesson actual = lessonRepository.findById(EXISTENT_LESSON_ID_5000001).orElse(new Lesson());
+        Lesson actual = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
 
         actual.setLecturer(new Lecturer().setId(EXISTENT_PERSON_ID_50006))
                 .setTimeSlot(new TimeSlot().setId(TIME_SLOT_ID_4))
@@ -168,9 +166,9 @@ class LessonRepositoryImplTest {
                 .setStartTime(NEW_LESSON_START_TIME)
                 .setEndTime(NEW_LESSON_END_TIME);
 
-        lessonRepository.save(actual);
+        lessonRepository.update(actual);
 
-        Lesson expected = lessonRepository.findById(EXISTENT_LESSON_ID_5000001).orElse(new Lesson());
+        Lesson expected = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("students","course","lecturer","timeSlot")
@@ -182,17 +180,17 @@ class LessonRepositoryImplTest {
 
     @Test
     void testUpdateShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> lessonRepository.save(null), "update(null) should throw InvalidDataAccessApiUsageException");
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> lessonRepository.update(null), "update(null) should throw InvalidDataAccessApiUsageException");
     }
 
     @Test
     @Sql(POPULATE_DB_SQL)
     void testDeleteShouldDeactivateExistentCourse() {
-        Lesson lesson = new Lesson().setId(EXISTENT_LESSON_ID_5000001);
+        Lesson lesson = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
         lessonRepository.delete(lesson);
 
-        Optional<Lesson> actual = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
-        assertFalse(actual.isPresent(), "null is expected when deleted lesson id passed");
+        Lesson actual = lessonRepository.findById(EXISTENT_LESSON_ID_5000001);
+        assertNull(actual, "null is expected when deleted lesson id passed");
     }
 
     @Test

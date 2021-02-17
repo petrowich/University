@@ -16,13 +16,13 @@ import ru.petrowich.university.repository.CourseRepository;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(classes = {University.class, AppTestConfiguration.class})
 @ActiveProfiles("test")
@@ -71,7 +71,7 @@ class CourseRepositoryImplTest {
         groups.add(new Group().setId(EXISTENT_GROUP_ID_502));
         expected.setGroups(groups);
 
-        Course actual = courseRepository.findById(EXISTENT_COURSE_ID_51).orElse(new Course());
+        Course actual = courseRepository.findById(EXISTENT_COURSE_ID_51);
 
         assertThat(actual)
                 .usingRecursiveComparison()
@@ -84,9 +84,9 @@ class CourseRepositoryImplTest {
 
     @Test
     @Sql(POPULATE_DB_SQL)
-    void testFindByIdShouldReturnNotPresentWhenNonexistentIdPassed() {
-        Optional<Course> actual = courseRepository.findById(NONEXISTENT_COURSE_ID);
-        assertFalse(actual.isPresent(), "null is expected when nonexistent id passed");
+    void testFindByIdShouldReturnNullWhenNonexistentIdPassed() {
+        Course actual = courseRepository.findById(NONEXISTENT_COURSE_ID);
+        assertNull(actual, "null is expected when nonexistent id passed");
     }
 
     @Test
@@ -111,7 +111,7 @@ class CourseRepositoryImplTest {
         courseRepository.save(expected);
         assertNotNull(expected.getId(), "add() should set new id to the course, new id cannot be null");
 
-        Course actual = courseRepository.findById(expected.getId()).orElse(new Course());
+        Course actual = courseRepository.findById(expected.getId());
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("groups", "students", "author")
@@ -127,16 +127,16 @@ class CourseRepositoryImplTest {
     @Test
     @Sql(POPULATE_DB_SQL)
     void testUpdateShouldUpdateExistentCourse() {
-        Course actual = courseRepository.findById(EXISTENT_COURSE_ID_51).orElse(new Course());
+        Course actual = courseRepository.findById(EXISTENT_COURSE_ID_51);
 
         actual.setName(NEW_COURSE_NAME)
                 .setDescription(NEW_COURSE_DESCRIPTION)
                 .setAuthor(new Lecturer().setId(50006))
                 .setActive(false);
 
-        courseRepository.save(actual);
+        courseRepository.update(actual);
 
-        Course expected = courseRepository.findById(EXISTENT_COURSE_ID_51).orElse(new Course());
+        Course expected = courseRepository.findById(EXISTENT_COURSE_ID_51);
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("groups", "students", "author")
@@ -146,7 +146,7 @@ class CourseRepositoryImplTest {
 
     @Test
     void testUpdateShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> courseRepository.save(null), "update(null) should throw InvalidDataAccessApiUsageException");
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> courseRepository.update(null), "update(null) should throw InvalidDataAccessApiUsageException");
     }
 
     @Test
@@ -155,13 +155,13 @@ class CourseRepositoryImplTest {
         courseRepository.save(course);
         courseRepository.delete(course);
 
-        Course actual = courseRepository.findById(course.getId()).orElse(new Course());
+        Course actual = courseRepository.findById(course.getId());
         assertFalse(actual.isActive(), "actual should not be active");
     }
 
     @Test
-    void testDeleteShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> courseRepository.delete(null), "delete(null) should throw InvalidDataAccessApiUsageException");
+    void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> courseRepository.delete(null), "delete(null) should throw NullPointerException");
     }
 
     @Test

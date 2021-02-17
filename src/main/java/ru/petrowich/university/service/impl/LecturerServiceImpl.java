@@ -8,7 +8,6 @@ import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.service.LecturerService;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -25,13 +24,7 @@ public class LecturerServiceImpl implements LecturerService {
     @Override
     public Lecturer getById(Integer lecturerId) {
         LOGGER.debug("getById {}", lecturerId);
-
-        if (lecturerId == null) {
-            return null;
-        }
-
-        Optional<Lecturer> optionalLecturer = lecturerRepository.findById(lecturerId);
-        return optionalLecturer.orElse(null);
+        return lecturerRepository.findById(lecturerId);
     }
 
     @Override
@@ -43,19 +36,13 @@ public class LecturerServiceImpl implements LecturerService {
     @Override
     public void update(Lecturer lecturer) {
         LOGGER.debug("update {}", lecturer);
-        lecturerRepository.save(lecturer);
+        lecturerRepository.update(lecturer);
     }
 
     @Override
     public void delete(Lecturer lecturer) {
         LOGGER.debug("delete {}", lecturer);
-        Optional<Lecturer> optionalLecturer = lecturerRepository.findById(lecturer.getId());
-
-        if(optionalLecturer.isPresent()) {
-            Lecturer currentLecturer = optionalLecturer.get();
-            currentLecturer.setActive(false);
-            lecturerRepository.save(currentLecturer);
-        }
+        lecturerRepository.delete(lecturer);
     }
 
     @Override

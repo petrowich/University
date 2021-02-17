@@ -16,13 +16,13 @@ import ru.petrowich.university.repository.GroupRepository;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(classes = {University.class, AppTestConfiguration.class})
 @ActiveProfiles("test")
@@ -65,7 +65,7 @@ class GroupRepositoryImplTest {
         expectedCourses.add(new Course().setId(EXISTENT_COURSE_ID_54));
         expected.setCourses(expectedCourses);
 
-        Group actual = groupRepository.findById(EXISTENT_GROUP_ID_501).orElse(new Group());
+        Group actual = groupRepository.findById(EXISTENT_GROUP_ID_501);
 
         assertThat(actual)
                 .usingRecursiveComparison()
@@ -78,9 +78,9 @@ class GroupRepositoryImplTest {
 
     @Test
     @Sql(POPULATE_DB_SQL)
-    void testFindByIdShouldReturnNotPresentWhenNonexistentIdPassed() {
-        Optional<Group> actual = groupRepository.findById(NONEXISTENT_GROUP_ID);
-        assertFalse(actual.isPresent(), "null is expected when nonexistent id passed");
+    void testFindByIdShouldReturnNullWhenNonexistentIdPassed() {
+        Group actual = groupRepository.findById(NONEXISTENT_GROUP_ID);
+        assertNull(actual, "null is expected when nonexistent id passed");
     }
 
     @Test
@@ -97,7 +97,7 @@ class GroupRepositoryImplTest {
         groupRepository.save(expected);
         assertNotNull(expected.getId(), "add() should set new id to the group, new id cannot be null");
 
-        Group actual = groupRepository.findById(expected.getId()).orElse(new Group());
+        Group actual = groupRepository.findById(expected.getId());
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("students", "courses")
@@ -112,14 +112,14 @@ class GroupRepositoryImplTest {
     @Test
     @Sql(POPULATE_DB_SQL)
     void testUpdateShouldUpdateExistentGroup() {
-        Group actual = groupRepository.findById(EXISTENT_GROUP_ID_501).orElse(new Group());
+        Group actual = groupRepository.findById(EXISTENT_GROUP_ID_501);
 
         actual.setName(NEW_GROUP_NAME)
                 .setActive(false);
 
-        groupRepository.save(actual);
+        groupRepository.update(actual);
 
-        Group expected = groupRepository.findById(EXISTENT_GROUP_ID_501).orElse(new Group());
+        Group expected = groupRepository.findById(EXISTENT_GROUP_ID_501);
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("students", "courses")
@@ -128,7 +128,7 @@ class GroupRepositoryImplTest {
 
     @Test
     void testUpdateShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> groupRepository.save(null), "update(null) should throw InvalidDataAccessApiUsageException");
+        assertThrows(InvalidDataAccessApiUsageException.class, () -> groupRepository.update(null), "update(null) should throw InvalidDataAccessApiUsageException");
     }
 
     @Test
@@ -137,13 +137,13 @@ class GroupRepositoryImplTest {
         groupRepository.save(group);
         groupRepository.delete(group);
 
-        Group actual = groupRepository.findById(group.getId()).orElse(new Group());
+        Group actual = groupRepository.findById(group.getId());
         assertFalse(actual.isActive(), "actual should not be active");
     }
 
     @Test
-    void testDeleteShouldThrowInvalidDataAccessApiUsageExceptionWhenNullPassed() {
-        assertThrows(InvalidDataAccessApiUsageException.class, () -> groupRepository.delete(null), "delete(null) should throw InvalidDataAccessApiUsageException");
+    void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> groupRepository.delete(null), "delete(null) should throw NullPointerException");
     }
 
     @Test

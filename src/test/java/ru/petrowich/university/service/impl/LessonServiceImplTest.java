@@ -15,9 +15,9 @@ import ru.petrowich.university.model.TimeSlot;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
@@ -70,9 +70,7 @@ class LessonServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnLessonWhenLessonIdPassed() {
-        Optional<Lesson> optionalFirstLesson = Optional.of(firstLesson);
-        when(mockLessonRepository.findById(LESSON_ID_5000001)).thenReturn(optionalFirstLesson);
-
+        when(mockLessonRepository.findById(LESSON_ID_5000001)).thenReturn(firstLesson);
         Lesson actual = lessonServiceImpl.getById(LESSON_ID_5000001);
 
         verify(mockLessonRepository, times(1)).findById(LESSON_ID_5000001);
@@ -82,7 +80,7 @@ class LessonServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnNullWhenNonexistentIdPassed() {
-        when(mockLessonRepository.findById(-1L)).thenReturn(Optional.empty());
+        when(mockLessonRepository.findById(-1L)).thenReturn(null);
         Lesson actual = lessonServiceImpl.getById(-1L);
 
         verify(mockLessonRepository, times(1)).findById(-1L);
@@ -91,47 +89,50 @@ class LessonServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnNullWhenNullPassed() {
-        when(mockLessonRepository.findById(null)).thenReturn(Optional.empty());
+        when(mockLessonRepository.findById(null)).thenReturn(null);
         Lesson actual = lessonServiceImpl.getById(null);
 
-        verify(mockLessonRepository, times(0)).findById(null);
+        verify(mockLessonRepository, times(1)).findById(null);
         assertNull(actual, "null should be returned");
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedLesson() {
+    void testAddShouldInvokeRepositoryUpdateWithPassedLesson() {
+        doNothing().when(mockLessonRepository).save(firstLesson);
         lessonServiceImpl.add(firstLesson);
         verify(mockLessonRepository, times(1)).save(firstLesson);
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedNull() {
+    void testAddShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockLessonRepository).save(null);
         lessonServiceImpl.add(null);
         verify(mockLessonRepository, times(1)).save(null);
     }
 
-
     @Test
     void testUpdateShouldInvokeRepositoryUpdateWithPassedLesson() {
+        doNothing().when(mockLessonRepository).update(firstLesson);
         lessonServiceImpl.update(firstLesson);
-        verify(mockLessonRepository, times(1)).save(firstLesson);
+        verify(mockLessonRepository, times(1)).update(firstLesson);
     }
 
     @Test
     void testUpdateShouldInvokeRepositoryUpdateWithPassedNull() {
+        doNothing().when(mockLessonRepository).update(null);
         lessonServiceImpl.update(null);
-        verify(mockLessonRepository, times(1)).save(null);
+        verify(mockLessonRepository, times(1)).update(null);
     }
 
     @Test
-    void testDeleteShouldInvokeRepositoryDeleteWithPassedLesson() {
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedLesson() {
         doNothing().when(mockLessonRepository).delete(firstLesson);
         lessonServiceImpl.delete(firstLesson);
         verify(mockLessonRepository, times(1)).delete(firstLesson);
     }
 
     @Test
-    void testDeleteShouldInvokeRepositoryDeleteWithPassedNull() {
+    void testDeleteShouldInvokeRepositoryUpdateWithPassedNull() {
         doNothing().when(mockLessonRepository).delete(null);
         lessonServiceImpl.delete(null);
         verify(mockLessonRepository, times(1)).delete(null);
