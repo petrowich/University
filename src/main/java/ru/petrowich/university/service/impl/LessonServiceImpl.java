@@ -8,6 +8,7 @@ import ru.petrowich.university.repository.LessonRepository;
 import ru.petrowich.university.service.LessonService;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -24,7 +25,13 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public Lesson getById(Long lessonId) {
         LOGGER.debug("getById {}", lessonId);
-        return lessonRepository.findById(lessonId);
+
+        if (lessonId == null) {
+            throw new NullPointerException();
+        }
+
+        Optional<Lesson> optionalLesson = lessonRepository.findById(lessonId);
+        return optionalLesson.orElse(null);
     }
 
     @Override
@@ -36,7 +43,7 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public void update(Lesson lesson) {
         LOGGER.debug("update {}", lesson);
-        lessonRepository.update(lesson);
+        lessonRepository.save(lesson);
     }
 
     @Override

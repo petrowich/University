@@ -8,13 +8,14 @@ import ru.petrowich.university.model.TimeSlot;
 import ru.petrowich.university.service.TimeSlotService;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class TimeSlotServiceImpl implements TimeSlotService {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
-    private TimeSlotRepository timeSlotRepository;
+    private final TimeSlotRepository timeSlotRepository;
 
     @Autowired
     public TimeSlotServiceImpl(TimeSlotRepository timeSlotRepository) {
@@ -24,7 +25,13 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     @Override
     public TimeSlot getById(Integer timeSlotId) {
         LOGGER.debug("getById {}", timeSlotId);
-        return timeSlotRepository.findById(timeSlotId);
+
+        if (timeSlotId == null) {
+            throw new NullPointerException();
+        }
+
+        Optional<TimeSlot> optionalTimeSlot = timeSlotRepository.findById(timeSlotId);
+        return optionalTimeSlot.orElse(null);
     }
 
     @Override
@@ -36,7 +43,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     @Override
     public void update(TimeSlot timeSlot) {
         LOGGER.debug("update {}", timeSlot);
-        timeSlotRepository.update(timeSlot);
+        timeSlotRepository.save(timeSlot);
     }
 
     @Override

@@ -12,14 +12,15 @@ import ru.petrowich.university.model.Student;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatObject;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.doNothing;
 
 class GroupServiceImplTest {
     private static final Integer GROUP_ID_501 = 501;
@@ -69,7 +70,8 @@ class GroupServiceImplTest {
         students.add(thirdStudent);
         firstGroup.setStudents(students);
 
-        when(mockGroupRepository.findById(GROUP_ID_501)).thenReturn(firstGroup);
+        Optional<Group> optionalFirstGroup = Optional.of(firstGroup);
+        when(mockGroupRepository.findById(GROUP_ID_501)).thenReturn(optionalFirstGroup);
 
         Group actual = groupServiceImpl.getById(GROUP_ID_501);
 
@@ -80,7 +82,7 @@ class GroupServiceImplTest {
 
     @Test
     void testGetByIdShouldReturnNullWhenWhenNonexistentIdPassed() {
-        when(mockGroupRepository.findById(-1)).thenReturn(null);
+        when(mockGroupRepository.findById(-1)).thenReturn(Optional.empty());
         Group actual = groupServiceImpl.getById(-1);
 
         verify(mockGroupRepository, times(1)).findById(-1);
@@ -88,54 +90,53 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenWhenNullPassed() {
-        when(mockGroupRepository.findById(null)).thenReturn(null);
-        Group actual = groupServiceImpl.getById(null);
-
-        verify(mockGroupRepository, times(1)).findById(null);
-        assertNull(actual, "null should be returned");
+    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> groupServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
+        verify(mockGroupRepository, times(0)).findById(null);
     }
 
     @Test
-    void testAddShouldInvokeRepositoryUpdateWithPassedCourse() {
-        doNothing().when(mockGroupRepository).save(firstGroup);
+    void testAddShouldInvokeRepositorySaveWithPassedCourse() {
         groupServiceImpl.add(firstGroup);
         verify(mockGroupRepository, times(1)).save(firstGroup);
     }
 
     @Test
-    void testAddShouldInvokeRepositoryUpdateWithPassedNull() {
-        doNothing().when(mockGroupRepository).save(null);
+    void testAddShouldInvokeRepositorySaveWithPassedNull() {
         groupServiceImpl.add(null);
         verify(mockGroupRepository, times(1)).save(null);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositoryUpdateWithPassedCourse() {
-        doNothing().when(mockGroupRepository).update(firstGroup);
+    void testUpdateShouldInvokeRepositorySaveWithPassedCourse() {
         groupServiceImpl.update(firstGroup);
-        verify(mockGroupRepository, times(1)).update(firstGroup);
+        verify(mockGroupRepository, times(1)).save(firstGroup);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositoryUpdateWithPassedNull() {
-        doNothing().when(mockGroupRepository).update(null);
+    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
         groupServiceImpl.update(null);
-        verify(mockGroupRepository, times(1)).update(null);
+        verify(mockGroupRepository, times(1)).save(null);
     }
 
     @Test
-    void testDeleteShouldInvokeRepositoryUpdateWithPassedCourse() {
-        doNothing().when(mockGroupRepository).delete(firstGroup);
+    void testDeleteShouldInvokeRepositorySaveWithPassedCourse() {
+        Group actual = new Group().setId(GROUP_ID_501).setActive(true);
+
+        Optional<Group> optionalFirstGroup = Optional.of(actual);
+        when(mockGroupRepository.findById(GROUP_ID_501)).thenReturn(optionalFirstGroup);
+
         groupServiceImpl.delete(firstGroup);
-        verify(mockGroupRepository, times(1)).delete(firstGroup);
+
+        verify(mockGroupRepository, times(1)).findById(GROUP_ID_501);
+        assertFalse(actual.isActive(),"group should turn inactive");
+        verify(mockGroupRepository, times(1)).save(firstGroup);
     }
 
     @Test
-    void testDeleteShouldInvokeRepositoryUpdateWithPassedNull() {
-        doNothing().when(mockGroupRepository).delete(null);
-        groupServiceImpl.delete(null);
-        verify(mockGroupRepository, times(1)).delete(null);
+    void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> groupServiceImpl.delete(null),"delete(null) should throw NullPointerException");
+        verify(mockGroupRepository, times(0)).save(null);
     }
 
     @Test
