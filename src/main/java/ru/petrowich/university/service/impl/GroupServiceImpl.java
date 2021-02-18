@@ -27,7 +27,7 @@ public class GroupServiceImpl implements GroupService {
         LOGGER.debug("getById {}", groupId);
 
         if (groupId == null) {
-            return null;
+            throw new NullPointerException();
         }
 
         Optional<Group> optionalGroup = groupRepository.findById(groupId);

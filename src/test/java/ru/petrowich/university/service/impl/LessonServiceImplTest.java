@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
@@ -90,12 +91,9 @@ class LessonServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenNullPassed() {
-        when(mockLessonRepository.findById(null)).thenReturn(Optional.empty());
-        Lesson actual = lessonServiceImpl.getById(null);
-
+    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> lessonServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
         verify(mockLessonRepository, times(0)).findById(null);
-        assertNull(actual, "null should be returned");
     }
 
     @Test
@@ -110,15 +108,14 @@ class LessonServiceImplTest {
         verify(mockLessonRepository, times(1)).save(null);
     }
 
-
     @Test
-    void testUpdateShouldInvokeRepositoryUpdateWithPassedLesson() {
+    void testUpdateShouldInvokeRepositorySaveWithPassedLesson() {
         lessonServiceImpl.update(firstLesson);
         verify(mockLessonRepository, times(1)).save(firstLesson);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositoryUpdateWithPassedNull() {
+    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
         lessonServiceImpl.update(null);
         verify(mockLessonRepository, times(1)).save(null);
     }

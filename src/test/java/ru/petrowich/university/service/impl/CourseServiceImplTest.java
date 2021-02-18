@@ -94,10 +94,9 @@ class CourseServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenWhenNullPassed() {
-        Course actual = courseServiceImpl.getById(null);
+    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> courseServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
         verify(mockCourseRepository, times(0)).findById(null);
-        assertNull(actual, "null should be returned");
     }
 
     @Test

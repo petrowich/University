@@ -27,7 +27,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
         LOGGER.debug("getById {}", timeSlotId);
 
         if (timeSlotId == null) {
-            return null;
+            throw new NullPointerException();
         }
 
         Optional<TimeSlot> optionalTimeSlot = timeSlotRepository.findById(timeSlotId);

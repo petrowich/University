@@ -16,6 +16,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
@@ -68,12 +69,9 @@ class TimeSlotServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenNullPassed() {
-        when(mockTimeSlotRepository.findById(null)).thenReturn(Optional.empty());
-        TimeSlot actual = timeSlotServiceImpl.getById(null);
-
+    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> timeSlotServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
         verify(mockTimeSlotRepository, times(0)).findById(null);
-        assertNull(actual, "null should be returned");
     }
 
     @Test
@@ -101,13 +99,13 @@ class TimeSlotServiceImplTest {
     }
 
     @Test
-    void testDeleteShouldInvokeRepositorySaveWithPassedTimeSlot() {
+    void testDeleteShouldInvokeRepositoryDeleteWithPassedTimeSlot() {
         timeSlotServiceImpl.delete(timeSlot);
         verify(mockTimeSlotRepository, times(1)).delete(timeSlot);
     }
 
     @Test
-    void testDeleteShouldInvokeRepositorySaveWithPassedNull() {
+    void testDeleteShouldInvokeRepositoryDeleteWithPassedNull() {
         doNothing().when(mockTimeSlotRepository).delete(null);
         timeSlotServiceImpl.delete(null);
         verify(mockTimeSlotRepository, times(1)).delete(null);

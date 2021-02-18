@@ -27,7 +27,7 @@ public class LecturerServiceImpl implements LecturerService {
         LOGGER.debug("getById {}", lecturerId);
 
         if (lecturerId == null) {
-            return null;
+            throw new NullPointerException();
         }
 
         Optional<Lecturer> optionalLecturer = lecturerRepository.findById(lecturerId);

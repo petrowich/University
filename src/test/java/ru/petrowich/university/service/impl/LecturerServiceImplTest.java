@@ -99,12 +99,9 @@ class LecturerServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenWhenNullPassed() {
-        when(mockLecturerRepository.findById(null)).thenReturn(Optional.empty());
-        Lecturer actual = lecturerServiceImpl.getById(null);
-
-        verify(mockLecturerRepository, times(0)).findById(null);
-        assertNull(actual, "null should be returned");
+    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> lecturerServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
+        verify(mockLecturerRepository, times(0)).save(null);
     }
 
     @Test

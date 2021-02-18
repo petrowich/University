@@ -35,7 +35,7 @@ public class CourseServiceImpl implements CourseService {
         LOGGER.debug("getById {}", courseId);
 
         if (courseId == null) {
-            return null;
+            throw new NullPointerException();
         }
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);

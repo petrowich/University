@@ -27,7 +27,7 @@ public class StudentServiceImpl implements StudentService {
         LOGGER.debug("getById {}", studentId);
 
         if (studentId == null) {
-            return null;
+            throw new NullPointerException();
         }
 
         Optional<Student> studentOptional = studentRepository.findById(studentId);
@@ -54,7 +54,7 @@ public class StudentServiceImpl implements StudentService {
         if (studentOptional.isPresent()) {
             Student currentStudent = studentOptional.get();
             currentStudent.setActive(false);
-            studentRepository.delete(student);
+            studentRepository.save(student);
         }
     }
 

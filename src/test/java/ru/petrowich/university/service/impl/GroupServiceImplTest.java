@@ -90,10 +90,9 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenWhenNullPassed() {
-        Group actual = groupServiceImpl.getById(null);
+    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> groupServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
         verify(mockGroupRepository, times(0)).findById(null);
-        assertNull(actual, "null should be returned");
     }
 
     @Test

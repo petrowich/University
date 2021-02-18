@@ -87,12 +87,9 @@ class StudentServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldReturnNullWhenNullPassed() {
-        when(mockStudentRepository.findById(null)).thenReturn(Optional.empty());
-        Student actual = studentServiceImpl.getById(null);
-
+    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> studentServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
         verify(mockStudentRepository, times(0)).findById(null);
-        assertNull(actual, "null should be returned");
     }
 
     @Test
@@ -120,7 +117,7 @@ class StudentServiceImplTest {
     }
 
     @Test
-    void testDeleteShouldInvokeRepositoryUpdateWithPassedStudent() {
+    void testDeleteShouldInvokeRepositorySaveWithPassedStudent() {
         Student actual = new Student().setId(PERSON_ID_50001).setActive(true);
 
         Optional<Student> optionalFirstStudent = Optional.of(actual);
@@ -130,7 +127,7 @@ class StudentServiceImplTest {
 
         verify(mockStudentRepository, times(1)).findById(PERSON_ID_50001);
         assertFalse(actual.isActive(),"lecturer should turn inactive");
-        verify(mockStudentRepository, times(1)).delete(firstStudent);
+        verify(mockStudentRepository, times(1)).save(firstStudent);
     }
 
     @Test

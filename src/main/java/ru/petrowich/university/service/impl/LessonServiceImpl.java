@@ -27,7 +27,7 @@ public class LessonServiceImpl implements LessonService {
         LOGGER.debug("getById {}", lessonId);
 
         if (lessonId == null) {
-            return null;
+            throw new NullPointerException();
         }
 
         Optional<Lesson> optionalLesson = lessonRepository.findById(lessonId);
