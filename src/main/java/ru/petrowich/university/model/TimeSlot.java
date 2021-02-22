@@ -7,25 +7,31 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Column;
 import javax.persistence.GenerationType;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalTime;
 import java.util.Objects;
 
 @Entity(name = "TimeSlot")
 @Table(name = "t_timeslots")
 public class TimeSlot {
-
     @Id
     @SequenceGenerator(name="seq_timeslots", sequenceName="seq_timeslots", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_timeslots")
     @Column(name = "timeslot_id")
     private Integer id;
 
+    @NotBlank(message = "timeslot name is empty")
+    @Size(max=255, message = "timeslot name length is more than 255 characters")
     @Column(name = "timeslot_name")
     private String name;
 
+    @NotNull(message = "timeslot start time is null")
     @Column(name = "timeslot_start_time")
     private LocalTime startTime;
 
+    @NotNull(message = "timeslot end time is null")
     @Column(name = "timeslot_end_time")
     private LocalTime endTime;
 

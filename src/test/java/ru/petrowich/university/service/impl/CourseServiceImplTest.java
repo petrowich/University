@@ -11,10 +11,12 @@ import ru.petrowich.university.repository.GroupRepository;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Lecturer;
-
-import java.util.ArrayList;
+import javax.validation.ConstraintViolation;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Set;
+import java.util.HashSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -95,20 +97,21 @@ class CourseServiceImplTest {
 
     @Test
     void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> courseServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
+        assertThrows(NullPointerException.class, () -> courseServiceImpl.getById(null), "GetById(null) should throw NullPointerException");
         verify(mockCourseRepository, times(0)).findById(null);
     }
 
     @Test
     void testAddShouldInvokeRepositorySaveWithPassedCourse() {
+        Set<ConstraintViolation<Course>> violations = new HashSet<>();
         courseServiceImpl.add(firstCourse);
         verify(mockCourseRepository, times(1)).save(firstCourse);
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedNull() {
-        courseServiceImpl.add(null);
-        verify(mockCourseRepository, times(1)).save(null);
+    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> courseServiceImpl.add(null), "add(null) should throw NullPointerException");
+        verify(mockCourseRepository, times(0)).save(null);
     }
 
     @Test
@@ -118,9 +121,9 @@ class CourseServiceImplTest {
     }
 
     @Test
-    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
-        courseServiceImpl.update(null);
-        verify(mockCourseRepository, times(1)).save(null);
+    void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> courseServiceImpl.update(null), "update(null) should throw NullPointerException");
+        verify(mockCourseRepository, times(0)).save(null);
     }
 
     @Test

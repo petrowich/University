@@ -88,7 +88,7 @@ class StudentServiceImplTest {
 
     @Test
     void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> studentServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
+        assertThrows(NullPointerException.class, () -> studentServiceImpl.getById(null), "GetById(null) should throw NullPointerException");
         verify(mockStudentRepository, times(0)).findById(null);
     }
 
@@ -99,9 +99,9 @@ class StudentServiceImplTest {
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedNull() {
-        studentServiceImpl.add(null);
-        verify(mockStudentRepository, times(1)).save(null);
+    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> studentServiceImpl.add(null), "add(null) should throw NullPointerException");
+        verify(mockStudentRepository, times(0)).save(null);
     }
 
     @Test
@@ -111,9 +111,9 @@ class StudentServiceImplTest {
     }
 
     @Test
-    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
-        studentServiceImpl.update(null);
-        verify(mockStudentRepository, times(1)).save(null);
+    void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> studentServiceImpl.update(null), "update(null) should throw NullPointerException");
+        verify(mockStudentRepository, times(0)).save(null);
     }
 
     @Test

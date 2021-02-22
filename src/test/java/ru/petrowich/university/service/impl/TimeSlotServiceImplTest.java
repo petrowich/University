@@ -70,7 +70,7 @@ class TimeSlotServiceImplTest {
 
     @Test
     void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> timeSlotServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
+        assertThrows(NullPointerException.class, () -> timeSlotServiceImpl.getById(null), "GetById(null) should throw NullPointerException");
         verify(mockTimeSlotRepository, times(0)).findById(null);
     }
 
@@ -81,9 +81,9 @@ class TimeSlotServiceImplTest {
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedNull() {
-        timeSlotServiceImpl.add(null);
-        verify(mockTimeSlotRepository, times(1)).save(null);
+    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> timeSlotServiceImpl.add(null), "add(null) should throw NullPointerException");
+        verify(mockTimeSlotRepository, times(0)).save(null);
     }
 
     @Test
@@ -93,9 +93,9 @@ class TimeSlotServiceImplTest {
     }
 
     @Test
-    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
-        timeSlotServiceImpl.update(null);
-        verify(mockTimeSlotRepository, times(1)).save(null);
+    void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> timeSlotServiceImpl.update(null), "update(null) should throw NullPointerException");
+        verify(mockTimeSlotRepository, times(0)).save(null);
     }
 
     @Test

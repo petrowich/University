@@ -1,8 +1,18 @@
 package ru.petrowich.university.model;
 
 import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.*;
+import javax.persistence.Id;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.GenerationType;
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Transient;
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -12,7 +22,6 @@ import java.util.Objects;
 @Entity(name = "Lesson")
 @Table(name = "t_lessons")
 public class Lesson implements Comparable<Lesson> {
-
     @Id
     @SequenceGenerator(name = "seq_lessons", sequenceName = "seq_lessons", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_lessons")
@@ -27,6 +36,8 @@ public class Lesson implements Comparable<Lesson> {
     @JoinColumn(name = "lecturer_id", referencedColumnName = "person_id")
     private Lecturer lecturer = new Lecturer();
 
+    @NotNull(message = "lesson date is null")
+    @FutureOrPresent(message = "lesson date is in the past")
     @Column(name = "lesson_date")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate date;
@@ -35,9 +46,11 @@ public class Lesson implements Comparable<Lesson> {
     @JoinColumn(name = "timeslot_id", referencedColumnName = "timeslot_id")
     private TimeSlot timeSlot = new TimeSlot();
 
+    @NotNull(message = "lesson start time is null")
     @Column(name = "lesson_start_time")
     private LocalTime startTime;
 
+    @NotNull(message = "lesson end time is null")
     @Column(name = "lesson_end_time")
     private LocalTime endTime;
 

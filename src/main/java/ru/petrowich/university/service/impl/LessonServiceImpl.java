@@ -6,15 +6,19 @@ import org.springframework.stereotype.Service;
 import ru.petrowich.university.model.Lesson;
 import ru.petrowich.university.repository.LessonRepository;
 import ru.petrowich.university.service.LessonService;
-
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static javax.validation.Validation.buildDefaultValidatorFactory;
 
 @Service
 public class LessonServiceImpl implements LessonService {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
+    private final Validator validator = buildDefaultValidatorFactory().getValidator();
     private final LessonRepository lessonRepository;
 
     @Autowired
@@ -37,12 +41,30 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public void add(Lesson lesson) {
         LOGGER.debug("add {}", lesson);
+
+        if (lesson == null) {
+            throw new NullPointerException();
+        }
+
+        if(checkViolations(lesson)){
+            throw new IllegalArgumentException();
+        }
+
         lessonRepository.save(lesson);
     }
 
     @Override
     public void update(Lesson lesson) {
         LOGGER.debug("update {}", lesson);
+
+        if (lesson == null) {
+            throw new NullPointerException();
+        }
+
+        if(checkViolations(lesson)){
+            throw new IllegalArgumentException();
+        }
+
         lessonRepository.save(lesson);
     }
 
@@ -56,5 +78,11 @@ public class LessonServiceImpl implements LessonService {
     public List<Lesson> getAll() {
         LOGGER.debug("getAll");
         return lessonRepository.findAll();
+    }
+
+    private boolean checkViolations(Lesson lesson) {
+        Set<ConstraintViolation<Lesson>> violations = validator.validate(lesson);
+        violations.forEach(violation -> LOGGER.error(violation.getMessage()));
+        return !violations.isEmpty();
     }
 }

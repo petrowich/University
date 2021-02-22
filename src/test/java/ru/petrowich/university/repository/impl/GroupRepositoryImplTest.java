@@ -39,6 +39,7 @@ class GroupRepositoryImplTest {
     private static final String EXISTENT_GROUP_NAME_501 = "AA-01";
     private static final String EXISTENT_GROUP_NAME_502 = "BB-02";
     private static final String EXISTENT_GROUP_NAME_503 = "CC-03";
+    private static final Integer EXISTENT_GROUP_CAPACITY = 20;
     private static final Integer EXISTENT_COURSE_ID_51 = 51;
     private static final Integer EXISTENT_COURSE_ID_52 = 52;
     private static final Integer EXISTENT_COURSE_ID_54 = 54;
@@ -52,6 +53,7 @@ class GroupRepositoryImplTest {
         Group expected = new Group()
                 .setId(EXISTENT_GROUP_ID_501)
                 .setName(EXISTENT_GROUP_NAME_501)
+                .setCapacity(EXISTENT_GROUP_CAPACITY)
                 .setActive(true);
 
         List<Student> expectedStudents = new ArrayList<>();

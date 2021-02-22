@@ -23,9 +23,9 @@ INSERT INTO public.t_timeslots (timeslot_name, timeslot_start_time, timeslot_end
 , ('eighth lesson','20:00:00','21:30:00');
 
 INSERT INTO public.t_groups (group_id, group_name, group_capacity, group_active) VALUES
-  (501, 'AA-01', 2, TRUE)
-, (502, 'BB-02', 1, TRUE)
-, (503, 'CC-03', 0, FALSE);
+  (501, 'AA-01', 20, TRUE)
+, (502, 'BB-02', 20, TRUE)
+, (503, 'CC-03', 20, FALSE);
 
 insert into public.t_persons (person_id, person_first_name, person_last_name, person_role_id, person_email, person_comment, person_active) VALUES
   (50001,'Рулон','Обоев',1, 'rulon.oboev@university.edu', 'stupid', TRUE)

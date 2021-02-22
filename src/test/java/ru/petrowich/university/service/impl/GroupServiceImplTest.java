@@ -91,7 +91,7 @@ class GroupServiceImplTest {
 
     @Test
     void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> groupServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
+        assertThrows(NullPointerException.class, () -> groupServiceImpl.getById(null), "GetById(null) should throw NullPointerException");
         verify(mockGroupRepository, times(0)).findById(null);
     }
 
@@ -102,9 +102,9 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedNull() {
-        groupServiceImpl.add(null);
-        verify(mockGroupRepository, times(1)).save(null);
+    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> groupServiceImpl.add(null), "add(null) should throw NullPointerException");
+        verify(mockGroupRepository, times(0)).save(null);
     }
 
     @Test
@@ -114,9 +114,9 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
-        groupServiceImpl.update(null);
-        verify(mockGroupRepository, times(1)).save(null);
+    void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
+        assertThrows(NullPointerException.class, () -> groupServiceImpl.update(null), "update(null) should throw NullPointerException");
+        verify(mockGroupRepository, times(0)).save(null);
     }
 
     @Test

@@ -18,20 +18,22 @@
             <tr class="text-center">
                 <th scope="col">Group</th>
                 <th scope="col">Students</th>
-                <th scope="col"/>
+                <th scope="col">Capacity</th>
+                <th scope="col"></th>
             </tr>
             </thead>
             <tbody>
                 <tr class="text-center" th:each="group : ${allGroups}" th:classappend="${group.isActive() ? '':'alert alert-danger text-danger'}">
                     <td><a href="#" th:href="@{/students/group(id=${group.id})}" th:text="${group.name}" th:classappend="${group.isActive() ? '':'text-danger'}">group name</a></td>
                     <td th:text="${group.getStudents().size()}">0</td>
+                    <td th:text="${group.getCapacity}">0</td>
                     <td><a th:href="@{/students/group/edit(id=${group.id})}" class="btn btn-light fas fa-edit"></a></td>
                 </tr>
             </tbody>
             <tfoot>
                 <tr class="text-center">
-                    <td colspan="2"/>
-                    <td><a th:href="@{/students/group/new}" class="btn btn-success"><em class="fas fa-plus ml-0"/></a></td>
+                    <td colspan="3"></td>
+                    <td><a th:href="@{/students/group/new}" class="btn btn-success"><em class="fas fa-plus ml-0"></em></a></td>
                 </tr>
             </tfoot>
         </table>
