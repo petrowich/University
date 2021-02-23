@@ -4,7 +4,7 @@ import org.assertj.core.internal.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.petrowich.university.University;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = {University.class})
+@SpringBootTest
+@ActiveProfiles("test")
 class StudentValidationTest {
     @Autowired
     private Validator validator;

@@ -6,8 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import ru.petrowich.university.AppTestConfiguration;
-import ru.petrowich.university.University;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Student;
 import ru.petrowich.university.model.Course;
@@ -30,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@SpringBootTest(classes = {University.class, AppTestConfiguration.class})
+@SpringBootTest
 @ActiveProfiles("test")
 @Transactional
 class LessonRepositoryImplTest {
