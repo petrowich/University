@@ -57,7 +57,7 @@ public class LessonServiceImpl implements LessonService {
         LOGGER.debug("update {}", lesson);
 
         if (lesson == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead lesson");
         }
 
         checkViolations(lesson);

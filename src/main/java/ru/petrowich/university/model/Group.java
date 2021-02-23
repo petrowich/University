@@ -23,18 +23,18 @@ import java.util.Objects;
 @Table(name = "t_groups")
 public class Group {
     @Id
-    @SequenceGenerator(name="seq_groups", sequenceName="seq_groups", allocationSize = 1)
+    @SequenceGenerator(name = "seq_groups", sequenceName = "seq_groups", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_groups")
     @Column(name = "group_id")
     private Integer id;
 
     @NotBlank(message = "group name is empty")
-    @Size(max=255, message = "group name length is more than 255 characters")
+    @Size(max = 255, message = "group name length is more than 255 characters")
     @Column(name = "group_name")
     private String name;
 
-    @Min(value=1, message = "group capacity is less than 1")
-    @Max(value=100,  message = "group capacity exceed 100")
+    @Min(value = 1, message = "group capacity is less than 1")
+    @Max(value = 100, message = "group capacity exceed 100")
     @Column(name = "group_capacity")
     private Integer capacity;
 

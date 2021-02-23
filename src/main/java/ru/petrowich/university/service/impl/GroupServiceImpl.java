@@ -44,7 +44,7 @@ public class GroupServiceImpl implements GroupService {
         LOGGER.debug("add {}", group);
 
         if (group == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead group");
         }
 
         checkViolations(group);

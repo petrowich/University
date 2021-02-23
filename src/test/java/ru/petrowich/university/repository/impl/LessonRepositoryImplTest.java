@@ -107,7 +107,7 @@ class LessonRepositoryImplTest {
 
         assertThat(actual)
                 .usingRecursiveComparison()
-                .ignoringFields("students","course","lecturer","timeSlot")
+                .ignoringFields("students", "course", "lecturer", "timeSlot")
                 .isEqualTo(expected);
         assertThat(actual.getCourse()).isEqualTo(expected.getCourse());
         assertThat(actual.getLecturer()).isEqualTo(expected.getLecturer());
@@ -143,7 +143,7 @@ class LessonRepositoryImplTest {
         Lesson actual = lessonRepository.findById(expected.getId()).orElse(new Lesson());
         assertThat(actual)
                 .usingRecursiveComparison()
-                .ignoringFields("students","course","lecturer","timeSlot")
+                .ignoringFields("students", "course", "lecturer", "timeSlot")
                 .isEqualTo(expected);
         assertThat(actual.getCourse()).isEqualTo(expected.getCourse());
         assertThat(actual.getLecturer()).isEqualTo(expected.getLecturer());
@@ -171,7 +171,7 @@ class LessonRepositoryImplTest {
         Lesson expected = lessonRepository.findById(EXISTENT_LESSON_ID_5000001).orElse(new Lesson());
         assertThat(actual)
                 .usingRecursiveComparison()
-                .ignoringFields("students","course","lecturer","timeSlot")
+                .ignoringFields("students", "course", "lecturer", "timeSlot")
                 .isEqualTo(expected);
         assertThat(actual.getCourse()).isEqualTo(expected.getCourse());
         assertThat(actual.getLecturer()).isEqualTo(expected.getLecturer());

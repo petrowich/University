@@ -23,7 +23,7 @@ class GroupValidationTest {
     private Validator validator;
 
     @Test
-    void testGroupNameSizeValidation(){
+    void testGroupNameSizeValidation() {
         String longName = new RandomString(300).nextString();
         Group group = new Group().setName(longName);
         Set<ConstraintViolation<Group>> violations = validator.validate(group);

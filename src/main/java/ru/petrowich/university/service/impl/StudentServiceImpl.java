@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.petrowich.university.repository.StudentRepository;
 import ru.petrowich.university.model.Student;
 import ru.petrowich.university.service.StudentService;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
@@ -44,7 +45,7 @@ public class StudentServiceImpl implements StudentService {
         LOGGER.debug("add {}", student);
 
         if (student == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead student");
         }
 
         checkViolations(student);
@@ -86,7 +87,7 @@ public class StudentServiceImpl implements StudentService {
     private void checkViolations(Student student) {
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
 
-        if(!violations.isEmpty()) {
+        if (!violations.isEmpty()) {
             violations.forEach(violation -> LOGGER.error(violation.getMessage()));
             throw new ConstraintViolationException(violations);
         }

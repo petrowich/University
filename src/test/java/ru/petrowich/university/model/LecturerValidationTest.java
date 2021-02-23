@@ -23,7 +23,7 @@ class LecturerValidationTest {
     private Validator validator;
 
     @Test
-    void testLecturerFirstNameSizeValidation(){
+    void testLecturerFirstNameSizeValidation() {
         String longFirstName = new RandomString(300).nextString();
         Lecturer lecturer = new Lecturer().setFirstName(longFirstName);
         Set<ConstraintViolation<Lecturer>> violations = validator.validate(lecturer);
@@ -37,7 +37,7 @@ class LecturerValidationTest {
     }
 
     @Test
-    void testLecturerLastNameSizeValidation(){
+    void testLecturerLastNameSizeValidation() {
         String longLastName = new RandomString(300).nextString();
         Lecturer lecturer = new Lecturer().setLastName(longLastName);
         Set<ConstraintViolation<Lecturer>> violations = validator.validate(lecturer);
@@ -51,7 +51,7 @@ class LecturerValidationTest {
     }
 
     @Test
-    void testLecturerEmailValidation(){
+    void testLecturerEmailValidation() {
         String email = new RandomString(10).nextString();
         Lecturer lecturer = new Lecturer().setEmail(email);
         Set<ConstraintViolation<Lecturer>> violations = validator.validate(lecturer);
@@ -65,7 +65,7 @@ class LecturerValidationTest {
     }
 
     @Test
-    void testLecturerEmailNullValidation(){
+    void testLecturerEmailNullValidation() {
         Lecturer lecturer = new Lecturer().setEmail(null);
         Set<ConstraintViolation<Lecturer>> violations = validator.validate(lecturer);
 
@@ -78,7 +78,7 @@ class LecturerValidationTest {
     }
 
     @Test
-    void testCourseCommentSizeValidation(){
+    void testCourseCommentSizeValidation() {
         String longComment = new RandomString(3000).nextString();
         Lecturer lecturer = new Lecturer().setComment(longComment);
         Set<ConstraintViolation<Lecturer>> violations = validator.validate(lecturer);

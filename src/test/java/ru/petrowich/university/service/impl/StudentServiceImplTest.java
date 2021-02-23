@@ -111,9 +111,9 @@ class StudentServiceImplTest {
     }
 
     @Test
-    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+    void testAddShouldThrowIllegalArgumentExceptionWhenNullPassed() {
         when(mockValidator.validate(firstStudent)).thenReturn(violations);
-        assertThrows(NullPointerException.class, () -> studentServiceImpl.add(null), "add(null) should throw NullPointerException");
+        assertThrows(IllegalArgumentException.class, () -> studentServiceImpl.add(null), "add(null) should throw IllegalArgumentException");
 
         verify(mockValidator, times(0)).validate(firstStudent);
         verify(mockStudentRepository, times(0)).save(null);
@@ -147,13 +147,13 @@ class StudentServiceImplTest {
         studentServiceImpl.delete(firstStudent);
 
         verify(mockStudentRepository, times(1)).findById(PERSON_ID_50001);
-        assertFalse(actual.isActive(),"lecturer should turn inactive");
+        assertFalse(actual.isActive(), "lecturer should turn inactive");
         verify(mockStudentRepository, times(1)).save(firstStudent);
     }
 
     @Test
     void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> studentServiceImpl.delete(null),"delete(null) should throw NullPointerException");
+        assertThrows(NullPointerException.class, () -> studentServiceImpl.delete(null), "delete(null) should throw NullPointerException");
         verify(mockStudentRepository, times(0)).save(null);
     }
 

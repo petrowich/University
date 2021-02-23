@@ -93,9 +93,9 @@ class TimeSlotServiceImplTest {
     }
 
     @Test
-    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+    void testAddShouldThrowIllegalArgumentExceptionWhenNullPassed() {
         when(mockValidator.validate(timeSlot)).thenReturn(violations);
-        assertThrows(NullPointerException.class, () -> timeSlotServiceImpl.add(null), "add(null) should throw NullPointerException");
+        assertThrows(IllegalArgumentException.class, () -> timeSlotServiceImpl.add(null), "add(null) should throw IllegalArgumentException");
 
         verify(mockValidator, times(0)).validate(timeSlot);
         verify(mockTimeSlotRepository, times(0)).save(null);

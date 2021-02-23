@@ -22,7 +22,7 @@ class LessonValidationTest {
     private Validator validator;
 
     @Test
-    void testLessonDatePastValidation(){
+    void testLessonDatePastValidation() {
         LocalDate pastDate = LocalDate.of(2000, 12, 31);
         Lesson Lesson = new Lesson().setDate(pastDate);
         Set<ConstraintViolation<Lesson>> violations = validator.validate(Lesson);
@@ -36,7 +36,7 @@ class LessonValidationTest {
     }
 
     @Test
-    void testLessonDateNullValidation(){
+    void testLessonDateNullValidation() {
         Lesson Lesson = new Lesson().setDate(null);
         Set<ConstraintViolation<Lesson>> violations = validator.validate(Lesson);
 
@@ -49,7 +49,7 @@ class LessonValidationTest {
     }
 
     @Test
-    void testLessonStartTimeNullValidation(){
+    void testLessonStartTimeNullValidation() {
         Lesson Lesson = new Lesson().setStartTime(null);
         Set<ConstraintViolation<Lesson>> violations = validator.validate(Lesson);
 
@@ -62,7 +62,7 @@ class LessonValidationTest {
     }
 
     @Test
-    void testLessonEndTimeNullValidation(){
+    void testLessonEndTimeNullValidation() {
         Lesson Lesson = new Lesson().setEndTime(null);
         Set<ConstraintViolation<Lesson>> violations = validator.validate(Lesson);
 

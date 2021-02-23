@@ -11,6 +11,7 @@ import ru.petrowich.university.repository.GroupRepository;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Lecturer;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.List;
@@ -116,9 +117,9 @@ class CourseServiceImplTest {
     }
 
     @Test
-    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+    void testAddShouldThrowIllegalArgumentExceptionWhenNullPassed() {
         when(mockValidator.validate(firstCourse)).thenReturn(violations);
-        assertThrows(NullPointerException.class, () -> courseServiceImpl.add(null), "add(null) should throw NullPointerException");
+        assertThrows(IllegalArgumentException.class, () -> courseServiceImpl.add(null), "add(null) should throw IllegalArgumentException");
 
         verify(mockValidator, times(0)).validate(firstCourse);
         verify(mockCourseRepository, times(0)).save(null);
@@ -152,13 +153,13 @@ class CourseServiceImplTest {
         courseServiceImpl.delete(firstCourse);
 
         verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
-        assertFalse(actual.isActive(),"course should turn inactive");
+        assertFalse(actual.isActive(), "course should turn inactive");
         verify(mockCourseRepository, times(1)).save(firstCourse);
     }
 
     @Test
     void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> courseServiceImpl.delete(null),"delete(null) should throw NullPointerException");
+        assertThrows(NullPointerException.class, () -> courseServiceImpl.delete(null), "delete(null) should throw NullPointerException");
         verify(mockCourseRepository, times(0)).save(null);
     }
 
@@ -179,7 +180,7 @@ class CourseServiceImplTest {
     }
 
     @Test
-    void testAssignGroupToCourseShouldInvokeRepositoryAssignGroupToCourse(){
+    void testAssignGroupToCourseShouldInvokeRepositoryAssignGroupToCourse() {
         List<Group> currentGroups = new ArrayList<>();
         currentGroups.add(firstGroup);
         currentGroups.add(secondGroup);
@@ -206,7 +207,7 @@ class CourseServiceImplTest {
     }
 
     @Test
-    void testAssignGroupToCourseShouldNotInvokeRepositoryAssignGroupToCourseWhenAssignedGroupPassed(){
+    void testAssignGroupToCourseShouldNotInvokeRepositoryAssignGroupToCourseWhenAssignedGroupPassed() {
         List<Group> currentGroups = new ArrayList<>();
         currentGroups.add(firstGroup);
         currentGroups.add(secondGroup);
@@ -232,7 +233,7 @@ class CourseServiceImplTest {
     }
 
     @Test
-    void testRemoveGroupToCourseShouldInvokeRepositoryRemoveGroupFromCourse(){
+    void testRemoveGroupToCourseShouldInvokeRepositoryRemoveGroupFromCourse() {
         List<Group> currentGroups = new ArrayList<>();
         currentGroups.add(firstGroup);
         currentGroups.add(secondGroup);

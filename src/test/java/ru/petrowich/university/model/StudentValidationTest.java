@@ -22,7 +22,7 @@ class StudentValidationTest {
     private Validator validator;
 
     @Test
-    void testStudentFirstNameSizeValidation(){
+    void testStudentFirstNameSizeValidation() {
         String longFirstName = new RandomString(300).nextString();
         Student student = new Student().setFirstName(longFirstName);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
@@ -36,7 +36,7 @@ class StudentValidationTest {
     }
 
     @Test
-    void testStudentLastNameSizeValidation(){
+    void testStudentLastNameSizeValidation() {
         String longLastName = new RandomString(300).nextString();
         Student student = new Student().setLastName(longLastName);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
@@ -50,7 +50,7 @@ class StudentValidationTest {
     }
 
     @Test
-    void testStudentEmailValidation(){
+    void testStudentEmailValidation() {
         String email = new RandomString(10).nextString();
         Student student = new Student().setEmail(email);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
@@ -64,7 +64,7 @@ class StudentValidationTest {
     }
 
     @Test
-    void testStudentEmailNullValidation(){
+    void testStudentEmailNullValidation() {
         Student student = new Student().setEmail(null);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
 
@@ -77,7 +77,7 @@ class StudentValidationTest {
     }
 
     @Test
-    void testCourseCommentSizeValidation(){
+    void testCourseCommentSizeValidation() {
         String longComment = new RandomString(3000).nextString();
         Student student = new Student().setComment(longComment);
         Set<ConstraintViolation<Student>> violations = validator.validate(student);

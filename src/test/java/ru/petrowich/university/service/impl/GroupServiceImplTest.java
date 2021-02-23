@@ -114,9 +114,9 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+    void testAddShouldThrowIllegalArgumentExceptionWhenNullPassed() {
         when(mockValidator.validate(firstGroup)).thenReturn(violations);
-        assertThrows(NullPointerException.class, () -> groupServiceImpl.add(null), "add(null) should throw NullPointerException");
+        assertThrows(IllegalArgumentException.class, () -> groupServiceImpl.add(null), "add(null) should throw IllegalArgumentException");
 
         verify(mockValidator, times(0)).validate(firstGroup);
         verify(mockGroupRepository, times(0)).save(null);
@@ -150,13 +150,13 @@ class GroupServiceImplTest {
         groupServiceImpl.delete(firstGroup);
 
         verify(mockGroupRepository, times(1)).findById(GROUP_ID_501);
-        assertFalse(actual.isActive(),"group should turn inactive");
+        assertFalse(actual.isActive(), "group should turn inactive");
         verify(mockGroupRepository, times(1)).save(firstGroup);
     }
 
     @Test
     void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> groupServiceImpl.delete(null),"delete(null) should throw NullPointerException");
+        assertThrows(NullPointerException.class, () -> groupServiceImpl.delete(null), "delete(null) should throw NullPointerException");
         verify(mockGroupRepository, times(0)).save(null);
     }
 

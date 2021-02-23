@@ -22,7 +22,7 @@ class TimeSlotValidationTest {
     private Validator validator;
 
     @Test
-    void testTimeSlotNameSizeValidation(){
+    void testTimeSlotNameSizeValidation() {
         String longName = new RandomString(300).nextString();
         TimeSlot timeSlot = new TimeSlot().setName(longName);
         Set<ConstraintViolation<TimeSlot>> violations = validator.validate(timeSlot);
@@ -36,7 +36,7 @@ class TimeSlotValidationTest {
     }
 
     @Test
-    void testTimeSlotNameNotBlankValidation(){
+    void testTimeSlotNameNotBlankValidation() {
         TimeSlot timeSlot = new TimeSlot().setName("");
         Set<ConstraintViolation<TimeSlot>> violations = validator.validate(timeSlot);
 
@@ -49,7 +49,7 @@ class TimeSlotValidationTest {
     }
 
     @Test
-    void testTimeSlotNameNullValidation(){
+    void testTimeSlotNameNullValidation() {
         TimeSlot timeSlot = new TimeSlot().setName(null);
         Set<ConstraintViolation<TimeSlot>> violations = validator.validate(timeSlot);
 
@@ -62,7 +62,7 @@ class TimeSlotValidationTest {
     }
 
     @Test
-    void testTimeSlotStartTimeNullValidation(){
+    void testTimeSlotStartTimeNullValidation() {
         TimeSlot timeSlot = new TimeSlot().setStartTime(null);
         Set<ConstraintViolation<TimeSlot>> violations = validator.validate(timeSlot);
 
@@ -75,7 +75,7 @@ class TimeSlotValidationTest {
     }
 
     @Test
-    void testTimeSlotEndTimeNullValidation(){
+    void testTimeSlotEndTimeNullValidation() {
         TimeSlot timeSlot = new TimeSlot().setEndTime(null);
         Set<ConstraintViolation<TimeSlot>> violations = validator.validate(timeSlot);
 

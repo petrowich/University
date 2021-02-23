@@ -44,7 +44,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
         LOGGER.debug("add {}", timeSlot);
 
         if (timeSlot == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead timeSlot");
         }
 
         checkViolations(timeSlot);

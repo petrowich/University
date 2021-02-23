@@ -22,7 +22,7 @@ class CourseValidationTest {
     private Validator validator;
 
     @Test
-    void testCourseNameSizeValidation(){
+    void testCourseNameSizeValidation() {
         String longName = new RandomString(300).nextString();
         Course course = new Course().setName(longName);
         Set<ConstraintViolation<Course>> violations = validator.validate(course);
@@ -62,7 +62,7 @@ class CourseValidationTest {
     }
 
     @Test
-    void testCourseDescriptionSizeValidation(){
+    void testCourseDescriptionSizeValidation() {
         String longDescription = new RandomString(3000).nextString();
         Course course = new Course().setDescription(longDescription);
         Set<ConstraintViolation<Course>> violations = validator.validate(course);

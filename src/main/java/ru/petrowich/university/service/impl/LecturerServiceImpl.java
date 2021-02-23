@@ -44,7 +44,7 @@ public class LecturerServiceImpl implements LecturerService {
         LOGGER.debug("add {}", lecturer);
 
         if (lecturer == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead lecturer");
         }
 
         checkViolations(lecturer);

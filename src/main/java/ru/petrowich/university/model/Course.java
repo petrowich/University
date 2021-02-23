@@ -27,11 +27,11 @@ public class Course {
     private Integer id;
 
     @NotBlank(message = "course name is empty")
-    @Size(max=255, message = "course name length is more than 255 characters")
+    @Size(max = 255, message = "course name length is more than 255 characters")
     @Column(name = "course_name")
     private String name;
 
-    @Size(max=2048, message = "description is more than 2048 characters")
+    @Size(max = 2048, message = "description is more than 2048 characters")
     @Column(name = "course_description")
     private String description;
 

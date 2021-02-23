@@ -52,7 +52,7 @@ public class CourseServiceImpl implements CourseService {
         LOGGER.debug("add {}", course);
 
         if (course == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead course");
         }
 
         checkViolations(course);

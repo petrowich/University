@@ -135,9 +135,9 @@ class LessonServiceImplTest {
     }
 
     @Test
-    void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
+    void testUpdateShouldThrowIllegalArgumentExceptionWhenNullPassed() {
         when(mockValidator.validate(firstLesson)).thenReturn(violations);
-        assertThrows(NullPointerException.class, () -> lessonServiceImpl.update(null), "update(null) should throw NullPointerException");
+        assertThrows(IllegalArgumentException.class, () -> lessonServiceImpl.update(null), "update(null) should throw IllegalArgumentException");
 
         verify(mockValidator, times(0)).validate(firstLesson);
         verify(mockLessonRepository, times(0)).save(null);
