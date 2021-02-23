@@ -10,6 +10,9 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import javax.validation.Validator;
+
+import static javax.validation.Validation.buildDefaultValidatorFactory;
 
 @Configuration
 @EnableTransactionManagement

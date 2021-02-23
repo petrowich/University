@@ -10,8 +10,12 @@ import ru.petrowich.university.repository.GroupRepository;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Student;
 
-import java.util.ArrayList;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +40,8 @@ class GroupServiceImplTest {
     private static final String PERSON_EMAIL_50002 = "obval.zaboev@university.edu";
     private static final String PERSON_EMAIL_50003 = "record.nadoev@university.edu";
 
+    private static final Set<ConstraintViolation<Group>> violations = new HashSet<>();
+
     private final Group firstGroup = new Group().setId(GROUP_ID_501).setName(GROUP_NAME_501).setActive(true);
     private final Group secondGroup = new Group().setId(GROUP_ID_502).setName(GROUP_NAME_502).setActive(true);
     private final Group thirdGroup = new Group().setId(GROUP_ID_503).setName(GROUP_NAME_503).setActive(false);
@@ -51,6 +57,9 @@ class GroupServiceImplTest {
 
     @InjectMocks
     private GroupServiceImpl groupServiceImpl;
+
+    @Mock
+    private Validator mockValidator;
 
     @BeforeEach
     private void setUp() {
@@ -97,25 +106,37 @@ class GroupServiceImplTest {
 
     @Test
     void testAddShouldInvokeRepositorySaveWithPassedCourse() {
+        when(mockValidator.validate(firstGroup)).thenReturn(violations);
         groupServiceImpl.add(firstGroup);
+
+        verify(mockValidator, times(1)).validate(firstGroup);
         verify(mockGroupRepository, times(1)).save(firstGroup);
     }
 
     @Test
     void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstGroup)).thenReturn(violations);
         assertThrows(NullPointerException.class, () -> groupServiceImpl.add(null), "add(null) should throw NullPointerException");
+
+        verify(mockValidator, times(0)).validate(firstGroup);
         verify(mockGroupRepository, times(0)).save(null);
     }
 
     @Test
     void testUpdateShouldInvokeRepositorySaveWithPassedCourse() {
+        when(mockValidator.validate(firstGroup)).thenReturn(violations);
         groupServiceImpl.update(firstGroup);
+
+        verify(mockValidator, times(1)).validate(firstGroup);
         verify(mockGroupRepository, times(1)).save(firstGroup);
     }
 
     @Test
     void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstGroup)).thenReturn(violations);
         assertThrows(NullPointerException.class, () -> groupServiceImpl.update(null), "update(null) should throw NullPointerException");
+
+        verify(mockValidator, times(0)).validate(firstGroup);
         verify(mockGroupRepository, times(0)).save(null);
     }
 

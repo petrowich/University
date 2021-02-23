@@ -7,22 +7,23 @@ import ru.petrowich.university.repository.TimeSlotRepository;
 import ru.petrowich.university.model.TimeSlot;
 import ru.petrowich.university.service.TimeSlotService;
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static javax.validation.Validation.buildDefaultValidatorFactory;
 
 @Service
 public class TimeSlotServiceImpl implements TimeSlotService {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
-    private final Validator validator = buildDefaultValidatorFactory().getValidator();
+    private final Validator validator;
     private final TimeSlotRepository timeSlotRepository;
 
     @Autowired
-    public TimeSlotServiceImpl(TimeSlotRepository timeSlotRepository) {
+    public TimeSlotServiceImpl(Validator validator, TimeSlotRepository timeSlotRepository) {
+        this.validator = validator;
         this.timeSlotRepository = timeSlotRepository;
     }
 
@@ -46,9 +47,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
             throw new NullPointerException();
         }
 
-        if(checkViolations(timeSlot)){
-            throw new IllegalArgumentException();
-        }
+        checkViolations(timeSlot);
 
         timeSlotRepository.save(timeSlot);
     }
@@ -61,9 +60,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
             throw new NullPointerException();
         }
 
-        if(checkViolations(timeSlot)){
-            throw new IllegalArgumentException();
-        }
+        checkViolations(timeSlot);
 
         timeSlotRepository.save(timeSlot);
     }
@@ -80,9 +77,12 @@ public class TimeSlotServiceImpl implements TimeSlotService {
         return timeSlotRepository.findAll();
     }
 
-    private boolean checkViolations(TimeSlot timeSlot) {
+    private void checkViolations(TimeSlot timeSlot) {
         Set<ConstraintViolation<TimeSlot>> violations = validator.validate(timeSlot);
-        violations.forEach(violation -> LOGGER.error(violation.getMessage()));
-        return !violations.isEmpty();
+
+        if(!violations.isEmpty()) {
+            violations.forEach(violation -> LOGGER.error(violation.getMessage()));
+            throw new ConstraintViolationException(violations);
+        }
     }
 }

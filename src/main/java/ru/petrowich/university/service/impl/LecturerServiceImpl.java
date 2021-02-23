@@ -7,22 +7,23 @@ import ru.petrowich.university.repository.LecturerRepository;
 import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.service.LecturerService;
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static javax.validation.Validation.buildDefaultValidatorFactory;
 
 @Service
 public class LecturerServiceImpl implements LecturerService {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
-    private final Validator validator = buildDefaultValidatorFactory().getValidator();
+    private final Validator validator;
     private final LecturerRepository lecturerRepository;
 
     @Autowired
-    public LecturerServiceImpl(LecturerRepository lecturerRepository) {
+    public LecturerServiceImpl(Validator validator, LecturerRepository lecturerRepository) {
+        this.validator = validator;
         this.lecturerRepository = lecturerRepository;
     }
 
@@ -46,9 +47,7 @@ public class LecturerServiceImpl implements LecturerService {
             throw new NullPointerException();
         }
 
-        if(checkViolations(lecturer)){
-            throw new IllegalArgumentException();
-        }
+        checkViolations(lecturer);
 
         lecturerRepository.save(lecturer);
     }
@@ -61,9 +60,7 @@ public class LecturerServiceImpl implements LecturerService {
             throw new NullPointerException();
         }
 
-        if(checkViolations(lecturer)){
-            throw new IllegalArgumentException();
-        }
+        checkViolations(lecturer);
 
         lecturerRepository.save(lecturer);
     }
@@ -86,9 +83,12 @@ public class LecturerServiceImpl implements LecturerService {
         return lecturerRepository.findAll();
     }
 
-    private boolean checkViolations(Lecturer lecturer) {
+    private void checkViolations(Lecturer lecturer) {
         Set<ConstraintViolation<Lecturer>> violations = validator.validate(lecturer);
-        violations.forEach(violation -> LOGGER.error(violation.getMessage()));
-        return !violations.isEmpty();
+
+        if(!violations.isEmpty()) {
+            violations.forEach(violation -> LOGGER.error(violation.getMessage()));
+            throw new ConstraintViolationException(violations);
+        }
     }
 }

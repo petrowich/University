@@ -11,8 +11,12 @@ import ru.petrowich.university.repository.StudentRepository;
 import ru.petrowich.university.model.Student;
 import ru.petrowich.university.model.Group;
 
-import java.util.ArrayList;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +39,8 @@ class StudentServiceImplTest {
     private static final String GROUP_NAME_501 = "AA-01";
     private static final String GROUP_NAME_502 = "BB-02";
 
+    private static final Set<ConstraintViolation<Student>> violations = new HashSet<>();
+
     private final Group firstGroup = new Group().setId(GROUP_ID_501).setName(GROUP_NAME_501).setActive(true);
     private final Group secondGroup = new Group().setId(GROUP_ID_502).setName(GROUP_NAME_502).setActive(true);
 
@@ -49,6 +55,9 @@ class StudentServiceImplTest {
 
     @Mock
     private GroupRepository mockGroupRepository;
+
+    @Mock
+    private Validator mockValidator;
 
     @InjectMocks
     private StudentServiceImpl studentServiceImpl;
@@ -94,25 +103,37 @@ class StudentServiceImplTest {
 
     @Test
     void testAddShouldInvokeRepositorySaveWithPassedStudent() {
+        when(mockValidator.validate(firstStudent)).thenReturn(violations);
         studentServiceImpl.add(firstStudent);
+
+        verify(mockValidator, times(1)).validate(firstStudent);
         verify(mockStudentRepository, times(1)).save(firstStudent);
     }
 
     @Test
     void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstStudent)).thenReturn(violations);
         assertThrows(NullPointerException.class, () -> studentServiceImpl.add(null), "add(null) should throw NullPointerException");
+
+        verify(mockValidator, times(0)).validate(firstStudent);
         verify(mockStudentRepository, times(0)).save(null);
     }
 
     @Test
     void testUpdateShouldInvokeRepositorySaveWithPassedStudent() {
+        when(mockValidator.validate(firstStudent)).thenReturn(violations);
         studentServiceImpl.update(firstStudent);
+
+        verify(mockValidator, times(1)).validate(firstStudent);
         verify(mockStudentRepository, times(1)).save(firstStudent);
     }
 
     @Test
     void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstStudent)).thenReturn(violations);
         assertThrows(NullPointerException.class, () -> studentServiceImpl.update(null), "update(null) should throw NullPointerException");
+
+        verify(mockValidator, times(0)).validate(firstStudent);
         verify(mockStudentRepository, times(0)).save(null);
     }
 

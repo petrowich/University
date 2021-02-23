@@ -11,10 +11,15 @@ import ru.petrowich.university.model.Lecturer;
 import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Lesson;
 import ru.petrowich.university.model.TimeSlot;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +46,8 @@ class LessonServiceImplTest {
     private static final Long LESSON_ID_5000002 = 5000002L;
     private static final Long LESSON_ID_5000003 = 5000003L;
 
+    private static final Set<ConstraintViolation<Lesson>> violations = new HashSet<>();
+
     private final Lecturer lecturer = new Lecturer().setId(PERSON_ID_50005).setEmail(PERSON_EMAIL_50005).setActive(true);
 
     private final Course firstCourse = new Course().setId(COURSE_ID_51).setName(COURSE_NAME_51).setAuthor(lecturer).setActive(true);
@@ -56,6 +63,9 @@ class LessonServiceImplTest {
 
     @Mock
     private LessonRepository mockLessonRepository;
+
+    @Mock
+    private Validator mockValidator;
 
     @InjectMocks
     private LessonServiceImpl lessonServiceImpl;
@@ -99,25 +109,37 @@ class LessonServiceImplTest {
 
     @Test
     void testAddShouldInvokeRepositorySaveWithPassedLesson() {
+        when(mockValidator.validate(firstLesson)).thenReturn(violations);
         lessonServiceImpl.add(firstLesson);
+
+        verify(mockValidator, times(1)).validate(firstLesson);
         verify(mockLessonRepository, times(1)).save(firstLesson);
     }
 
     @Test
     void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstLesson)).thenReturn(violations);
         assertThrows(NullPointerException.class, () -> lessonServiceImpl.add(null), "add(null) should throw NullPointerException");
+
+        verify(mockValidator, times(0)).validate(firstLesson);
         verify(mockLessonRepository, times(0)).save(null);
     }
 
     @Test
     void testUpdateShouldInvokeRepositorySaveWithPassedLesson() {
+        when(mockValidator.validate(firstLesson)).thenReturn(violations);
         lessonServiceImpl.update(firstLesson);
+
+        verify(mockValidator, times(1)).validate(firstLesson);
         verify(mockLessonRepository, times(1)).save(firstLesson);
     }
 
     @Test
     void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstLesson)).thenReturn(violations);
         assertThrows(NullPointerException.class, () -> lessonServiceImpl.update(null), "update(null) should throw NullPointerException");
+
+        verify(mockValidator, times(0)).validate(firstLesson);
         verify(mockLessonRepository, times(0)).save(null);
     }
 

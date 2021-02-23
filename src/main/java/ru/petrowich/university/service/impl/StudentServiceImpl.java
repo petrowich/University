@@ -7,22 +7,23 @@ import ru.petrowich.university.repository.StudentRepository;
 import ru.petrowich.university.model.Student;
 import ru.petrowich.university.service.StudentService;
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static javax.validation.Validation.buildDefaultValidatorFactory;
 
 @Service
 public class StudentServiceImpl implements StudentService {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
-    private final Validator validator = buildDefaultValidatorFactory().getValidator();
+    private final Validator validator;
     private final StudentRepository studentRepository;
 
     @Autowired
-    public StudentServiceImpl(StudentRepository studentRepository) {
+    public StudentServiceImpl(Validator validator, StudentRepository studentRepository) {
+        this.validator = validator;
         this.studentRepository = studentRepository;
     }
 
@@ -46,9 +47,7 @@ public class StudentServiceImpl implements StudentService {
             throw new NullPointerException();
         }
 
-        if(checkViolations(student)){
-            throw new IllegalArgumentException();
-        }
+        checkViolations(student);
 
         studentRepository.save(student);
     }
@@ -61,9 +60,7 @@ public class StudentServiceImpl implements StudentService {
             throw new NullPointerException();
         }
 
-        if(checkViolations(student)){
-            throw new IllegalArgumentException();
-        }
+        checkViolations(student);
 
         studentRepository.save(student);
     }
@@ -86,9 +83,12 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.findAll();
     }
 
-    private boolean checkViolations(Student student) {
+    private void checkViolations(Student student) {
         Set<ConstraintViolation<Student>> violations = validator.validate(student);
-        violations.forEach(violation -> LOGGER.error(violation.getMessage()));
-        return !violations.isEmpty();
+
+        if(!violations.isEmpty()) {
+            violations.forEach(violation -> LOGGER.error(violation.getMessage()));
+            throw new ConstraintViolationException(violations);
+        }
     }
 }

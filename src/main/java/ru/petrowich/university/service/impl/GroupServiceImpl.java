@@ -7,22 +7,23 @@ import ru.petrowich.university.model.Group;
 import ru.petrowich.university.repository.GroupRepository;
 import ru.petrowich.university.service.GroupService;
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static javax.validation.Validation.buildDefaultValidatorFactory;
 
 @Service
 public class GroupServiceImpl implements GroupService {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
-    private final Validator validator = buildDefaultValidatorFactory().getValidator();
+    private final Validator validator;
     private final GroupRepository groupRepository;
 
     @Autowired
-    public GroupServiceImpl(GroupRepository groupRepository) {
+    public GroupServiceImpl(Validator validator, GroupRepository groupRepository) {
+        this.validator = validator;
         this.groupRepository = groupRepository;
     }
 
@@ -46,9 +47,7 @@ public class GroupServiceImpl implements GroupService {
             throw new NullPointerException();
         }
 
-        if(checkViolations(group)){
-            throw new IllegalArgumentException();
-        }
+        checkViolations(group);
 
         groupRepository.save(group);
     }
@@ -61,9 +60,7 @@ public class GroupServiceImpl implements GroupService {
             throw new NullPointerException();
         }
 
-        if(checkViolations(group)){
-            throw new IllegalArgumentException();
-        }
+        checkViolations(group);
 
         groupRepository.save(group);
     }
@@ -86,9 +83,12 @@ public class GroupServiceImpl implements GroupService {
         return groupRepository.findAll();
     }
 
-    private boolean checkViolations(Group group) {
+    private void checkViolations(Group group) {
         Set<ConstraintViolation<Group>> violations = validator.validate(group);
-        violations.forEach(violation -> LOGGER.error(violation.getMessage()));
-        return !violations.isEmpty();
+
+        if(!violations.isEmpty()) {
+            violations.forEach(violation -> LOGGER.error(violation.getMessage()));
+            throw new ConstraintViolationException(violations);
+        }
     }
 }
