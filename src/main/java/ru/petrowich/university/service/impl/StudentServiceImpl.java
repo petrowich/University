@@ -32,7 +32,7 @@ public class StudentServiceImpl implements StudentService {
         LOGGER.debug("getById {}", studentId);
 
         if (studentId == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead valid studentId");
         }
 
         Optional<Student> studentOptional = studentRepository.findById(studentId);

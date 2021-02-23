@@ -78,8 +78,8 @@ class TimeSlotServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> timeSlotServiceImpl.getById(null), "GetById(null) should throw NullPointerException");
+    void testGetByIdShouldIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> timeSlotServiceImpl.getById(null), "GetById(null) should throw IllegalArgumentException");
         verify(mockTimeSlotRepository, times(0)).findById(null);
     }
 

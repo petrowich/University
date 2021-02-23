@@ -99,8 +99,8 @@ class GroupServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> groupServiceImpl.getById(null), "GetById(null) should throw NullPointerException");
+    void testGetByIdShouldIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> groupServiceImpl.getById(null), "GetById(null) should throw IllegalArgumentException");
         verify(mockGroupRepository, times(0)).findById(null);
     }
 

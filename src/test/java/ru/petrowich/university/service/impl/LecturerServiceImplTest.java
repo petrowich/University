@@ -108,8 +108,8 @@ class LecturerServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> lecturerServiceImpl.getById(null), "GetById(null) should throw NullPointerException");
+    void testGetByIdShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> lecturerServiceImpl.getById(null), "GetById(null) should throw IllegalArgumentException");
         verify(mockLecturerRepository, times(0)).save(null);
     }
 

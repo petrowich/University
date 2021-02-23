@@ -39,7 +39,7 @@ public class CourseServiceImpl implements CourseService {
         LOGGER.debug("getById {}", courseId);
 
         if (courseId == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead valid courseId");
         }
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);

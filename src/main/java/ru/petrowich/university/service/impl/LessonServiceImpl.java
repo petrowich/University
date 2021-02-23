@@ -32,7 +32,7 @@ public class LessonServiceImpl implements LessonService {
         LOGGER.debug("getById {}", lessonId);
 
         if (lessonId == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead valid lessonId");
         }
 
         Optional<Lesson> optionalLesson = lessonRepository.findById(lessonId);

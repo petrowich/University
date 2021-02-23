@@ -32,7 +32,7 @@ public class LecturerServiceImpl implements LecturerService {
         LOGGER.debug("getById {}", lecturerId);
 
         if (lecturerId == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead valid lecturerId");
         }
 
         Optional<Lecturer> optionalLecturer = lecturerRepository.findById(lecturerId);

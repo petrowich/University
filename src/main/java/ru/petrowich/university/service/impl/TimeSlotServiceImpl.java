@@ -32,7 +32,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
         LOGGER.debug("getById {}", timeSlotId);
 
         if (timeSlotId == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead valid timeSlotId");
         }
 
         Optional<TimeSlot> optionalTimeSlot = timeSlotRepository.findById(timeSlotId);

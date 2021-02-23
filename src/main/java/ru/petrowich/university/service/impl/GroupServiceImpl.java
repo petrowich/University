@@ -32,7 +32,7 @@ public class GroupServiceImpl implements GroupService {
         LOGGER.debug("getById {}", groupId);
 
         if (groupId == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead valid groupId");
         }
 
         Optional<Group> optionalGroup = groupRepository.findById(groupId);
