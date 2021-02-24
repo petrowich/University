@@ -11,6 +11,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.InheritanceType;
 import javax.persistence.DiscriminatorType;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -20,20 +23,25 @@ import java.util.StringJoiner;
 @DiscriminatorColumn(name = "person_role_id", discriminatorType = DiscriminatorType.INTEGER)
 public abstract class AbstractPerson {
     @Id
-    @SequenceGenerator(name="seq_persons", sequenceName="seq_persons", allocationSize = 1)
+    @SequenceGenerator(name = "seq_persons", sequenceName = "seq_persons", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_persons")
     @Column(name = "person_id", nullable = false, unique = true)
     private Integer id;
 
+    @Size(max = 255, message = "person first name length is more than 255 characters")
     @Column(name = "person_first_name")
     private String firstName;
 
+    @Size(max = 255, message = "person last name length is more than 255 characters")
     @Column(name = "person_last_name")
     private String lastName;
 
+    @NotBlank(message = "person email is empty")
+    @Email(message = "person email is not valid")
     @Column(name = "person_email")
     private String email;
 
+    @Size(max = 2048, message = "person comment is more than 2048 characters")
     @Column(name = "person_comment")
     private String comment;
 

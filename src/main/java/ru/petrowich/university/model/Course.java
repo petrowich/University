@@ -11,6 +11,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinTable;
 import javax.persistence.GenerationType;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -24,9 +26,12 @@ public class Course {
     @Column(name = "course_id")
     private Integer id;
 
+    @NotBlank(message = "course name is empty")
+    @Size(max = 255, message = "course name length is more than 255 characters")
     @Column(name = "course_name")
     private String name;
 
+    @Size(max = 2048, message = "description is more than 2048 characters")
     @Column(name = "course_description")
     private String description;
 

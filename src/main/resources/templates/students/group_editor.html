@@ -16,14 +16,21 @@
 </header>
 <main>
     <div class="container my-5">
-        <h1 class="header">edit group</h1>
+        <h1 class="header">Edit group</h1>
         <div class="card edit-card">
             <div class="card-body">
                 <form action="#" th:action="@{/students/group/update(id=${group.id})}" th:object="${group}" method="post" class="needs-validation" novalidate>
-                    <div class="form-group col-md-6">
-                        <label for="groupName">Group Name</label>
-                        <input type="text" th:field="*{name}" class="form-control" id="groupName" placeholder="Group Name" required>
-                        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+                    <div class="form-row">
+                        <div class="form-group col-md-5">
+                            <label for="groupName">Group Name</label>
+                            <input type="text" th:field="*{name}" class="form-control" id="groupName" placeholder="Group Name" required>
+                            <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-1">
+                            <label for="groupCapacity">Capacity</label>
+                            <input type="number" min="5" max="30" th:field="*{capacity}" class="form-control" id="groupCapacity" placeholder="20" required>
+                            <span th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}" class="text-danger"></span>
+                        </div>
                     </div>
                     <div class="form-check p-4">
                         <input type="checkbox" th:field="*{active}" class="form-check-input" id="active" onClick="activeGroup(this.form.active.checked)">

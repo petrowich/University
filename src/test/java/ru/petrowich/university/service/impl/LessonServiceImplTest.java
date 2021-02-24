@@ -12,9 +12,14 @@ import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Lesson;
 import ru.petrowich.university.model.TimeSlot;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,11 +39,14 @@ class LessonServiceImplTest {
     private static final String COURSE_NAME_52 = "biology";
     private static final Integer TIME_SLOT_ID = 1;
     private static final String TIME_SLOT_NAME = "first lesson";
+    private static final LocalDate TIME_SLOT_DATE = LocalDate.of(2025, 12, 31);
     private static final LocalTime TIME_SLOT_START_TIME = LocalTime.of(8, 0);
     private static final LocalTime TIME_SLOT_END_TIME = LocalTime.of(9, 30);
     private static final Long LESSON_ID_5000001 = 5000001L;
     private static final Long LESSON_ID_5000002 = 5000002L;
     private static final Long LESSON_ID_5000003 = 5000003L;
+
+    private static final Set<ConstraintViolation<Lesson>> violations = new HashSet<>();
 
     private final Lecturer lecturer = new Lecturer().setId(PERSON_ID_50005).setEmail(PERSON_EMAIL_50005).setActive(true);
 
@@ -47,7 +55,7 @@ class LessonServiceImplTest {
 
     private final TimeSlot timeSlot = new TimeSlot().setId(TIME_SLOT_ID).setName(TIME_SLOT_NAME).setStartTime(TIME_SLOT_START_TIME).setEndTime(TIME_SLOT_END_TIME);
 
-    private final Lesson firstLesson = new Lesson().setId(LESSON_ID_5000001).setTimeSlot(timeSlot).setLecturer(lecturer).setCourse(firstCourse);
+    private final Lesson firstLesson = new Lesson().setId(LESSON_ID_5000001).setTimeSlot(timeSlot).setLecturer(lecturer).setCourse(firstCourse).setDate(TIME_SLOT_DATE).setStartTime(TIME_SLOT_START_TIME).setEndTime(TIME_SLOT_END_TIME);
     private final Lesson secondLesson = new Lesson().setId(LESSON_ID_5000002).setTimeSlot(timeSlot).setLecturer(lecturer).setCourse(secondCourse);
     private final Lesson thirdLesson = new Lesson().setId(LESSON_ID_5000003).setTimeSlot(timeSlot).setLecturer(lecturer).setCourse(new Course());
 
@@ -55,6 +63,9 @@ class LessonServiceImplTest {
 
     @Mock
     private LessonRepository mockLessonRepository;
+
+    @Mock
+    private Validator mockValidator;
 
     @InjectMocks
     private LessonServiceImpl lessonServiceImpl;
@@ -91,33 +102,45 @@ class LessonServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> lessonServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
+    void testGetByIdShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> lessonServiceImpl.getById(null), "GetById(null) should throw IllegalArgumentException");
         verify(mockLessonRepository, times(0)).findById(null);
     }
 
     @Test
     void testAddShouldInvokeRepositorySaveWithPassedLesson() {
+        when(mockValidator.validate(firstLesson)).thenReturn(violations);
         lessonServiceImpl.add(firstLesson);
+
+        verify(mockValidator, times(1)).validate(firstLesson);
         verify(mockLessonRepository, times(1)).save(firstLesson);
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedNull() {
-        lessonServiceImpl.add(null);
-        verify(mockLessonRepository, times(1)).save(null);
+    void testAddShouldThrowNullPointerExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstLesson)).thenReturn(violations);
+        assertThrows(NullPointerException.class, () -> lessonServiceImpl.add(null), "add(null) should throw NullPointerException");
+
+        verify(mockValidator, times(0)).validate(firstLesson);
+        verify(mockLessonRepository, times(0)).save(null);
     }
 
     @Test
     void testUpdateShouldInvokeRepositorySaveWithPassedLesson() {
+        when(mockValidator.validate(firstLesson)).thenReturn(violations);
         lessonServiceImpl.update(firstLesson);
+
+        verify(mockValidator, times(1)).validate(firstLesson);
         verify(mockLessonRepository, times(1)).save(firstLesson);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
-        lessonServiceImpl.update(null);
-        verify(mockLessonRepository, times(1)).save(null);
+    void testUpdateShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstLesson)).thenReturn(violations);
+        assertThrows(IllegalArgumentException.class, () -> lessonServiceImpl.update(null), "update(null) should throw IllegalArgumentException");
+
+        verify(mockValidator, times(0)).validate(firstLesson);
+        verify(mockLessonRepository, times(0)).save(null);
     }
 
     @Test

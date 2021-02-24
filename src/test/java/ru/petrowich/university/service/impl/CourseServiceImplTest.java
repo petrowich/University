@@ -12,8 +12,12 @@ import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Group;
 import ru.petrowich.university.model.Lecturer;
 
-import java.util.ArrayList;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +45,8 @@ class CourseServiceImplTest {
     private static final Integer GROUP_ID_503 = 503;
     private static final Integer NONEXISTENT_GROUP_ID = 666;
 
+    private static final Set<ConstraintViolation<Course>> violations = new HashSet<>();
+
     private final Lecturer firstLecturer = new Lecturer().setId(PERSON_ID_50005).setEmail(PERSON_EMAIL_50005).setActive(true);
     private final Lecturer secondLecturer = new Lecturer().setId(PERSON_ID_50006).setEmail(PERSON_EMAIL_50006).setActive(false);
 
@@ -59,6 +65,9 @@ class CourseServiceImplTest {
 
     @Mock
     private GroupRepository mockGroupRepository;
+
+    @Mock
+    private Validator mockValidator;
 
     @InjectMocks
     private CourseServiceImpl courseServiceImpl;
@@ -80,7 +89,6 @@ class CourseServiceImplTest {
         Course actual = courseServiceImpl.getById(COURSE_ID_51);
 
         verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
-
         assertThat(actual).usingRecursiveComparison().isEqualTo(firstCourse);
     }
 
@@ -94,33 +102,45 @@ class CourseServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> courseServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
+    void testGetByIdShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> courseServiceImpl.getById(null), "GetById(null) should throw IllegalArgumentException");
         verify(mockCourseRepository, times(0)).findById(null);
     }
 
     @Test
     void testAddShouldInvokeRepositorySaveWithPassedCourse() {
+        when(mockValidator.validate(firstCourse)).thenReturn(violations);
         courseServiceImpl.add(firstCourse);
+
+        verify(mockValidator, times(1)).validate(firstCourse);
         verify(mockCourseRepository, times(1)).save(firstCourse);
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedNull() {
-        courseServiceImpl.add(null);
-        verify(mockCourseRepository, times(1)).save(null);
+    void testAddShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstCourse)).thenReturn(violations);
+        assertThrows(IllegalArgumentException.class, () -> courseServiceImpl.add(null), "add(null) should throw IllegalArgumentException");
+
+        verify(mockValidator, times(0)).validate(firstCourse);
+        verify(mockCourseRepository, times(0)).save(null);
     }
 
     @Test
     void testUpdateShouldInvokeRepositorySaveWithPassedCourse() {
+        when(mockValidator.validate(firstCourse)).thenReturn(violations);
         courseServiceImpl.update(firstCourse);
+
+        verify(mockValidator, times(1)).validate(firstCourse);
         verify(mockCourseRepository, times(1)).save(firstCourse);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
-        courseServiceImpl.update(null);
-        verify(mockCourseRepository, times(1)).save(null);
+    void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstCourse)).thenReturn(violations);
+        assertThrows(NullPointerException.class, () -> courseServiceImpl.update(null), "update(null) should throw NullPointerException");
+
+        verify(mockValidator, times(0)).validate(firstCourse);
+        verify(mockCourseRepository, times(0)).save(null);
     }
 
     @Test
@@ -133,13 +153,13 @@ class CourseServiceImplTest {
         courseServiceImpl.delete(firstCourse);
 
         verify(mockCourseRepository, times(1)).findById(COURSE_ID_51);
-        assertFalse(actual.isActive(),"course should turn inactive");
+        assertFalse(actual.isActive(), "course should turn inactive");
         verify(mockCourseRepository, times(1)).save(firstCourse);
     }
 
     @Test
     void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> courseServiceImpl.delete(null),"delete(null) should throw NullPointerException");
+        assertThrows(NullPointerException.class, () -> courseServiceImpl.delete(null), "delete(null) should throw NullPointerException");
         verify(mockCourseRepository, times(0)).save(null);
     }
 
@@ -160,7 +180,7 @@ class CourseServiceImplTest {
     }
 
     @Test
-    void testAssignGroupToCourseShouldInvokeRepositoryAssignGroupToCourse(){
+    void testAssignGroupToCourseShouldInvokeRepositoryAssignGroupToCourse() {
         List<Group> currentGroups = new ArrayList<>();
         currentGroups.add(firstGroup);
         currentGroups.add(secondGroup);
@@ -187,7 +207,7 @@ class CourseServiceImplTest {
     }
 
     @Test
-    void testAssignGroupToCourseShouldNotInvokeRepositoryAssignGroupToCourseWhenAssignedGroupPassed(){
+    void testAssignGroupToCourseShouldNotInvokeRepositoryAssignGroupToCourseWhenAssignedGroupPassed() {
         List<Group> currentGroups = new ArrayList<>();
         currentGroups.add(firstGroup);
         currentGroups.add(secondGroup);
@@ -213,7 +233,7 @@ class CourseServiceImplTest {
     }
 
     @Test
-    void testRemoveGroupToCourseShouldInvokeRepositoryRemoveGroupFromCourse(){
+    void testRemoveGroupToCourseShouldInvokeRepositoryRemoveGroupFromCourse() {
         List<Group> currentGroups = new ArrayList<>();
         currentGroups.add(firstGroup);
         currentGroups.add(secondGroup);

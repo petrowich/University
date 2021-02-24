@@ -11,8 +11,12 @@ import ru.petrowich.university.repository.StudentRepository;
 import ru.petrowich.university.model.Student;
 import ru.petrowich.university.model.Group;
 
-import java.util.ArrayList;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +39,8 @@ class StudentServiceImplTest {
     private static final String GROUP_NAME_501 = "AA-01";
     private static final String GROUP_NAME_502 = "BB-02";
 
+    private static final Set<ConstraintViolation<Student>> violations = new HashSet<>();
+
     private final Group firstGroup = new Group().setId(GROUP_ID_501).setName(GROUP_NAME_501).setActive(true);
     private final Group secondGroup = new Group().setId(GROUP_ID_502).setName(GROUP_NAME_502).setActive(true);
 
@@ -49,6 +55,9 @@ class StudentServiceImplTest {
 
     @Mock
     private GroupRepository mockGroupRepository;
+
+    @Mock
+    private Validator mockValidator;
 
     @InjectMocks
     private StudentServiceImpl studentServiceImpl;
@@ -87,33 +96,45 @@ class StudentServiceImplTest {
     }
 
     @Test
-    void testGetByIdShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> studentServiceImpl.getById(null), "GetById(null) should throw InvalidDataAccessApiUsageException");
+    void testGetByIdShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        assertThrows(IllegalArgumentException.class, () -> studentServiceImpl.getById(null), "GetById(null) should throw IllegalArgumentException");
         verify(mockStudentRepository, times(0)).findById(null);
     }
 
     @Test
     void testAddShouldInvokeRepositorySaveWithPassedStudent() {
+        when(mockValidator.validate(firstStudent)).thenReturn(violations);
         studentServiceImpl.add(firstStudent);
+
+        verify(mockValidator, times(1)).validate(firstStudent);
         verify(mockStudentRepository, times(1)).save(firstStudent);
     }
 
     @Test
-    void testAddShouldInvokeRepositorySaveWithPassedNull() {
-        studentServiceImpl.add(null);
-        verify(mockStudentRepository, times(1)).save(null);
+    void testAddShouldThrowIllegalArgumentExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstStudent)).thenReturn(violations);
+        assertThrows(IllegalArgumentException.class, () -> studentServiceImpl.add(null), "add(null) should throw IllegalArgumentException");
+
+        verify(mockValidator, times(0)).validate(firstStudent);
+        verify(mockStudentRepository, times(0)).save(null);
     }
 
     @Test
     void testUpdateShouldInvokeRepositorySaveWithPassedStudent() {
+        when(mockValidator.validate(firstStudent)).thenReturn(violations);
         studentServiceImpl.update(firstStudent);
+
+        verify(mockValidator, times(1)).validate(firstStudent);
         verify(mockStudentRepository, times(1)).save(firstStudent);
     }
 
     @Test
-    void testUpdateShouldInvokeRepositorySaveWithPassedNull() {
-        studentServiceImpl.update(null);
-        verify(mockStudentRepository, times(1)).save(null);
+    void testUpdateShouldThrowNullPointerExceptionWhenNullPassed() {
+        when(mockValidator.validate(firstStudent)).thenReturn(violations);
+        assertThrows(NullPointerException.class, () -> studentServiceImpl.update(null), "update(null) should throw NullPointerException");
+
+        verify(mockValidator, times(0)).validate(firstStudent);
+        verify(mockStudentRepository, times(0)).save(null);
     }
 
     @Test
@@ -126,13 +147,13 @@ class StudentServiceImplTest {
         studentServiceImpl.delete(firstStudent);
 
         verify(mockStudentRepository, times(1)).findById(PERSON_ID_50001);
-        assertFalse(actual.isActive(),"lecturer should turn inactive");
+        assertFalse(actual.isActive(), "lecturer should turn inactive");
         verify(mockStudentRepository, times(1)).save(firstStudent);
     }
 
     @Test
     void testDeleteShouldThrowNullPointerExceptionWhenNullPassed() {
-        assertThrows(NullPointerException.class, () -> studentServiceImpl.delete(null),"delete(null) should throw NullPointerException");
+        assertThrows(NullPointerException.class, () -> studentServiceImpl.delete(null), "delete(null) should throw NullPointerException");
         verify(mockStudentRepository, times(0)).save(null);
     }
 

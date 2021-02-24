@@ -8,12 +8,14 @@ import ru.petrowich.university.model.Group;
 import ru.petrowich.university.repository.CourseRepository;
 import ru.petrowich.university.repository.GroupRepository;
 import ru.petrowich.university.service.CourseService;
-
 import org.springframework.transaction.annotation.Transactional;
-
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -21,11 +23,13 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Service
 public class CourseServiceImpl implements CourseService {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
+    private final Validator validator;
     private final GroupRepository groupRepository;
     private final CourseRepository courseRepository;
 
     @Autowired
-    public CourseServiceImpl(CourseRepository courseRepository, GroupRepository groupRepository) {
+    public CourseServiceImpl(Validator validator, CourseRepository courseRepository, GroupRepository groupRepository) {
+        this.validator = validator;
         this.courseRepository = courseRepository;
         this.groupRepository = groupRepository;
     }
@@ -35,7 +39,7 @@ public class CourseServiceImpl implements CourseService {
         LOGGER.debug("getById {}", courseId);
 
         if (courseId == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("null is passed instead valid courseId");
         }
 
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
@@ -46,12 +50,26 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     public void add(Course course) {
         LOGGER.debug("add {}", course);
+
+        if (course == null) {
+            throw new IllegalArgumentException("null is passed instead course");
+        }
+
+        checkViolations(course);
+
         courseRepository.save(course);
     }
 
     @Override
     public void update(Course course) {
         LOGGER.debug("update {}", course);
+
+        if (course == null) {
+            throw new NullPointerException();
+        }
+
+        checkViolations(course);
+
         courseRepository.save(course);
     }
 
@@ -117,6 +135,15 @@ public class CourseServiceImpl implements CourseService {
             Course currentCourse = optionalCurrentCourse.get();
             currentCourse.setGroups(actualGroups);
             courseRepository.save(currentCourse);
+        }
+    }
+
+    private void checkViolations(Course course) {
+        Set<ConstraintViolation<Course>> violations = validator.validate(course);
+
+        if(!violations.isEmpty()) {
+            violations.forEach(violation -> LOGGER.error(violation.getMessage()));
+            throw new ConstraintViolationException(violations);
         }
     }
 }

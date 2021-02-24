@@ -11,6 +11,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.JoinTable;
 import javax.persistence.GenerationType;
+import javax.validation.constraints.Size;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,16 +23,20 @@ import java.util.Objects;
 @Table(name = "t_groups")
 public class Group {
     @Id
-    @SequenceGenerator(name="seq_groups", sequenceName="seq_groups", allocationSize = 1)
+    @SequenceGenerator(name = "seq_groups", sequenceName = "seq_groups", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_groups")
     @Column(name = "group_id")
     private Integer id;
 
+    @NotBlank(message = "group name is empty")
+    @Size(max = 255, message = "group name length is more than 255 characters")
     @Column(name = "group_name")
     private String name;
 
+    @Min(value = 1, message = "group capacity is less than 1")
+    @Max(value = 100, message = "group capacity exceed 100")
     @Column(name = "group_capacity")
-    private Integer capacity = 0;
+    private Integer capacity;
 
     @OneToMany(mappedBy = "group")
     private List<Student> students = new ArrayList<>();
@@ -62,7 +70,7 @@ public class Group {
     }
 
     public Integer getCapacity() {
-        return this.capacity;
+        return capacity;
     }
 
     public Group setCapacity(Integer capacity) {
@@ -76,7 +84,6 @@ public class Group {
 
     public Group setStudents(List<Student> students) {
         this.students = students;
-        this.capacity = students.size();
         return this;
     }
 
