@@ -21,7 +21,7 @@ import java.util.StringJoiner;
 @Table(name = "t_persons")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "person_role_id", discriminatorType = DiscriminatorType.INTEGER)
-public abstract class AbstractPerson {
+public abstract class AbstractPerson extends AbstractEntity {
     @Id
     @SequenceGenerator(name = "seq_persons", sequenceName = "seq_persons", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_persons")

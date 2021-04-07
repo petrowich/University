@@ -10,10 +10,10 @@ public interface GenericService<T, I> {
     T getById(I id);
 
     @Transactional
-    void add(T object);
+    T add(T object);
 
     @Transactional
-    void update(T object);
+    T update(T object);
 
     @Transactional
     void delete(T object);

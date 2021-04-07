@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 @SpringBootApplication
 @Import({AppConfiguration.class})
 public class University extends SpringBootServletInitializer {
-     public static void main(String[] args) {
-         SpringApplication.run(University.class, args);
+    public static void main(String[] args) {
+        SpringApplication.run(University.class, args);
     }
 }

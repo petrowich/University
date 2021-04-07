@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Entity(name = "Lesson")
 @Table(name = "t_lessons")
-public class Lesson implements Comparable<Lesson> {
+public class Lesson extends AbstractEntity implements Comparable<Lesson> {
     @Id
     @SequenceGenerator(name = "seq_lessons", sequenceName = "seq_lessons", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_lessons")

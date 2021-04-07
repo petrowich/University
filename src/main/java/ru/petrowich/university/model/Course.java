@@ -19,7 +19,7 @@ import java.util.Objects;
 
 @Entity(name = "Course")
 @Table(name = "t_courses")
-public class Course {
+public class Course extends AbstractEntity {
     @Id
     @SequenceGenerator(name = "seq_courses", sequenceName = "seq_courses", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_courses")

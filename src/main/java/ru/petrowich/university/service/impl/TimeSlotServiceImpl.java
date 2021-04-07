@@ -40,7 +40,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
     }
 
     @Override
-    public void add(TimeSlot timeSlot) {
+    public TimeSlot add(TimeSlot timeSlot) {
         LOGGER.debug("add {}", timeSlot);
 
         if (timeSlot == null) {
@@ -49,11 +49,11 @@ public class TimeSlotServiceImpl implements TimeSlotService {
 
         checkViolations(timeSlot);
 
-        timeSlotRepository.save(timeSlot);
+        return timeSlotRepository.save(timeSlot);
     }
 
     @Override
-    public void update(TimeSlot timeSlot) {
+    public TimeSlot update(TimeSlot timeSlot) {
         LOGGER.debug("update {}", timeSlot);
 
         if (timeSlot == null) {
@@ -62,7 +62,7 @@ public class TimeSlotServiceImpl implements TimeSlotService {
 
         checkViolations(timeSlot);
 
-        timeSlotRepository.save(timeSlot);
+        return timeSlotRepository.save(timeSlot);
     }
 
     @Override

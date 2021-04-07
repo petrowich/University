@@ -40,7 +40,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void add(Group group) {
+    public Group add(Group group) {
         LOGGER.debug("add {}", group);
 
         if (group == null) {
@@ -49,11 +49,11 @@ public class GroupServiceImpl implements GroupService {
 
         checkViolations(group);
 
-        groupRepository.save(group);
+        return groupRepository.save(group);
     }
 
     @Override
-    public void update(Group group) {
+    public Group update(Group group) {
         LOGGER.debug("update {}", group);
 
         if (group == null) {
@@ -62,7 +62,7 @@ public class GroupServiceImpl implements GroupService {
 
         checkViolations(group);
 
-        groupRepository.save(group);
+        return groupRepository.save(group);
     }
 
     @Override

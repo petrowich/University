@@ -40,7 +40,7 @@ public class LecturerServiceImpl implements LecturerService {
     }
 
     @Override
-    public void add(Lecturer lecturer) {
+    public Lecturer add(Lecturer lecturer) {
         LOGGER.debug("add {}", lecturer);
 
         if (lecturer == null) {
@@ -49,11 +49,11 @@ public class LecturerServiceImpl implements LecturerService {
 
         checkViolations(lecturer);
 
-        lecturerRepository.save(lecturer);
+        return lecturerRepository.save(lecturer);
     }
 
     @Override
-    public void update(Lecturer lecturer) {
+    public Lecturer update(Lecturer lecturer) {
         LOGGER.debug("update {}", lecturer);
 
         if (lecturer == null) {
@@ -62,7 +62,7 @@ public class LecturerServiceImpl implements LecturerService {
 
         checkViolations(lecturer);
 
-        lecturerRepository.save(lecturer);
+        return lecturerRepository.save(lecturer);
     }
 
     @Override

@@ -15,7 +15,7 @@ import java.util.Objects;
 
 @Entity(name = "TimeSlot")
 @Table(name = "t_timeslots")
-public class TimeSlot {
+public class TimeSlot extends AbstractEntity {
     @Id
     @SequenceGenerator(name="seq_timeslots", sequenceName="seq_timeslots", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_timeslots")

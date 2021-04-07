@@ -40,7 +40,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public void add(Lesson lesson) {
+    public Lesson add(Lesson lesson) {
         LOGGER.debug("add {}", lesson);
 
         if (lesson == null) {
@@ -49,11 +49,11 @@ public class LessonServiceImpl implements LessonService {
 
         checkViolations(lesson);
 
-        lessonRepository.save(lesson);
+        return lessonRepository.save(lesson);
     }
 
     @Override
-    public void update(Lesson lesson) {
+    public Lesson update(Lesson lesson) {
         LOGGER.debug("update {}", lesson);
 
         if (lesson == null) {
@@ -62,7 +62,7 @@ public class LessonServiceImpl implements LessonService {
 
         checkViolations(lesson);
 
-        lessonRepository.save(lesson);
+        return lessonRepository.save(lesson);
     }
 
     @Override
