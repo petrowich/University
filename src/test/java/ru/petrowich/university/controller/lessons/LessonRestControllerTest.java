@@ -12,11 +12,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.petrowich.university.dto.lessons.LessonDTO;
 import ru.petrowich.university.mapper.lesson.LessonMapper;
-import ru.petrowich.university.model.Course;
 import ru.petrowich.university.model.Lesson;
 import ru.petrowich.university.service.LessonService;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +42,9 @@ class LessonRestControllerTest {
     private static final Long EXISTENT_LESSON_ID_5000001 = 5000001L;
     private static final Long NONEXISTENT_LESSON_ID = 9999999L;
     private static final LocalDate ANOTHER_LESSON_DATE = LocalDate.of(2020, 7, 31);
-    private static final Integer EXISTENT_COURSE_ID_51 = 51;
+    private static final LocalTime ANOTHER_LESSON_START_TIME = LocalTime.of(18, 30, 0);
+    private static final String ANOTHER_LESSON_DATE_STRING = "2020-07-31";
+    private static final String ANOTHER_LESSON_START_TIME_STRING = "18:30";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ModelMapper modelMapper = new ModelMapper();
@@ -130,7 +132,9 @@ class LessonRestControllerTest {
 
     @Test
     void testUpdateLessonShouldReturnOK() throws Exception {
-        Lesson lesson = new Lesson().setId(EXISTENT_LESSON_ID_5000001).setCourse(new Course().setId(EXISTENT_COURSE_ID_51));
+        Lesson lesson = new Lesson().setId(EXISTENT_LESSON_ID_5000001)
+                .setDate(ANOTHER_LESSON_DATE)
+                .setStartTime(ANOTHER_LESSON_START_TIME);
         LessonDTO lessonDTO = lessonMapper.toDto(lesson);
 
         when(mockLessonService.getById(EXISTENT_LESSON_ID_5000001)).thenReturn(new Lesson().setId(EXISTENT_LESSON_ID_5000001));
@@ -147,7 +151,8 @@ class LessonRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.id").value(EXISTENT_LESSON_ID_5000001))
-                .andExpect(jsonPath("$.courseId").value(EXISTENT_COURSE_ID_51));
+                .andExpect(jsonPath("$.date").value(ANOTHER_LESSON_DATE_STRING))
+                .andExpect(jsonPath("$.startTime").value(ANOTHER_LESSON_START_TIME_STRING));
 
         verify(mockLessonService, times(1)).getById(EXISTENT_LESSON_ID_5000001);
         verify(mockLessonMapper, times(1)).toEntity(lessonDTO);
