@@ -101,8 +101,6 @@ public class CourseRestController {
     public ResponseEntity<CourseDTO> deleteCourse(@PathVariable("id") Integer courseId) {
         LOGGER.info("processing request of deactivating course id={}", courseId);
 
-        LOGGER.info("delete course");
-
         if (courseId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

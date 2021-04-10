@@ -1,29 +1,27 @@
 package ru.petrowich.university.dto.lessons;
 
-import ru.petrowich.university.dto.AbstractDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import ru.petrowich.university.dto.AbstractEntityDTO;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class LessonDTO extends AbstractDTO {
-    private Long id = null;
+public class LessonDTO extends AbstractEntityDTO<Long> {
     private Integer courseId = null;
     private String courseName = null;
     private Integer lecturerId = null;
     private String lecturerFullName = null;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate date = null;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime startTime = null;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime endTime = null;
+
     private Integer numberOfAttendees = null;
-
-    public Long getId() {
-        return id;
-    }
-
-    public LessonDTO setId(Long id) {
-        this.id = id;
-        return this;
-    }
 
     public Integer getCourseId() {
         return courseId;

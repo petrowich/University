@@ -14,7 +14,7 @@ public abstract class AbstractMapper<E extends AbstractEntity, D extends Abstrac
     private final Class<D> dtoClass;
 
     @Autowired
-    public AbstractMapper(ModelMapper modelMapper, Class<E> entityClass, Class<D> dtoClass) {
+    protected AbstractMapper(ModelMapper modelMapper, Class<E> entityClass, Class<D> dtoClass) {
         this.modelMapper = modelMapper;
         this.entityClass = entityClass;
         this.dtoClass = dtoClass;

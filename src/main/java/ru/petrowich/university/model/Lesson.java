@@ -125,6 +125,12 @@ public class Lesson extends AbstractEntity implements Comparable<Lesson> {
         return this;
     }
 
+    public List<Student> getStudents() {
+        students = new ArrayList<>();
+        course.getGroups().forEach(group -> students.addAll(group.getStudents()));
+        return students;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -138,12 +144,6 @@ public class Lesson extends AbstractEntity implements Comparable<Lesson> {
         Lesson lesson = (Lesson) object;
 
         return Objects.equals(id, lesson.id);
-    }
-
-    public List<Student> getStudents() {
-        students = new ArrayList<>();
-        course.getGroups().forEach(group -> students.addAll(group.getStudents()));
-        return students;
     }
 
     @Override

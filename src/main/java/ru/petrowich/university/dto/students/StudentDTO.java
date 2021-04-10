@@ -1,12 +1,11 @@
 package ru.petrowich.university.dto.students;
 
-import ru.petrowich.university.dto.AbstractDTO;
+import ru.petrowich.university.dto.AbstractEntityDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StudentDTO extends AbstractDTO {
-    private Integer id = null;
+public class StudentDTO extends AbstractEntityDTO<Integer> {
     private String firstName = null;
     private String lastName = null;
     private String email = null;
@@ -16,15 +15,6 @@ public class StudentDTO extends AbstractDTO {
     private Integer numberOfAssignedCourses = null;
     private transient List<StudentCourseDTO> courses = new ArrayList<>();
     boolean active;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public StudentDTO setId(Integer id) {
-        this.id = id;
-        return this;
-    }
 
     public String getFirstName() {
         return firstName;

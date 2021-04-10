@@ -51,19 +51,19 @@ class LessonControllerTest {
     private static final LocalTime TIME_SLOT_END_TIME_8 = LocalTime.of(10, 30);
 
     @Mock
-    LessonService mockLessonService;
+    private LessonService mockLessonService;
 
     @Mock
-    LecturerService mockLecturerService;
+    private LecturerService mockLecturerService;
 
     @Mock
-    CourseService mockCourseService;
+    private CourseService mockCourseService;
 
     @Mock
-    TimeSlotService mockTimeSlotService;
+    private TimeSlotService mockTimeSlotService;
 
     @InjectMocks
-    LessonController lessonController;
+    private LessonController lessonController;
 
     @BeforeEach
     private void openMocks() {

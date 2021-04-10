@@ -91,8 +91,6 @@ public class TimeSlotRestController {
     public ResponseEntity<TimeSlotDTO> deleteTimeSlot(@PathVariable("id") Integer timeSlotId) {
         LOGGER.info("processing request of deactivating timeSlot id={}", timeSlotId);
 
-        LOGGER.info("delete timeSlot");
-
         if (timeSlotId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

@@ -45,16 +45,16 @@ class CourseControllerTest {
     private static final Integer PERSON_ID_50004 = 50004;
 
     @Mock
-    CourseService mockCourseService;
+    private CourseService mockCourseService;
 
     @Mock
-    GroupService mockGroupService;
+    private GroupService mockGroupService;
 
     @Mock
-    LecturerService mockLecturerService;
+    private LecturerService mockLecturerService;
 
     @InjectMocks
-    CourseController courseController;
+    private CourseController courseController;
 
     @BeforeEach
     private void beforeEach() {

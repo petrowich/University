@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @RestController
-@RequestMapping("/api/groups/")
+@RequestMapping("/api/students/groups/")
 public class GroupRestController {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
     private final GroupService groupService;
@@ -91,8 +91,6 @@ public class GroupRestController {
     @DeleteMapping("delete/{id}")
     public ResponseEntity<GroupDTO> deleteGroup(@PathVariable("id") Integer groupId) {
         LOGGER.info("processing request of deactivating group id={}", groupId);
-
-        LOGGER.info("delete group");
 
         if (groupId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

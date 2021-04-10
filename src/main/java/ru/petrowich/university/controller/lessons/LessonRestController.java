@@ -79,7 +79,8 @@ public class LessonRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Lesson lesson = lessonMapper.toEntity(lessonDTO).setId(lessonId);
+        Lesson lesson = lessonMapper.toEntity(lessonDTO);
+        lesson.setId(lessonId);
         Lesson actualLesson = lessonService.update(lesson);
         LessonDTO actualLessonDTO = lessonMapper.toDto(actualLesson);
 
@@ -90,8 +91,6 @@ public class LessonRestController {
     @DeleteMapping("delete/{id}")
     public ResponseEntity<LessonDTO> deleteLesson(@PathVariable("id") Long lessonId) {
         LOGGER.info("processing request of deactivating lesson id={}", lessonId);
-
-        LOGGER.info("delete lesson");
 
         if (lessonId == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

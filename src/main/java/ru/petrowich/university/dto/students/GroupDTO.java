@@ -1,12 +1,11 @@
 package ru.petrowich.university.dto.students;
 
-import ru.petrowich.university.dto.AbstractDTO;
+import ru.petrowich.university.dto.AbstractEntityDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroupDTO extends AbstractDTO {
-    private Integer id = null;
+public class GroupDTO extends AbstractEntityDTO<Integer> {
     private String name = null;
     private Integer capacity = null;
     private Integer numberOfAssignedCourses = null;
@@ -14,15 +13,6 @@ public class GroupDTO extends AbstractDTO {
     private Integer numberOfStudents = null;
     private List<GroupStudentDTO> students = new ArrayList<>();
     private boolean active;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public GroupDTO setId(Integer id) {
-        this.id = id;
-        return this;
-    }
 
     public String getName() {
         return name;
