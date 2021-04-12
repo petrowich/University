@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.petrowich.university.model.Course;
@@ -23,6 +22,7 @@ import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.openMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,20 +45,20 @@ class CourseControllerTest {
     private static final Integer PERSON_ID_50004 = 50004;
 
     @Mock
-    CourseService mockCourseService;
+    private CourseService mockCourseService;
 
     @Mock
-    GroupService mockGroupService;
+    private GroupService mockGroupService;
 
     @Mock
-    LecturerService mockLecturerService;
+    private LecturerService mockLecturerService;
 
     @InjectMocks
-    CourseController courseController;
+    private CourseController courseController;
 
     @BeforeEach
-    private void openMocks() {
-        autoCloseable = MockitoAnnotations.openMocks(this);
+    private void beforeEach() {
+        autoCloseable = openMocks(this);
         mockMvc = standaloneSetup(courseController).build();
     }
 

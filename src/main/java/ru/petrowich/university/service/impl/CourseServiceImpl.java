@@ -48,7 +48,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     @Transactional
-    public void add(Course course) {
+    public Course add(Course course) {
         LOGGER.debug("add {}", course);
 
         if (course == null) {
@@ -57,11 +57,11 @@ public class CourseServiceImpl implements CourseService {
 
         checkViolations(course);
 
-        courseRepository.save(course);
+        return courseRepository.save(course);
     }
 
     @Override
-    public void update(Course course) {
+    public Course update(Course course) {
         LOGGER.debug("update {}", course);
 
         if (course == null) {
@@ -70,7 +70,7 @@ public class CourseServiceImpl implements CourseService {
 
         checkViolations(course);
 
-        courseRepository.save(course);
+        return courseRepository.save(course);
     }
 
     @Override

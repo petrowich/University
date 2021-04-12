@@ -41,7 +41,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void add(Student student) {
+    public Student add(Student student) {
         LOGGER.debug("add {}", student);
 
         if (student == null) {
@@ -50,11 +50,11 @@ public class StudentServiceImpl implements StudentService {
 
         checkViolations(student);
 
-        studentRepository.save(student);
+        return studentRepository.save(student);
     }
 
     @Override
-    public void update(Student student) {
+    public Student update(Student student) {
         LOGGER.debug("update {}", student);
 
         if (student == null) {
@@ -63,7 +63,7 @@ public class StudentServiceImpl implements StudentService {
 
         checkViolations(student);
 
-        studentRepository.save(student);
+        return studentRepository.save(student);
     }
 
     @Override

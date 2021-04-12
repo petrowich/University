@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Entity(name = "Group")
 @Table(name = "t_groups")
-public class Group {
+public class Group extends AbstractEntity {
     @Id
     @SequenceGenerator(name = "seq_groups", sequenceName = "seq_groups", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_groups")
