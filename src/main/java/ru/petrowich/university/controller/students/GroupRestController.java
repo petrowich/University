@@ -1,5 +1,12 @@
 package ru.petrowich.university.controller.students;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +31,7 @@ import java.util.stream.Collectors;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @RestController
+@Tag(name = "Groups", description = "operating university groups")
 @RequestMapping("/api/students/groups/")
 public class GroupRestController {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
@@ -37,6 +45,14 @@ public class GroupRestController {
     }
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "get group by id", description = "returns a single group by its id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the group", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = GroupDTO.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+            @ApiResponse(responseCode = "404", description = "The group id is not found", content = @Content)
+    })
     public ResponseEntity<GroupDTO> getGroup(@PathVariable("id") Integer groupId) {
         LOGGER.info("processing request of getting group id={}", groupId);
 
@@ -56,6 +72,13 @@ public class GroupRestController {
     }
 
     @PostMapping("add")
+    @Operation(summary = "create a new group", description = "adds a single group in the system, assigns a new internal id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Added the new group", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = GroupDTO.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid group data supplied", content = @Content)
+    })
     public ResponseEntity<GroupDTO> addGroup(@RequestBody GroupDTO groupDTO) {
         LOGGER.info("processing request of creating new group");
 
@@ -67,6 +90,14 @@ public class GroupRestController {
     }
 
     @PutMapping("update/{id}")
+    @Operation(summary = "get group by id", description = "overwrites a single group of supplied id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Overwritten the group", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = GroupDTO.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+            @ApiResponse(responseCode = "404", description = "The group id is not found", content = @Content)
+    })
     public ResponseEntity<GroupDTO> updateGroup(@RequestBody GroupDTO groupDTO, @PathVariable("id") Integer groupId) {
         LOGGER.info("processing request of updating group id={}", groupId);
 
@@ -87,8 +118,15 @@ public class GroupRestController {
         return new ResponseEntity<>(actualGroupDTO, HttpStatus.OK);
     }
 
-
     @DeleteMapping("delete/{id}")
+    @Operation(summary = "delete group by id", description = "deactivates a single group by supplied id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deactivated the group", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = GroupDTO.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+            @ApiResponse(responseCode = "404", description = "The group id is not found", content = @Content)
+    })
     public ResponseEntity<GroupDTO> deleteGroup(@PathVariable("id") Integer groupId) {
         LOGGER.info("processing request of deactivating group id={}", groupId);
 
@@ -108,6 +146,12 @@ public class GroupRestController {
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "get all of the groups", description = "returns the full list of active groups records in system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the groups",
+                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = GroupDTO.class)))
+            )
+    })
     public ResponseEntity<List<GroupDTO>> getAllGroups() {
         LOGGER.info("processing request of listing groups");
 
