@@ -70,7 +70,8 @@ public class StudentRestController {
     }
 
     @PostMapping("add")
-    @Operation(summary = "create a new student", description = "adds a single student in the system, assigns a new internal id")
+    @Operation(summary = "create a new student",
+            description = "adds a single student in the system, assigns a new internal id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Added the new student", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = StudentDTO.class))
@@ -96,7 +97,8 @@ public class StudentRestController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "The student id is not found", content = @Content)
     })
-    public ResponseEntity<StudentDTO> updateStudent(@RequestBody StudentDTO studentDTO, @PathVariable("id") Integer studentId) {
+    public ResponseEntity<StudentDTO> updateStudent(@RequestBody StudentDTO studentDTO,
+                                                    @PathVariable("id") Integer studentId) {
         LOGGER.info("processing request of updating student id={}", studentId);
 
         if (studentId == null) {
@@ -144,10 +146,12 @@ public class StudentRestController {
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "get all of the students", description = "returns the full list of active lessons records in system")
+    @Operation(summary = "get all of the students",
+            description = "returns the full list of active lessons records in system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the students",
-                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = StudentDTO.class)))
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = StudentDTO.class)))
             )
     })
     public ResponseEntity<List<StudentDTO>> getAllStudents() {

@@ -71,7 +71,8 @@ public class TimeSlotRestController {
 
 
     @PostMapping("add")
-    @Operation(summary = "create a new time slot", description = "adds a single time slot in the system, assigns a new internal id")
+    @Operation(summary = "create a new time slot",
+            description = "adds a single time slot in the system, assigns a new internal id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Added the new time slot", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = TimeSlotDTO.class))
@@ -97,7 +98,8 @@ public class TimeSlotRestController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "The time slot id is not found", content = @Content)
     })
-    public ResponseEntity<TimeSlotDTO> updateTimeSlot(@RequestBody TimeSlotDTO timeSlotDTO, @PathVariable("id") Integer timeSlotId) {
+    public ResponseEntity<TimeSlotDTO> updateTimeSlot(@RequestBody TimeSlotDTO timeSlotDTO,
+                                                      @PathVariable("id") Integer timeSlotId) {
         LOGGER.info("processing request of updating timeSlot id={}", timeSlotId);
 
         if (timeSlotId == null) {
@@ -144,10 +146,12 @@ public class TimeSlotRestController {
 
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "get all of the time slots", description = "returns the full list of active time slots records in system")
+    @Operation(summary = "get all of the time slots",
+            description = "returns the full list of active time slots records in system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the time slots",
-                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = TimeSlotDTO.class)))
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = TimeSlotDTO.class)))
             )
     })
     public ResponseEntity<List<TimeSlotDTO>> getAllTimeSlots() {

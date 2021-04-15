@@ -70,7 +70,8 @@ public class LessonRestController {
     }
 
     @PostMapping("add")
-    @Operation(summary = "create a new lesson", description = "adds a single lesson in the system, assigns a new internal id")
+    @Operation(summary = "create a new lesson",
+            description = "adds a single lesson in the system, assigns a new internal id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Added the new lesson", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = LessonDTO.class))
@@ -96,7 +97,8 @@ public class LessonRestController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "The lesson id is not found", content = @Content)
     })
-    public ResponseEntity<LessonDTO> updateLesson(@RequestBody LessonDTO lessonDTO, @PathVariable("id") Long lessonId) {
+    public ResponseEntity<LessonDTO> updateLesson(@RequestBody LessonDTO lessonDTO,
+                                                  @PathVariable("id") Long lessonId) {
         LOGGER.info("processing request of updating lesson id={}", lessonId);
 
         if (lessonId == null) {
@@ -144,10 +146,12 @@ public class LessonRestController {
 
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "get all of the lessons", description = "returns the full list of active lessons records in system")
+    @Operation(summary = "get all of the lessons",
+            description = "returns the full list of active lessons records in system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the lessons",
-                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = LessonDTO.class)))
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = LessonDTO.class)))
             )
     })
     public ResponseEntity<List<LessonDTO>> getAllLessons() {

@@ -57,13 +57,18 @@ public class CourseRestController {
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "get course by id", description = "returns a single course by its id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the course", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = CourseDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The course id is not found", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Found the course",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CourseDTO.class)
+                    )}),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "The course id is not found",
+                    content = @Content)
     })
-    public ResponseEntity<CourseDTO> getCourse(@PathVariable("id") @Parameter(description = "The course internal numeric identifier", required = true) Integer courseId) {
+    public ResponseEntity<CourseDTO> getCourse(@PathVariable("id")
+                                               @Parameter(description = "The course internal numeric identifier",
+                                                       required = true) Integer courseId) {
         LOGGER.info("processing request of getting course id={}", courseId);
 
         if (courseId == null) {
@@ -82,14 +87,18 @@ public class CourseRestController {
     }
 
     @PostMapping("add")
-    @Operation(summary = "create a new course", description = "adds a single course in the system, assigns a new internal id")
+    @Operation(summary = "create a new course",
+            description = "adds a single course in the system, assigns a new internal id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Added the new course", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = CourseDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid course data supplied", content = @Content)
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CourseDTO.class)
+                    )}),
+            @ApiResponse(responseCode = "400", description = "Invalid course data supplied",
+                    content = @Content)
     })
-    public ResponseEntity<CourseDTO> addCourse(@RequestBody @Parameter(description = "The new course data", required = true) CourseDTO courseDTO) {
+    public ResponseEntity<CourseDTO> addCourse(@RequestBody @Parameter(description = "The new course data",
+            required = true) CourseDTO courseDTO) {
         LOGGER.info("processing request of creating new course");
 
         Course newCourse = courseMapper.toEntity(courseDTO);
@@ -102,14 +111,20 @@ public class CourseRestController {
     @PutMapping("update/{id}")
     @Operation(summary = "get course by id", description = "overwrites a single course of supplied id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Overwritten the course", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = CourseDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The course id is not found", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Overwritten the course",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CourseDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "The course id is not found",
+                    content = @Content)
     })
-    public ResponseEntity<CourseDTO> updateCourse(@RequestBody @Parameter(description = "The course data for update", required = true) CourseDTO courseDTO,
-                                                  @PathVariable("id") @Parameter(description = "Updating course internal numeric identifier", required = true) Integer courseId) {
+    public ResponseEntity<CourseDTO> updateCourse(@RequestBody @Parameter(
+            description = "The course data for update", required = true) CourseDTO courseDTO,
+                                                  @PathVariable("id") @Parameter(
+                                                          description = "Updating course internal numeric identifier",
+                                                          required = true) Integer courseId) {
         LOGGER.info("processing request of updating course id={}", courseId);
 
         if (courseId == null) {
@@ -132,13 +147,17 @@ public class CourseRestController {
     @DeleteMapping("delete/{id}")
     @Operation(summary = "delete course by id", description = "deactivates a single course by supplied id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Deactivated the course", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = CourseDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The course id is not found", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Deactivated the course",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CourseDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "The course id is not found",
+                    content = @Content)
     })
-    public ResponseEntity<CourseDTO> deleteCourse(@PathVariable("id") @Parameter(description = "Deleting course internal numeric identifier", required = true) Integer courseId) {
+    public ResponseEntity<CourseDTO> deleteCourse(@PathVariable("id") @Parameter(
+            description = "Deleting course internal numeric identifier", required = true) Integer courseId) {
         LOGGER.info("processing request of deactivating course id={}", courseId);
 
         if (courseId == null) {
@@ -157,10 +176,12 @@ public class CourseRestController {
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "get all of the courses", description = "returns the full list of active courses records in system")
+    @Operation(summary = "get all of the courses",
+            description = "returns the full list of active courses records in system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the courses",
-                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CourseDTO.class)))
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = CourseDTO.class)))
             )
     })
     public ResponseEntity<List<CourseDTO>> getAllCourses() {
@@ -181,12 +202,15 @@ public class CourseRestController {
     @Operation(summary = "assign a group to the course", description = "assigns a group to the course by their ids")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All of assigned groups to the course",
-                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CourseGroupDTO.class)))
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = CourseGroupDTO.class)))
             ),
             @ApiResponse(responseCode = "400", description = "Invalid group or course id supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "The group or course id is not found", content = @Content)
     })
-    public ResponseEntity<List<CourseGroupDTO>> assignGroup(@RequestBody @Parameter(description = "Assignment group and course ids", required = true) CourseGroupAssignmentDTO courseGroupAssignmentDTO) {
+    public ResponseEntity<List<CourseGroupDTO>> assignGroup(@RequestBody @Parameter(
+            description = "Assignment group and course ids",
+            required = true) CourseGroupAssignmentDTO courseGroupAssignmentDTO) {
         LOGGER.info("processing request of assigning group to course");
 
         if (courseGroupAssignmentDTO.getCourseId() == null || courseGroupAssignmentDTO.getGroupId() == null) {
@@ -208,15 +232,19 @@ public class CourseRestController {
     }
 
     @PutMapping("remove-group")
-    @Operation(summary = "removes a group from the course", description = "cancels the assignment group to the course by their ids")
+    @Operation(summary = "removes a group from the course",
+            description = "cancels the assignment group to the course by their ids")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All of assigned groups to the course",
-                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CourseGroupDTO.class)))
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = CourseGroupDTO.class)))
             ),
             @ApiResponse(responseCode = "400", description = "Invalid group or course id supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "The group or course id is not found", content = @Content)
     })
-    public ResponseEntity<List<CourseGroupDTO>> removeGroup(@RequestBody @Parameter(description = "Removing group and course ids", required = true) CourseGroupAssignmentDTO courseGroupAssignmentDTO) {
+    public ResponseEntity<List<CourseGroupDTO>> removeGroup(@RequestBody @Parameter(
+            description = "Removing group and course ids",
+            required = true) CourseGroupAssignmentDTO courseGroupAssignmentDTO) {
         LOGGER.info("processing request of assigning group to course");
 
         if (courseGroupAssignmentDTO.getCourseId() == null || courseGroupAssignmentDTO.getGroupId() == null) {

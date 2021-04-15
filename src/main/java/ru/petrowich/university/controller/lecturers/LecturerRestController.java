@@ -70,7 +70,8 @@ public class LecturerRestController {
     }
 
     @PostMapping("add")
-    @Operation(summary = "create a new lecturer", description = "adds a single lecturer in the system, assigns a new internal id")
+    @Operation(summary = "create a new lecturer",
+            description = "adds a single lecturer in the system, assigns a new internal id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Added the new lecturer", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = LecturerDTO.class))
@@ -96,7 +97,8 @@ public class LecturerRestController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "The lecturer id is not found", content = @Content)
     })
-    public ResponseEntity<LecturerDTO> updateLecturer(@RequestBody LecturerDTO lecturerDTO, @PathVariable("id") Integer lecturerId) {
+    public ResponseEntity<LecturerDTO> updateLecturer(@RequestBody LecturerDTO lecturerDTO,
+                                                      @PathVariable("id") Integer lecturerId) {
         LOGGER.info("processing request of updating lecturer id={}", lecturerId);
 
         if (lecturerId == null) {
@@ -144,10 +146,12 @@ public class LecturerRestController {
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "get all of the lecturers", description = "returns the full list of active lecturers records in system")
+    @Operation(summary = "get all of the lecturers",
+            description = "returns the full list of active lecturers records in system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the lecturers",
-                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = LecturerDTO.class)))
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = LecturerDTO.class)))
             )
     })
     public ResponseEntity<List<LecturerDTO>> getAllLecturers() {

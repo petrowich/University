@@ -72,7 +72,8 @@ public class GroupRestController {
     }
 
     @PostMapping("add")
-    @Operation(summary = "create a new group", description = "adds a single group in the system, assigns a new internal id")
+    @Operation(summary = "create a new group",
+            description = "adds a single group in the system, assigns a new internal id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Added the new group", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = GroupDTO.class))
@@ -98,7 +99,8 @@ public class GroupRestController {
             @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
             @ApiResponse(responseCode = "404", description = "The group id is not found", content = @Content)
     })
-    public ResponseEntity<GroupDTO> updateGroup(@RequestBody GroupDTO groupDTO, @PathVariable("id") Integer groupId) {
+    public ResponseEntity<GroupDTO> updateGroup(@RequestBody GroupDTO groupDTO,
+                                                @PathVariable("id") Integer groupId) {
         LOGGER.info("processing request of updating group id={}", groupId);
 
         if (groupId == null) {
@@ -146,10 +148,12 @@ public class GroupRestController {
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "get all of the groups", description = "returns the full list of active groups records in system")
+    @Operation(summary = "get all of the groups",
+            description = "returns the full list of active groups records in system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the groups",
-                    content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = GroupDTO.class)))
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = GroupDTO.class)))
             )
     })
     public ResponseEntity<List<GroupDTO>> getAllGroups() {
