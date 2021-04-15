@@ -47,11 +47,17 @@ public class GroupRestController {
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "get group by id", description = "returns a single group by its id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the group", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = GroupDTO.class))
+            @ApiResponse(responseCode = "200",
+                    description = "Found the group", content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = GroupDTO.class))
             }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The group id is not found", content = @Content)
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The group id is not found",
+                    content = @Content)
     })
     public ResponseEntity<GroupDTO> getGroup(@PathVariable("id") Integer groupId) {
         LOGGER.info("processing request of getting group id={}", groupId);
@@ -75,10 +81,14 @@ public class GroupRestController {
     @Operation(summary = "create a new group",
             description = "adds a single group in the system, assigns a new internal id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Added the new group", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = GroupDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid group data supplied", content = @Content)
+            @ApiResponse(responseCode = "200",
+                    description = "Added the new group",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = GroupDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid group data supplied",
+                    content = @Content)
     })
     public ResponseEntity<GroupDTO> addGroup(@RequestBody GroupDTO groupDTO) {
         LOGGER.info("processing request of creating new group");
@@ -93,11 +103,17 @@ public class GroupRestController {
     @PutMapping("update/{id}")
     @Operation(summary = "get group by id", description = "overwrites a single group of supplied id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Overwritten the group", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = GroupDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The group id is not found", content = @Content)
+            @ApiResponse(responseCode = "200",
+                    description = "Overwritten the group",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = GroupDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The group id is not found",
+                    content = @Content)
     })
     public ResponseEntity<GroupDTO> updateGroup(@RequestBody GroupDTO groupDTO,
                                                 @PathVariable("id") Integer groupId) {
@@ -123,11 +139,17 @@ public class GroupRestController {
     @DeleteMapping("delete/{id}")
     @Operation(summary = "delete group by id", description = "deactivates a single group by supplied id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Deactivated the group", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = GroupDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The group id is not found", content = @Content)
+            @ApiResponse(responseCode = "200",
+                    description = "Deactivated the group",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = GroupDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The group id is not found",
+                    content = @Content)
     })
     public ResponseEntity<GroupDTO> deleteGroup(@PathVariable("id") Integer groupId) {
         LOGGER.info("processing request of deactivating group id={}", groupId);
@@ -151,7 +173,8 @@ public class GroupRestController {
     @Operation(summary = "get all of the groups",
             description = "returns the full list of active groups records in system")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the groups",
+            @ApiResponse(responseCode = "200",
+                    description = "Found the groups",
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = GroupDTO.class)))
             )

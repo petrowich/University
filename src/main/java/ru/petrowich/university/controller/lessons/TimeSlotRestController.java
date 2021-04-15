@@ -45,11 +45,16 @@ public class TimeSlotRestController {
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "get time slot by id", description = "returns a single time slot by its id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the time slot", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = TimeSlotDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The time slot id is not found", content = @Content)
+            @ApiResponse(responseCode = "200", description = "Found the time slot",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TimeSlotDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The time slot id is not found",
+                    content = @Content)
     })
     public ResponseEntity<TimeSlotDTO> getTimeSlot(@PathVariable("id") Integer timeSlotId) {
         LOGGER.info("processing request of getting timeSlot id={}", timeSlotId);
@@ -74,10 +79,14 @@ public class TimeSlotRestController {
     @Operation(summary = "create a new time slot",
             description = "adds a single time slot in the system, assigns a new internal id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Added the new time slot", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = TimeSlotDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid time slot data supplied", content = @Content)
+            @ApiResponse(responseCode = "200",
+                    description = "Added the new time slot",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TimeSlotDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid time slot data supplied",
+                    content = @Content)
     })
     public ResponseEntity<TimeSlotDTO> addTimeSlot(@RequestBody TimeSlotDTO timeSlotDTO) {
         LOGGER.info("processing request of creating new timeSlot");
@@ -92,11 +101,17 @@ public class TimeSlotRestController {
     @PutMapping("update/{id}")
     @Operation(summary = "get time slot by id", description = "overwrites a single time slot of supplied id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Overwritten the time slot", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = TimeSlotDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The time slot id is not found", content = @Content)
+            @ApiResponse(responseCode = "200",
+                    description = "Overwritten the time slot",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TimeSlotDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The time slot id is not found",
+                    content = @Content)
     })
     public ResponseEntity<TimeSlotDTO> updateTimeSlot(@RequestBody TimeSlotDTO timeSlotDTO,
                                                       @PathVariable("id") Integer timeSlotId) {
@@ -122,9 +137,15 @@ public class TimeSlotRestController {
     @DeleteMapping("delete/{id}")
     @Operation(summary = "delete time slot by id", description = "removes a single time slot by supplied id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Deactivated the time slot", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The time slot id is not found", content = @Content)
+            @ApiResponse(responseCode = "200",
+                    description = "Deactivated the time slot",
+                    content = @Content),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The time slot id is not found",
+                    content = @Content)
     })
     public ResponseEntity<TimeSlotDTO> deleteTimeSlot(@PathVariable("id") Integer timeSlotId) {
         LOGGER.info("processing request of deactivating timeSlot id={}", timeSlotId);
@@ -149,7 +170,8 @@ public class TimeSlotRestController {
     @Operation(summary = "get all of the time slots",
             description = "returns the full list of active time slots records in system")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the time slots",
+            @ApiResponse(responseCode = "200",
+                    description = "Found the time slots",
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = TimeSlotDTO.class)))
             )

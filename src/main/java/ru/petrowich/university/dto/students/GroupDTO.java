@@ -15,19 +15,24 @@ public class GroupDTO extends AbstractEntityDTO<Integer> {
     @Schema(description = "Maximum number of student in the group", example = "30")
     private Integer capacity = null;
 
-    @Schema(description = "Number of courses the group is assigned to", example = "5", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Number of courses the group is assigned to", example = "5",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private Integer numberOfAssignedCourses = null;
 
-    @Schema(description = "A list of courses the group is assigned to", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "A list of courses the group is assigned to",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private List<GroupCourseDTO> courses = new ArrayList<>();
 
-    @Schema(description = "Actual number of students of the group", example = "20", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Actual number of students of the group", example = "20",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private Integer numberOfStudents = null;
 
-    @Schema(description = "A list of students of the group", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "A list of students of the group",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private List<GroupStudentDTO> students = new ArrayList<>();
 
-    @Schema(description = "A status of the group record in a system", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "A status of the group record in a system",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private boolean active;
 
     public String getName() {

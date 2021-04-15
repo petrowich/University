@@ -45,11 +45,17 @@ public class StudentRestController {
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "get student by id", description = "returns a single student by its id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the student", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StudentDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The student id is not found", content = @Content)
+            @ApiResponse(responseCode = "200",
+                    description = "Found the student",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StudentDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The student id is not found",
+                    content = @Content)
     })
     public ResponseEntity<StudentDTO> getStudent(@PathVariable("id") Integer studentId) {
         LOGGER.info("processing request of getting student id={}", studentId);
@@ -73,10 +79,14 @@ public class StudentRestController {
     @Operation(summary = "create a new student",
             description = "adds a single student in the system, assigns a new internal id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Added the new student", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StudentDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid student data supplied", content = @Content)
+            @ApiResponse(responseCode = "200",
+                    description = "Added the new student",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StudentDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid student data supplied",
+                    content = @Content)
     })
     public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentDTO studentDTO) {
         LOGGER.info("processing request of creating new student");
@@ -91,11 +101,17 @@ public class StudentRestController {
     @PutMapping("update/{id}")
     @Operation(summary = "get student by id", description = "overwrites a single student of supplied id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Overwritten the student", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StudentDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The student id is not found", content = @Content)
+            @ApiResponse(responseCode = "200",
+                    description = "Overwritten the student",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StudentDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The student id is not found",
+                    content = @Content)
     })
     public ResponseEntity<StudentDTO> updateStudent(@RequestBody StudentDTO studentDTO,
                                                     @PathVariable("id") Integer studentId) {
@@ -121,11 +137,17 @@ public class StudentRestController {
     @DeleteMapping("delete/{id}")
     @Operation(summary = "delete student by id", description = "deactivates a single student by supplied id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Deactivated the student", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = StudentDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The student id is not found", content = @Content)
+            @ApiResponse(responseCode = "200",
+                    description = "Deactivated the student",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StudentDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The student id is not found",
+                    content = @Content)
     })
     public ResponseEntity<StudentDTO> deleteStudent(@PathVariable("id") Integer studentId) {
         LOGGER.info("processing request of deactivating student id={}", studentId);
@@ -149,10 +171,10 @@ public class StudentRestController {
     @Operation(summary = "get all of the students",
             description = "returns the full list of active lessons records in system")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the students",
+            @ApiResponse(responseCode = "200",
+                    description = "Found the students",
                     content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = StudentDTO.class)))
-            )
+                            array = @ArraySchema(schema = @Schema(implementation = StudentDTO.class))))
     })
     public ResponseEntity<List<StudentDTO>> getAllStudents() {
         LOGGER.info("processing request of listing courses");

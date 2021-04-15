@@ -24,16 +24,20 @@ public class StudentDTO extends AbstractEntityDTO<Integer> {
     @Schema(description = "Numeric internal identifier of the student group", example = "101")
     private Integer groupId = null;
 
-    @Schema(description = "A  name of the student group", example = "Shamil Basayev", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "A  name of the student group", example = "Shamil Basayev",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private String groupName = null;
 
-    @Schema(description = "A number of courses assigned to the student", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "A number of courses assigned to the student", example = "1",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private Integer numberOfAssignedCourses = null;
 
-    @Schema(description = "A list of courses assigned to the student", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "A list of courses assigned to the student",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private transient List<StudentCourseDTO> courses = new ArrayList<>();
 
-    @Schema(description = "A status of the student record in a system", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "A status of the student record in a system",
+            accessMode = Schema.AccessMode.READ_ONLY)
     boolean active;
 
     public String getFirstName() {

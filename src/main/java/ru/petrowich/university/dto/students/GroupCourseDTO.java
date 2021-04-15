@@ -6,16 +6,20 @@ import ru.petrowich.university.dto.AbstractDTO;
 @Schema(description = "A course of the group")
 public class GroupCourseDTO extends AbstractDTO {
 
-    @Schema(description = "Numeric internal identifier of the course", example = "101", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Numeric internal identifier of the course", example = "101",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private Integer id = null;
 
-    @Schema(description = "A name of the course", example = "Mathematical analysis", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "A name of the course", example = "Mathematical analysis",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private String name = null;
 
-    @Schema(description = "Numeric internal identifier of the lecturer is teaching the course", example = "10001", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Numeric internal identifier of the lecturer is teaching the course",
+            example = "10001", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer authorId = null;
 
-    @Schema(description = "A lecturer full name", example = "Shamil Basayev", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "A lecturer full name", example = "Shamil Basayev",
+            accessMode = Schema.AccessMode.READ_ONLY)
     private String authorFullName = null;
 
     public Integer getId() {

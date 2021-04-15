@@ -45,11 +45,17 @@ public class LecturerRestController {
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "get lecturer by id", description = "returns a single lecturer by its id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the lecturer", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = LecturerDTO.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
-            @ApiResponse(responseCode = "404", description = "The lecturer id is not found", content = @Content)
+            @ApiResponse(responseCode = "200",
+                    description = "Found the lecturer",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LecturerDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The lecturer id is not found",
+                    content = @Content)
     })
     public ResponseEntity<LecturerDTO> getLecturer(@PathVariable("id") Integer lecturerId) {
         LOGGER.info("processing request of getting lecturer id={}", lecturerId);
@@ -149,7 +155,8 @@ public class LecturerRestController {
     @Operation(summary = "get all of the lecturers",
             description = "returns the full list of active lecturers records in system")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Found the lecturers",
+            @ApiResponse(responseCode = "200",
+                    description = "Found the lecturers",
                     content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = LecturerDTO.class)))
             )
