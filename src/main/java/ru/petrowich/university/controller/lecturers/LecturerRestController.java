@@ -1,5 +1,12 @@
 package ru.petrowich.university.controller.lecturers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +30,7 @@ import java.util.stream.Collectors;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @RestController
+@Tag(name = "Lecturers", description = "operating university lecturers")
 @RequestMapping("/api/lecturers/")
 public class LecturerRestController {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
@@ -35,6 +43,20 @@ public class LecturerRestController {
     }
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "get lecturer by id", description = "returns a single lecturer by its id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Found the lecturer",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LecturerDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The lecturer id is not found",
+                    content = @Content)
+    })
     public ResponseEntity<LecturerDTO> getLecturer(@PathVariable("id") Integer lecturerId) {
         LOGGER.info("processing request of getting lecturer id={}", lecturerId);
 
@@ -54,18 +76,35 @@ public class LecturerRestController {
     }
 
     @PostMapping("add")
+    @Operation(summary = "create a new lecturer",
+            description = "adds a single lecturer in the system, assigns a new internal id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Added the new lecturer", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = LecturerDTO.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid lecturer data supplied", content = @Content)}
+    )
     public ResponseEntity<LecturerDTO> addLecturer(@RequestBody LecturerDTO lecturerDTO) {
         LOGGER.info("processing request of creating new lecturer");
 
         Lecturer newLecturer = lecturerMapper.toEntity(lecturerDTO);
         Lecturer actualLecturer = lecturerService.add(newLecturer);
-        LecturerDTO actualLecturerDTO= lecturerMapper.toDto(actualLecturer);
+        LecturerDTO actualLecturerDTO = lecturerMapper.toDto(actualLecturer);
 
         return new ResponseEntity<>(actualLecturerDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<LecturerDTO> updateLecturer(@RequestBody LecturerDTO lecturerDTO, @PathVariable("id") Integer lecturerId) {
+    @Operation(summary = "get lecturer by id", description = "overwrites a single lecturer of supplied id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Overwritten the lecturer", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = LecturerDTO.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+            @ApiResponse(responseCode = "404", description = "The lecturer id is not found", content = @Content)
+    })
+    public ResponseEntity<LecturerDTO> updateLecturer(@RequestBody LecturerDTO lecturerDTO,
+                                                      @PathVariable("id") Integer lecturerId) {
         LOGGER.info("processing request of updating lecturer id={}", lecturerId);
 
         if (lecturerId == null) {
@@ -80,12 +119,20 @@ public class LecturerRestController {
 
         Lecturer lecturer = lecturerMapper.toEntity(lecturerDTO).setId(lecturerId);
         Lecturer actualLecturer = lecturerService.update(lecturer);
-        LecturerDTO actualLecturerDTO= lecturerMapper.toDto(actualLecturer);
+        LecturerDTO actualLecturerDTO = lecturerMapper.toDto(actualLecturer);
 
         return new ResponseEntity<>(actualLecturerDTO, HttpStatus.OK);
     }
 
     @DeleteMapping("delete/{id}")
+    @Operation(summary = "delete lecturer by id", description = "deactivates a single lecturer by supplied id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deactivated the lecturer", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = LecturerDTO.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied", content = @Content),
+            @ApiResponse(responseCode = "404", description = "The lecturer id is not found", content = @Content)
+    })
     public ResponseEntity<LecturerDTO> deleteLecturer(@PathVariable("id") Integer lecturerId) {
         LOGGER.info("processing request of deactivating lecturer id={}", lecturerId);
 
@@ -105,8 +152,17 @@ public class LecturerRestController {
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "get all of the lecturers",
+            description = "returns the full list of active lecturers records in system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Found the lecturers",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = LecturerDTO.class)))
+            )
+    })
     public ResponseEntity<List<LecturerDTO>> getAllLecturers() {
-        LOGGER.info("processing request of listing courses");
+        LOGGER.info("processing request of listing lecturers");
 
         List<LecturerDTO> lecturerDTOs = this.lecturerService.getAll().stream()
                 .map(lecturerMapper::toDto)

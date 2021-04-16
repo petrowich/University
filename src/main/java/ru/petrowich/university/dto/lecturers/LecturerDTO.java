@@ -1,16 +1,30 @@
 package ru.petrowich.university.dto.lecturers;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import ru.petrowich.university.dto.AbstractEntityDTO;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Schema(description = "A lecturer entity")
 public class LecturerDTO extends AbstractEntityDTO<Integer> {
+
+    @Schema(description = "A lecturer first name", example = "Shamil")
     private String firstName = null;
+
+    @Schema(description = "A lecturer first name", example = "Basayev")
     private String lastName = null;
+
+    @Schema(description = "An email of the lecturer", example = "shamil.basayev@university.edu")
     private String email = null;
+
+    @Schema(description = "An additional notes about lecturer", example = "bla bla bla")
     private String comment = null;
+
+    @Schema(description = "A list of courses taught by the lecturer", accessMode = Schema.AccessMode.READ_ONLY)
     private transient List<LecturerCourseDTO> courses = new ArrayList<>();
+
+    @Schema(description = "A status of the lecturer record in a system", accessMode = Schema.AccessMode.READ_ONLY)
     boolean active;
 
     public String getFirstName() {

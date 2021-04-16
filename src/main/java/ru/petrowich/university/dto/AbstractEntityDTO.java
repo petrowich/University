@@ -1,8 +1,12 @@
 package ru.petrowich.university.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.Objects;
 
 public abstract class AbstractEntityDTO<I extends Number> extends AbstractDTO {
+
+    @Schema(description = "Internal numeric identifier", example = "1001", accessMode = Schema.AccessMode.READ_ONLY)
     private I id;
 
     public I getId() {

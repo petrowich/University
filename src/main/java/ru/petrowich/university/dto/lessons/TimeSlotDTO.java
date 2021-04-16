@@ -1,17 +1,19 @@
 package ru.petrowich.university.dto.lessons;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import ru.petrowich.university.dto.AbstractEntityDTO;
 
 import java.time.LocalTime;
 
+@Schema(description = "A time slot entity")
 public class TimeSlotDTO extends AbstractEntityDTO<Integer> {
     private String name;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime startTime = null;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime endTime = null;
 
     public String getName() {

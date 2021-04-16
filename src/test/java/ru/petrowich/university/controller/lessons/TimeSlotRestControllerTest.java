@@ -1,6 +1,7 @@
 package ru.petrowich.university.controller.lessons;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,7 @@ import ru.petrowich.university.mapper.lesson.TimeSlotMapper;
 import ru.petrowich.university.model.TimeSlot;
 import ru.petrowich.university.service.TimeSlotService;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,11 +40,16 @@ class TimeSlotRestControllerTest {
     private static final Integer NONEXISTENT_TIME_SLOT_ID = 9;
     private static final Integer EXISTENT_TIME_SLOT_ID_1 = 1;
     private static final Integer NEW_TIME_SLOT_ID = 9;
-    private static final String ANOTHER_TIME_SLOT_NAME = "another name";
+    private static final LocalTime ANOTHER_TIME_SLOT_START_TIME = LocalTime.of(18, 30, 0);
+    private static final String ANOTHER_TIME_SLOT_START_TIME_STRING = "18:30";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ModelMapper modelMapper = new ModelMapper();
     private final TimeSlotMapper timeSlotMapper = new TimeSlotMapper(modelMapper);
+
+    {
+        objectMapper.registerModule(new JavaTimeModule());
+    }
 
     @Mock
     TimeSlotService mockTimeSlotService;
@@ -121,7 +128,7 @@ class TimeSlotRestControllerTest {
 
     @Test
     void testUpdateTimeSlotShouldReturnOK() throws Exception {
-        TimeSlot timeSlot = new TimeSlot().setId(EXISTENT_TIME_SLOT_ID_1).setName(ANOTHER_TIME_SLOT_NAME);
+        TimeSlot timeSlot = new TimeSlot().setId(EXISTENT_TIME_SLOT_ID_1).setStartTime(ANOTHER_TIME_SLOT_START_TIME);
         TimeSlotDTO timeSlotDTO = timeSlotMapper.toDto(timeSlot);
 
         when(mockTimeSlotService.getById(EXISTENT_TIME_SLOT_ID_1)).thenReturn(new TimeSlot().setId(EXISTENT_TIME_SLOT_ID_1));
@@ -138,7 +145,7 @@ class TimeSlotRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.id").value(EXISTENT_TIME_SLOT_ID_1))
-                .andExpect(jsonPath("$.name").value(ANOTHER_TIME_SLOT_NAME));
+                .andExpect(jsonPath("$.startTime").value(ANOTHER_TIME_SLOT_START_TIME_STRING));
 
         verify(mockTimeSlotService, times(1)).getById(EXISTENT_TIME_SLOT_ID_1);
         verify(mockTimeSlotMapper, times(1)).toEntity(timeSlotDTO);

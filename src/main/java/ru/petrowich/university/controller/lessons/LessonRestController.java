@@ -1,5 +1,12 @@
 package ru.petrowich.university.controller.lessons;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +30,7 @@ import java.util.stream.Collectors;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @RestController
+@Tag(name = "Lessons", description = "operating university lessons")
 @RequestMapping("/api/lessons/")
 public class LessonRestController {
     private final Logger LOGGER = getLogger(getClass().getSimpleName());
@@ -35,6 +43,20 @@ public class LessonRestController {
     }
 
     @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "get lesson by id", description = "returns a single lesson by its id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Found the lesson",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LessonDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The lesson id is not found",
+                    content = @Content)
+    })
     public ResponseEntity<LessonDTO> getLesson(@PathVariable("id") Long lessonId) {
         LOGGER.info("processing request of getting lesson id={}", lessonId);
 
@@ -53,8 +75,19 @@ public class LessonRestController {
         return new ResponseEntity<>(lessonDTO, HttpStatus.OK);
     }
 
-
     @PostMapping("add")
+    @Operation(summary = "create a new lesson",
+            description = "adds a single lesson in the system, assigns a new internal id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Added the new lesson",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LessonDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid lesson data supplied",
+                    content = @Content)
+    })
     public ResponseEntity<LessonDTO> addLesson(@RequestBody LessonDTO lessonDTO) {
         LOGGER.info("processing request of creating new lesson");
 
@@ -66,7 +99,22 @@ public class LessonRestController {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<LessonDTO> updateLesson(@RequestBody LessonDTO lessonDTO, @PathVariable("id") Long lessonId) {
+    @Operation(summary = "get lesson by id", description = "overwrites a single lesson of supplied id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Overwritten the lesson",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = LessonDTO.class))
+                    }),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The lesson id is not found",
+                    content = @Content)
+    })
+    public ResponseEntity<LessonDTO> updateLesson(@RequestBody LessonDTO lessonDTO,
+                                                  @PathVariable("id") Long lessonId) {
         LOGGER.info("processing request of updating lesson id={}", lessonId);
 
         if (lessonId == null) {
@@ -87,8 +135,19 @@ public class LessonRestController {
         return new ResponseEntity<>(actualLessonDTO, HttpStatus.OK);
     }
 
-
     @DeleteMapping("delete/{id}")
+    @Operation(summary = "delete lesson by id", description = "removes a single group by supplied id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Deactivated the lesson",
+                    content = @Content),
+            @ApiResponse(responseCode = "400",
+                    description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404",
+                    description = "The lesson id is not found",
+                    content = @Content)
+    })
     public ResponseEntity<LessonDTO> deleteLesson(@PathVariable("id") Long lessonId) {
         LOGGER.info("processing request of deactivating lesson id={}", lessonId);
 
@@ -109,6 +168,15 @@ public class LessonRestController {
 
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "get all of the lessons",
+            description = "returns the full list of active lessons records in system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Found the lessons",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = LessonDTO.class)))
+            )
+    })
     public ResponseEntity<List<LessonDTO>> getAllLessons() {
         LOGGER.info("processing request of listing lessons");
 
