@@ -91,7 +91,7 @@ public class StudentRestController {
     public ResponseEntity<StudentDTO> addStudent(@RequestBody StudentDTO studentDTO) {
         LOGGER.info("processing request of creating new student");
 
-        Student newStudent = studentMapper.toEntity(studentDTO);
+        Student newStudent = studentMapper.toEntity(studentDTO).setActive(true);
         Student actualStudent = studentService.add(newStudent);
         StudentDTO actualStudentDTO = studentMapper.toDto(actualStudent);
 
@@ -127,7 +127,9 @@ public class StudentRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Student student = studentMapper.toEntity(studentDTO).setId(studentId);
+        Student student = studentMapper.toEntity(studentDTO)
+                .setId(studentId)
+                .setActive(persistentStudent.isActive());
         Student actualStudent = studentService.update(student);
         StudentDTO actualStudentDTO = studentMapper.toDto(actualStudent);
 

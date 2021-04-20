@@ -107,7 +107,7 @@ class LessonRestControllerTest {
     void testAddLessonShouldReturnCreated() throws Exception {
         Lesson newLesson = new Lesson();
         LessonDTO newLessonDTO = lessonMapper.toDto(newLesson);
-        String newLecturerJSON = objectMapper.writeValueAsString(newLessonDTO);
+        String newLessonJSON = objectMapper.writeValueAsString(newLessonDTO);
 
         Lesson expectedLesson = lessonMapper.toEntity(newLessonDTO).setId(NEW_LESSON_ID);
 
@@ -118,7 +118,7 @@ class LessonRestControllerTest {
         when(mockLessonMapper.toDto(expectedLesson)).thenReturn(expectedLessonDTO);
 
         mockMvc.perform(post("/api/lessons/add")
-                .content(newLecturerJSON)
+                .content(newLessonJSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())

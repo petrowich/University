@@ -24,6 +24,10 @@ public class LessonDTO extends AbstractEntityDTO<Long> {
             accessMode = Schema.AccessMode.READ_ONLY)
     private String lecturerFullName = null;
 
+    @Schema(description = "Numeric internal identifier of the time slot", example = "1",
+            accessMode = Schema.AccessMode.READ_ONLY)
+    private Integer timeSlotId = null;
+
     @Schema(description = "Date of the lesson, format yyyy-MM-dd", example = "2020-07-31")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate date = null;
@@ -73,6 +77,15 @@ public class LessonDTO extends AbstractEntityDTO<Long> {
 
     public LessonDTO setLecturerFullName(String lecturerFullName) {
         this.lecturerFullName = lecturerFullName;
+        return this;
+    }
+
+    public Integer getTimeSlotId() {
+        return timeSlotId;
+    }
+
+    public LessonDTO setTimeSlotId(Integer timeSlotId) {
+        this.timeSlotId = timeSlotId;
         return this;
     }
 

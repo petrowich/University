@@ -103,7 +103,7 @@ public class CourseRestController {
             required = true) CourseDTO courseDTO) {
         LOGGER.info("processing request of creating new course");
 
-        Course newCourse = courseMapper.toEntity(courseDTO);
+        Course newCourse = courseMapper.toEntity(courseDTO).setActive(true);
         Course actualCourse = courseService.add(newCourse);
         CourseDTO actualCourseDTO = courseMapper.toDto(actualCourse);
 
@@ -139,7 +139,9 @@ public class CourseRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Course course = courseMapper.toEntity(courseDTO).setId(courseId);
+        Course course = courseMapper.toEntity(courseDTO)
+                .setId(courseId)
+                .setActive(persistentCourse.isActive());
         Course actualCourse = courseService.update(course);
         CourseDTO actualCourseDTO = courseMapper.toDto(actualCourse);
 
