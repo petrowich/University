@@ -103,7 +103,7 @@ class CourseRestControllerTest {
     void testGetCourseShouldReturnNotFoundWhenNonexistentIdPassed() throws Exception {
         when(mockCourseService.getById(NONEXISTENT_COURSE_ID)).thenReturn(null);
 
-        mockMvc.perform(get("/api/courses/{id}", EXISTENT_COURSE_ID_51)
+        mockMvc.perform(get("/api/courses/{id}", NONEXISTENT_COURSE_ID)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }

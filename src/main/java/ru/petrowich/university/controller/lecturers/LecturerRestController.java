@@ -87,7 +87,7 @@ public class LecturerRestController {
     public ResponseEntity<LecturerDTO> addLecturer(@RequestBody LecturerDTO lecturerDTO) {
         LOGGER.info("processing request of creating new lecturer");
 
-        Lecturer newLecturer = lecturerMapper.toEntity(lecturerDTO);
+        Lecturer newLecturer = lecturerMapper.toEntity(lecturerDTO).setActive(true);
         Lecturer actualLecturer = lecturerService.add(newLecturer);
         LecturerDTO actualLecturerDTO = lecturerMapper.toDto(actualLecturer);
 
@@ -117,7 +117,9 @@ public class LecturerRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Lecturer lecturer = lecturerMapper.toEntity(lecturerDTO).setId(lecturerId);
+        Lecturer lecturer = lecturerMapper.toEntity(lecturerDTO)
+                .setId(lecturerId)
+                .setActive(persistentLecturer.isActive());
         Lecturer actualLecturer = lecturerService.update(lecturer);
         LecturerDTO actualLecturerDTO = lecturerMapper.toDto(actualLecturer);
 

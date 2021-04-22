@@ -127,8 +127,7 @@ public class LessonRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Lesson lesson = lessonMapper.toEntity(lessonDTO);
-        lesson.setId(lessonId);
+        Lesson lesson = lessonMapper.toEntity(lessonDTO).setId(lessonId);
         Lesson actualLesson = lessonService.update(lesson);
         LessonDTO actualLessonDTO = lessonMapper.toDto(actualLesson);
 

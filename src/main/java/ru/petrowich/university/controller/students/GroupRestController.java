@@ -93,7 +93,7 @@ public class GroupRestController {
     public ResponseEntity<GroupDTO> addGroup(@RequestBody GroupDTO groupDTO) {
         LOGGER.info("processing request of creating new group");
 
-        Group newGroup = groupMapper.toEntity(groupDTO);
+        Group newGroup = groupMapper.toEntity(groupDTO).setActive(true);
         Group actualGroup = groupService.add(newGroup);
         GroupDTO actualGroupDTO = groupMapper.toDto(actualGroup);
 
@@ -129,7 +129,9 @@ public class GroupRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Group group = groupMapper.toEntity(groupDTO).setId(groupId);
+        Group group = groupMapper.toEntity(groupDTO)
+                .setId(groupId)
+                .setActive(persistentGroup.isActive());
         Group actualGroup = groupService.update(group);
         GroupDTO actualGroupDTO = groupMapper.toDto(actualGroup);
 

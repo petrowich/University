@@ -48,10 +48,12 @@ public class Lesson extends AbstractEntity implements Comparable<Lesson> {
 
     @NotNull(message = "lesson start time is null")
     @Column(name = "lesson_start_time")
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime startTime;
 
     @NotNull(message = "lesson end time is null")
     @Column(name = "lesson_end_time")
+    @DateTimeFormat(pattern = "HH:mm")
     private LocalTime endTime;
 
     @Transient
