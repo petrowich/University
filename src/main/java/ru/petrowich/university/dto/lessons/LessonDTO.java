@@ -20,7 +20,7 @@ public class LessonDTO extends AbstractEntityDTO<Long> {
     @Schema(description = "Numeric internal identifier of the lecturer leading the lesson", example = "10001")
     private Integer lecturerId = null;
 
-    @Schema(description = "A full name of the lecturer is teaching a the course", example = "Shamil Basayev",
+    @Schema(description = "A full name of the lecturer is teaching a the course", example = "Giorgio Parisi",
             accessMode = Schema.AccessMode.READ_ONLY)
     private String lecturerFullName = null;
 

@@ -25,9 +25,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 class CourseControllerTest {
@@ -173,8 +171,8 @@ class CourseControllerTest {
         String expectedViewName = "courses/courses";
 
         mockMvc.perform(post("/courses/course/update").flashAttr("course", expectedCourse).contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(view().name(expectedViewName));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/courses/"));
 
         verify(mockCourseService, times(1)).update(expectedCourse);
     }
@@ -219,8 +217,8 @@ class CourseControllerTest {
         String expectedViewName = "courses/courses";
 
         mockMvc.perform(post("/courses/course/add").flashAttr("course", expectedCourse).contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(view().name(expectedViewName));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/courses/"));
 
         verify(mockCourseService, times(1)).add(expectedCourse);
     }
@@ -237,10 +235,8 @@ class CourseControllerTest {
         mockMvc.perform(post("/courses/course/assign-group")
                 .param("courseId", String.valueOf(COURSE_ID_51))
                 .param("groupId", String.valueOf(GROUP_ID_501)))
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("courseGroups", expectedGroups))
-                .andExpect(model().attribute("restGroups", expectedGroups))
-                .andExpect(view().name(expectedViewName));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/courses/course?id=51"));
 
         verify(mockCourseService, times(1)).assignGroupToCourse(group, course);
     }
@@ -257,11 +253,8 @@ class CourseControllerTest {
         mockMvc.perform(post("/courses/course/remove-group")
                 .param("courseId", String.valueOf(COURSE_ID_51))
                 .param("groupId", String.valueOf(GROUP_ID_501)))
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("course", expectedCourse))
-                .andExpect(model().attribute("courseGroups", expectedGroups))
-                .andExpect(model().attribute("restGroups", expectedGroups))
-                .andExpect(view().name(expectedViewName));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/courses/course?id=51"));
 
         verify(mockCourseService, times(1)).removeGroupFromCourse(group, expectedCourse);
     }

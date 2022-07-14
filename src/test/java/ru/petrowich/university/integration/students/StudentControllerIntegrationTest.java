@@ -25,8 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -37,9 +36,9 @@ class StudentControllerIntegrationTest {
 
     private static final Integer PERSON_ID_50001 = 50001;
     private static final Integer NEW_COURSE_ID = 10001;
-    private static final String PERSON_FIRST_NAME_50001 = "Рулон";
-    private static final String PERSON_LAST_NAME_50001 = "Обоев";
-    private static final String PERSON_EMAIL_50001 = "rulon.oboev@university.edu";
+    private static final String PERSON_FIRST_NAME_50001 = "Giorgio";
+    private static final String PERSON_LAST_NAME_50001 = "Parisi";
+    private static final String PERSON_EMAIL_50001 = "giorgio.parisi@university.edu";
     private static final String PERSON_COMMENT_50001 = "stupid";
     private static final String CHANGED_PERSON_FIRST_NAME = "new or changed first name";
     private static final String CHANGED_PERSON_LAST_NAME = "new or changed last name";
@@ -67,8 +66,8 @@ class StudentControllerIntegrationTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<h1 class=\"text-center\">Students</h1>"),
-                        containsString("<td><a href=\"/students/student?id=50001\">Рулон Обоев</a></td>"),
-                        containsString("<td><a href=\"mailto:rulon.oboev@university.edu\">rulon.oboev@university.edu</a></td>"),
+                        containsString("<td><a href=\"/students/student?id=50001\">Giorgio Parisi</a></td>"),
+                        containsString("<td><a href=\"mailto:giorgio.parisi@university.edu\">giorgio.parisi@university.edu</a></td>"),
                         containsString("<td><a href=\"/students/group?id=501\">AA-01</a></td>"),
                         containsString("<td><a href=\"/students/student/edit?id=50001\" class=\"btn btn-light fas fa-user-edit\"></a></td>")))
                 );
@@ -84,7 +83,7 @@ class StudentControllerIntegrationTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<p>Group:<a class=\"ml-1\" href=\"/students/group?id=501\">AA-01</a></p>"),
-                        containsString("<h1 class=\"display-4\">Рулон Обоев</h1>"),
+                        containsString("<h1 class=\"display-4\">Giorgio Parisi</h1>"),
                         containsString("<p class=\"lead\">stupid</p>"),
                         containsString("<p><a href=\"/students/student/edit?id=50001\" class=\"btn btn-primary\">Edit</a></p>"),
                         containsString("<p class=\"lead\">stupid</p>"),
@@ -104,9 +103,9 @@ class StudentControllerIntegrationTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<h1 class=\"header\">Edit student</h1>"),
-                        containsString("<input type=\"text\" class=\"form-control\" id=\"firstName\" placeholder=\"First Name\" required name=\"firstName\" value=\"Рулон\">"),
-                        containsString("<input type=\"text\" class=\"form-control\" id=\"lastName\" placeholder=\"Last Name\" required name=\"lastName\" value=\"Обоев\">"),
-                        containsString("<input type=\"email\" class=\"form-control\" id=\"email\" placeholder=\"Enter email\" required name=\"email\" value=\"rulon.oboev@university.edu\">"),
+                        containsString("<input type=\"text\" class=\"form-control\" id=\"firstName\" placeholder=\"First Name\" required name=\"firstName\" value=\"Giorgio\">"),
+                        containsString("<input type=\"text\" class=\"form-control\" id=\"lastName\" placeholder=\"Last Name\" required name=\"lastName\" value=\"Parisi\">"),
+                        containsString("<input type=\"email\" class=\"form-control\" id=\"email\" placeholder=\"Enter email\" required name=\"email\" value=\"giorgio.parisi@university.edu\">"),
                         containsString("<option value=\"501\" selected=\"selected\">AA-01</option>"),
                         containsString("<option value=\"502\">BB-02</option>"),
                         containsString("<option value=\"\">no group</option>"),
@@ -138,7 +137,14 @@ class StudentControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .contentType(MediaType.TEXT_HTML))
                 .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/students/"));
+
+        mockMvc.perform(get("/students/")
+                        .contentType(MediaType.TEXT_HTML))
+                .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<td><a href=\"/students/student?id=50001\" class=\"text-danger\">new or changed first name new or changed last name</a></td>"),
                         containsString("<td><a href=\"/students/group?id=502\">BB-02</a></td>")))
@@ -178,7 +184,14 @@ class StudentControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .contentType(MediaType.TEXT_HTML))
                 .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/students/"));
+
+        mockMvc.perform(get("/students/")
+                        .contentType(MediaType.TEXT_HTML))
+                .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<td><a href=\"/students/student?id=10001\">new or changed first name new or changed last name</a></td>"),
                         containsString("<td><a href=\"/students/group?id=502\">BB-02</a></td>")))

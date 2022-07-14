@@ -27,9 +27,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 class LessonControllerTest {
@@ -144,8 +142,8 @@ class LessonControllerTest {
         when(mockCourseService.getById(COURSE_ID_51)).thenReturn(course);
 
         mockMvc.perform(post("/lessons/lesson/add").flashAttr("lesson", expectedLesson).contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(view().name(expectedViewName));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/lessons/"));
 
         verify(mockTimeSlotService, times(1)).getById(TIME_SLOT_ID_1);
         verify(mockCourseService, times(1)).getById(COURSE_ID_51);
@@ -193,8 +191,8 @@ class LessonControllerTest {
         String expectedViewName = "lessons/lessons";
 
         mockMvc.perform(post("/lessons/lesson/update").flashAttr("lesson", expectedLesson).contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(view().name(expectedViewName));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/lessons/"));
 
         verify(mockLessonService, times(1)).update(expectedLesson);
     }
@@ -217,8 +215,8 @@ class LessonControllerTest {
         String expectedViewName = "lessons/lessons";
 
         mockMvc.perform(post("/lessons/lesson/delete").flashAttr("lesson", expectedLesson).contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(view().name(expectedViewName));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/lessons/"));
 
         verify(mockLessonService, times(1)).delete(expectedLesson);
     }

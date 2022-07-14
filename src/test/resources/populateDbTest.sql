@@ -28,12 +28,12 @@ INSERT INTO public.t_groups (group_id, group_name, group_capacity, group_active)
 , (503, 'CC-03', 20, FALSE);
 
 insert into public.t_persons (person_id, person_first_name, person_last_name, person_role_id, person_email, person_comment, person_active) VALUES
-  (50001,'Рулон','Обоев',1, 'rulon.oboev@university.edu', 'stupid', TRUE)
-, (50002,'Обвал','Забоев',1, 'obval.zaboev@university.edu', NULL, TRUE)
-, (50003, 'Рекорд','Надоев',1, 'record.nadoev@university.edu', '', TRUE)
-, (50004,'Подрыв','Устоев',1, 'podryv.ustoev@university.edu', 'expelled', FALSE)
-, (50005,'Отряд','Ковбоев',2, 'otryad.kovboev@university.edu', '', TRUE)
-, (50006, 'Ушат','Помоев',2, 'ushat.pomoev@university.edu', 'died', FALSE);
+  (50001,'Giorgio','Parisi',1, 'giorgio.parisi@university.edu', 'stupid', TRUE)
+, (50002,'Klaus','Hasselmann',1, 'klaus.hasselmann@university.edu', NULL, TRUE)
+, (50003, 'Syukuro','Manabe',1, 'syukuro.manabe@university.edu', '', TRUE)
+, (50004,'Andrea','Ghez',1, 'andrea.ghez@university.edu', 'expelled', FALSE)
+, (50005,'Reinhard','Genzel',2, 'reinhard.genzel@university.edu', '', TRUE)
+, (50006, 'Roger','Penrose',2, 'roger.penrose@university.edu', 'died', FALSE);
 
 INSERT INTO public.t_courses (course_id, course_name, course_description, course_author_id, course_active) VALUES
   (51, 'math', 'exact', 50005, TRUE)
@@ -41,7 +41,7 @@ INSERT INTO public.t_courses (course_id, course_name, course_description, course
 , (53, 'physics', 'exact', 50006, TRUE)
 , (54, 'literature', 'humanities', NULL, TRUE)
 , (55, 'psychology', 'humanities', 50006, FALSE)
-, (56, 'litrball', 'sport', NULL, TRUE);
+, (56, 'cybernetics', 'exact', NULL, TRUE);
 
 INSERT INTO public.t_groups_courses (group_id, course_id) VALUES
   (501, 51)

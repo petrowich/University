@@ -32,8 +32,8 @@ import static org.mockito.Mockito.times;
 class CourseServiceImplTest {
     private static final Integer PERSON_ID_50005 = 50005;
     private static final Integer PERSON_ID_50006 = 50006;
-    private static final String PERSON_EMAIL_50005 = "otryad.kovboev@university.edu";
-    private static final String PERSON_EMAIL_50006 = "ushat.pomoev@university.edu";
+    private static final String PERSON_EMAIL_50005 = "reinhard.genzel@university.edu";
+    private static final String PERSON_EMAIL_50006 = "roger.penrose@university.edu";
     private static final Integer COURSE_ID_51 = 51;
     private static final Integer COURSE_ID_52 = 52;
     private static final Integer COURSE_ID_53 = 53;

@@ -36,9 +36,9 @@ class GroupServiceImplTest {
     private static final Integer PERSON_ID_50001 = 50001;
     private static final Integer PERSON_ID_50002 = 50002;
     private static final Integer PERSON_ID_50003 = 50003;
-    private static final String PERSON_EMAIL_50001 = "rulon.oboev@university.edu";
-    private static final String PERSON_EMAIL_50002 = "obval.zaboev@university.edu";
-    private static final String PERSON_EMAIL_50003 = "record.nadoev@university.edu";
+    private static final String PERSON_EMAIL_50001 = "giorgio.parisi@university.edu";
+    private static final String PERSON_EMAIL_50002 = "klaus.hasselmann@university.edu";
+    private static final String PERSON_EMAIL_50003 = "syukuro.manabe@university.edu";
 
     private static final Set<ConstraintViolation<Group>> violations = new HashSet<>();
 

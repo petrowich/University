@@ -41,7 +41,7 @@ class CourseRepositoryImplTest {
     private static final String EXISTENT_COURSE_NAME_53 = "physics";
     private static final String EXISTENT_COURSE_NAME_54 = "literature";
     private static final String EXISTENT_COURSE_NAME_55 = "psychology";
-    private static final String EXISTENT_COURSE_NAME_56 = "litrball";
+    private static final String EXISTENT_COURSE_NAME_56 = "computer science";
     private static final String EXISTENT_COURSE_DESCRIPTION_51 = "exact";
     private static final String EXISTENT_COURSE_DESCRIPTION_52 = "natural";
     private static final String EXISTENT_COURSE_DESCRIPTION_53 = "exact";

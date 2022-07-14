@@ -110,7 +110,7 @@ public class StudentController {
 
         studentService.update(student);
 
-        return students(model);
+        return "redirect:/students/";
     }
 
     @GetMapping("/student/new")
@@ -130,7 +130,7 @@ public class StudentController {
     }
 
     @PostMapping("/student/add")
-    public String add(Student student, BindingResult result, Model model) {
+    public String add(Student student, BindingResult result) {
         LOGGER.info("adding new student");
 
         if (result.hasErrors()) {
@@ -143,7 +143,7 @@ public class StudentController {
 
         studentService.add(student.setActive(true));
 
-        return students(model);
+        return "redirect:/students/";
     }
 
     private Group getActualGroup(Group group) {

@@ -21,8 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -72,8 +71,8 @@ class GroupControllerIntegrationTest {
                         containsString("<a href=\"/courses/course?id=52\">biology</a>"),
                         containsString("<a href=\"/courses/course?id=54\">literature</a>"),
                         containsString("<a href=\"/courses/course?id=51\">math</a>"),
-                        containsString("<a href=\"/students/student?id=50001\">Рулон Обоев</a>"),
-                        containsString("<a href=\"/students/student?id=50002\">Обвал Забоев</a>")))
+                        containsString("<a href=\"/students/student?id=50001\">Giorgio Parisi</a>"),
+                        containsString("<a href=\"/students/student?id=50002\">Klaus Hasselmann</a>")))
                 );
     }
 
@@ -109,7 +108,14 @@ class GroupControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .contentType(MediaType.TEXT_HTML))
                 .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/students/groups/"));
+
+        mockMvc.perform(get("/students/groups/")
+                        .contentType(MediaType.TEXT_HTML))
+                .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<td><a href=\"/students/group?id=501\" class=\"text-danger\">new or changed name</a></td>"),
                         containsString("<td>30</td>")))
@@ -142,7 +148,14 @@ class GroupControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .contentType(MediaType.TEXT_HTML))
                 .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/students/groups/"));
+
+        mockMvc.perform(get("/students/groups/")
+                        .contentType(MediaType.TEXT_HTML))
+                .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<td><a href=\"/students/group?id=101\">new or changed name</a></td>"),
                         containsString("<td>30</td>")))

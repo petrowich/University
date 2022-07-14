@@ -46,7 +46,7 @@ public class Group extends AbstractEntity {
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "course_id")
     )
-    List<Course> courses = new ArrayList<>();
+    private List<Course> courses = new ArrayList<>();
 
     @Column(name = "group_active")
     private boolean active;

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en" xml:lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head th:replace="template :: head">
+    <meta charset="utf-8">
+    <title>Home</title>
+</head>
+<body>
+<header>
+    <vav th:replace="template :: navbar"/>
+</header>
+<main>
+    <h3 class="text-center">Error!</h3>
+    <span class="text-center"><p th:text="${error}"></p></span>
+</main>
+<footer th:replace="template :: footer"/>
+</body>
+</html>

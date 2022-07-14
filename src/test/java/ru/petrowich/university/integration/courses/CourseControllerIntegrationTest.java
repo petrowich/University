@@ -28,8 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -72,10 +71,10 @@ class CourseControllerIntegrationTest {
                 .andExpect(content().string(allOf(
                         containsString("<a href=\"/courses/course?id=51\" class=\"card-title\">"),
                         containsString("<h5>math</h5>"),
-                        containsString("<a href=\"/lecturers/lecturer?id=50005\" class=\"card-link\">Отряд Ковбоев</a>"),
+                        containsString("<a href=\"/lecturers/lecturer?id=50005\" class=\"card-link\">Reinhard Genzel</a>"),
                         containsString("<a href=\"/courses/course?id=55\" class=\"card-title text-dark\">"),
                         containsString("<h5>psychology</h5>"),
-                        containsString("<a href=\"/lecturers/lecturer?id=50006\" class=\"card-link\">Ушат Помоев</a>")))
+                        containsString("<a href=\"/lecturers/lecturer?id=50006\" class=\"card-link\">Roger Penrose</a>")))
                 );
     }
 
@@ -89,7 +88,7 @@ class CourseControllerIntegrationTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<h1 class=\"display-4\">math</h1>"),
-                        stringContainsInOrder("href=\"/lecturers/lecturer?id=50005\"", ">Отряд Ковбоев</a>"),
+                        stringContainsInOrder("href=\"/lecturers/lecturer?id=50005\"", ">Reinhard Genzel</a>"),
                         stringContainsInOrder("href=\"/students/group?id=501\"", ">AA-01</a>")))
                 );
     }
@@ -105,7 +104,7 @@ class CourseControllerIntegrationTest {
                 .andExpect(content().string(allOf(
                         containsString("<h1 class=\"header\">edit course</h1>"),
                         containsString("<input type=\"text\" class=\"form-control\" id=\"courseName\" placeholder=\"Course Name\" required name=\"name\" value=\"math\">"),
-                        containsString("<option value=\"50005\" selected=\"selected\">Отряд Ковбоев</option>"),
+                        containsString("<option value=\"50005\" selected=\"selected\">Reinhard Genzel</option>"),
                         containsString("<form action=\"/courses/course/update?id=51\" method=\"post\" class=\"needs-validation\" novalidate>"),
                         stringContainsInOrder("<textarea type=\"text\" class=\"form-control\" id=\"description\" placeholder=\"Description\"", "name=\"description\">exact</textarea>")))
                 );
@@ -130,7 +129,14 @@ class CourseControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .contentType(MediaType.TEXT_HTML))
                 .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/courses/"));
+
+        mockMvc.perform(get("/courses/")
+                        .contentType(MediaType.TEXT_HTML))
+                .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<a href=\"/courses/course?id=51\" class=\"card-title text-dark\">"),
                         containsString("<h5>new or changed name</h5>"),
@@ -155,7 +161,7 @@ class CourseControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(containsString("<h1 class=\"header\">new course</h1>"),
-                        containsString("<option value=\"50005\">Отряд Ковбоев</option>")))
+                        containsString("<option value=\"50005\">Reinhard Genzel</option>")))
                 );
     }
 
@@ -169,10 +175,17 @@ class CourseControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .contentType(MediaType.TEXT_HTML))
                 .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/courses/"));
+
+        mockMvc.perform(get("/courses/")
+                        .contentType(MediaType.TEXT_HTML))
+                .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(containsString("<h1 class=\"text-center\">Courses</h1>"),
                         containsString("<h5>new or changed name</h5>"),
-                        containsString("<a href=\"/lecturers/lecturer?id=50005\" class=\"card-link\">Отряд Ковбоев</a>")))
+                        containsString("<a href=\"/lecturers/lecturer?id=50005\" class=\"card-link\">Reinhard Genzel</a>")))
                 );
 
         Course actualCourse = courseService.getById(NEW_COURSE_ID);
@@ -199,7 +212,14 @@ class CourseControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .contentType(MediaType.TEXT_HTML))
                 .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/courses/course?id=51"));
+
+        mockMvc.perform(get("/courses/course?id=51")
+                        .contentType(MediaType.TEXT_HTML))
+                .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<h1 class=\"display-4\">math</h1>"),
                         containsString("<td><a href=\"/students/group?id=501\">AA-01</a></td>"),
@@ -226,7 +246,14 @@ class CourseControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .contentType(MediaType.TEXT_HTML))
                 .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/courses/course?id=51"));
+
+        mockMvc.perform(get("/courses/course?id=51")
+                        .contentType(MediaType.TEXT_HTML))
+                .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<h1 class=\"display-4\">math</h1>"),
                         containsString("<td><a href=\"/students/group?id=502\">BB-02</a></td>"),

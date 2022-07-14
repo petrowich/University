@@ -125,7 +125,7 @@ public class CourseController {
 
         courseService.update(course);
 
-        return courses(model);
+        return "redirect:/courses/";
     }
 
     @GetMapping("/course/new")
@@ -144,7 +144,7 @@ public class CourseController {
     }
 
     @PostMapping("/course/add")
-    public String add(Course course, BindingResult bindingResult, Model model) {
+    public String add(Course course, BindingResult bindingResult) {
         LOGGER.info("adding new course");
 
         if (bindingResult.hasErrors()) {
@@ -157,11 +157,11 @@ public class CourseController {
 
         courseService.add(course.setActive(true));
 
-        return courses(model);
+        return "redirect:/courses/";
     }
 
     @PostMapping("/course/assign-group")
-    public String assignGroup(HttpServletRequest httpServletRequest, Model model) {
+    public String assignGroup(HttpServletRequest httpServletRequest) {
         LOGGER.info("assigning group to course");
 
         Integer courseId = Integer.valueOf(httpServletRequest.getParameter("courseId"));
@@ -172,11 +172,11 @@ public class CourseController {
 
         courseService.assignGroupToCourse(group, course);
 
-        return course(courseId, model);
+        return String.format("redirect:/courses/course?id=%d",courseId);
     }
 
     @PostMapping("/course/remove-group")
-    public String removeGroup(HttpServletRequest httpServletRequest, Model model) {
+    public String removeGroup(HttpServletRequest httpServletRequest) {
         LOGGER.info("removing group from course");
 
         Integer courseId = Integer.valueOf(httpServletRequest.getParameter("courseId"));
@@ -187,7 +187,7 @@ public class CourseController {
 
         courseService.removeGroupFromCourse(group, course);
 
-        return course(courseId, model);
+        return String.format("redirect:/courses/course?id=%d",courseId);
     }
 
     private Lecturer getActualAuthor(Lecturer author) {

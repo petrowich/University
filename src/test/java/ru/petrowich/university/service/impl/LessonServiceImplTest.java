@@ -32,7 +32,7 @@ import static org.mockito.Mockito.doNothing;
 
 class LessonServiceImplTest {
     private static final Integer PERSON_ID_50005 = 50005;
-    private static final String PERSON_EMAIL_50005 = "otryad.kovboev@university.edu";
+    private static final String PERSON_EMAIL_50005 = "reinhard.genzel@university.edu";
     private static final Integer COURSE_ID_51 = 51;
     private static final Integer COURSE_ID_52 = 52;
     private static final String COURSE_NAME_51 = "math";

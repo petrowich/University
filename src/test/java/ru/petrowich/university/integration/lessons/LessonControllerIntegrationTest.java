@@ -28,8 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -71,7 +70,7 @@ class LessonControllerIntegrationTest {
                         containsString("<td>2020-06-01</td>"),
                         containsString("<td>08:00 - 09:30</td>"),
                         containsString("<td><a href=\"/courses/course?id=51\">math</a></td>"),
-                        containsString("<td><a href=\"/lecturers/lecturer?id=50005\">Отряд Ковбоев</a></td>"),
+                        containsString("<td><a href=\"/lecturers/lecturer?id=50005\">Reinhard Genzel</a></td>"),
                         containsString("<td class=\"text-center\">3</td>"),
                         containsString("<td><a href=\"/lessons/lesson/edit?id=5000001\" class=\"btn btn-light fas fa-edit\"></a></td>"),
                         containsString("<td><form action=\"/lessons/lesson/delete?id=5000001\" method=\"post\">")))
@@ -105,7 +104,14 @@ class LessonControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .contentType(MediaType.TEXT_HTML))
                 .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/lessons/"));
+
+        mockMvc.perform(get("/lessons/")
+                        .contentType(MediaType.TEXT_HTML))
+                .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<h1 class=\"text-center\">Lessons</h1>"),
                         containsString("<td>2025-01-01</td>"),
@@ -140,7 +146,7 @@ class LessonControllerIntegrationTest {
                         containsString("<input type=\"time\" class=\"form-control\" id=\"startTime\" name=\"startTime\" value=\"08:00\">"),
                         containsString("<input type=\"time\" class=\"form-control\" id=\"endTime\" name=\"endTime\" value=\"09:30\">"),
                         containsString("<option value=\"51\" selected=\"selected\">math</option>"),
-                        containsString("<option value=\"50005\" selected=\"selected\">Отряд Ковбоев</option>")))
+                        containsString("<option value=\"50005\" selected=\"selected\">Reinhard Genzel</option>")))
                 );
     }
 
@@ -156,7 +162,14 @@ class LessonControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .contentType(MediaType.TEXT_HTML))
                 .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/lessons/"));
+
+        mockMvc.perform(get("/lessons/")
+                        .contentType(MediaType.TEXT_HTML))
+                .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML_VALUE))
                 .andExpect(content().string(allOf(
                         containsString("<h1 class=\"text-center\">Lessons</h1>"),
                         containsString("<td>2025-01-01</td>"),
@@ -181,7 +194,7 @@ class LessonControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .contentType(MediaType.TEXT_HTML))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
 
         Lesson actualLesson = lessonService.getById(LESSON_ID_5000001);
         assertNull(actualLesson);

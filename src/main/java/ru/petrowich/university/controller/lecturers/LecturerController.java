@@ -86,7 +86,7 @@ public class LecturerController {
 
         lecturerService.update(lecturer);
 
-        return lecturers(model);
+        return "redirect:/lecturers/";
     }
 
     @GetMapping("/lecturer/new")
@@ -99,7 +99,7 @@ public class LecturerController {
     }
 
     @PostMapping("/lecturer/add")
-    public String add(Lecturer lecturer, BindingResult bindingResult, Model model) {
+    public String add(Lecturer lecturer, BindingResult bindingResult) {
         LOGGER.info("add new lecturer");
 
         if (bindingResult.hasErrors()) {
@@ -110,6 +110,6 @@ public class LecturerController {
 
         lecturerService.add(lecturer.setActive(true));
 
-        return lecturers(model);
+        return "redirect:/lecturers/";
     }
 }

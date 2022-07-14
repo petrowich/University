@@ -36,11 +36,11 @@ class StudentRestControllerIntegrationTest {
     private static final Integer NEW_PERSON_ID = 10001;
     private static final Integer PERSON_ID_50001 = 50001;
     private static final Integer NONEXISTENT_PERSON_ID = 99999;
-    private static final String PERSON_FIRST_NAME_50005 = "Рулон";
+    private static final String PERSON_FIRST_NAME_50005 = "Giorgio";
     private static final String ANOTHER_PERSON_FIRST_NAME = "some first name";
-    private static final String PERSON_LAST_NAME_50005 = "Обоев";
+    private static final String PERSON_LAST_NAME_50005 = "Parisi";
     private static final String ANOTHER_PERSON_LAST_NAME = "some last name";
-    private static final String PERSON_EMAIL_50005 = "rulon.oboev@university.edu";
+    private static final String PERSON_EMAIL_50005 = "giorgio.parisi@university.edu";
     private static final String ANOTHER_PERSON_EMAIL = "first.last@university.edu";
     private static final String PERSON_COMMENT_50001 = "stupid";
     private static final String ANOTHER_COMMENT = "some comment";

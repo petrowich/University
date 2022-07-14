@@ -15,7 +15,7 @@ public class LecturerDTO extends AbstractEntityDTO<Integer> {
     @Schema(description = "A lecturer first name", example = "Basayev")
     private String lastName = null;
 
-    @Schema(description = "An email of the lecturer", example = "shamil.basayev@university.edu")
+    @Schema(description = "An email of the lecturer", example = "giorgio.parisi@university.edu")
     private String email = null;
 
     @Schema(description = "An additional notes about lecturer", example = "bla bla bla")

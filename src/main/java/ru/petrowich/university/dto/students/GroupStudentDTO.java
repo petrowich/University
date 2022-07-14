@@ -10,7 +10,7 @@ public class GroupStudentDTO extends AbstractDTO {
             accessMode = Schema.AccessMode.READ_ONLY)
     private Integer id = null;
 
-    @Schema(description = "A student full name", example = "Rulon Oboev",
+    @Schema(description = "A student full name", example = "Klaus Hasselmann",
             accessMode = Schema.AccessMode.READ_ONLY)
     private String fullName = null;
 

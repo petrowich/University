@@ -120,9 +120,11 @@ class GroupControllerTest {
 
         String expectedViewName = "students/groups";
 
-        mockMvc.perform(post("/students/group/update").flashAttr("group", expectedGroup).contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(view().name(expectedViewName));
+        mockMvc.perform(post("/students/group/update")
+                        .flashAttr("group", expectedGroup)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/students/groups/"));
 
         verify(mockGroupService, times(1)).getById(GROUP_ID_501);
         verify(mockGroupService, times(1)).update(expectedGroup);
@@ -157,9 +159,11 @@ class GroupControllerTest {
 
         String expectedViewName = "students/groups";
 
-        mockMvc.perform(post("/students/group/add").flashAttr("group", expectedGroup).contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(view().name(expectedViewName));
+        mockMvc.perform(post("/students/group/add")
+                        .flashAttr("group", expectedGroup)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/students/groups/"));
 
         verify(mockGroupService, times(1)).add(expectedGroup);
     }

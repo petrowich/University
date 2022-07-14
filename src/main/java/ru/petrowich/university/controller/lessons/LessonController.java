@@ -19,6 +19,7 @@ import ru.petrowich.university.service.LessonService;
 import ru.petrowich.university.service.TimeSlotService;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolationException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,9 +103,14 @@ public class LessonController {
         lesson.setEndTime(timeSlot.getEndTime());
         lesson.setLecturer(course.getAuthor());
 
-        lessonService.add(lesson);
+        try {
+            lessonService.add(lesson);
+        } catch (ConstraintViolationException constraintViolationException) {
+            model.addAttribute("error", constraintViolationException.getMessage());
+            return "error";
+        }
 
-        return lessons(model);
+        return "redirect:/lessons/";
     }
 
     @GetMapping("/lesson/edit")
@@ -155,7 +161,7 @@ public class LessonController {
 
         lessonService.update(lesson);
 
-        return lessons(model);
+        return "redirect:/lessons/";
     }
 
     @PostMapping("/lesson/delete")
@@ -171,6 +177,6 @@ public class LessonController {
 
         lessonService.delete(lesson);
 
-        return lessons(model);
+        return "redirect:/lessons/";
     }
 }

@@ -6,23 +6,8 @@
         </encoder>
     </appender>
 
-<!--    <logger name="org.hibernate" level="DEBUG" />-->
-<!--    <logger name="org.hibernate.SQL" level="DEBUG" />-->
-<!--    <logger name="org.hibernate.type" level="TRACE" />-->
-
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
 
-<!--    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>${user.home}/university.log</file>
-        <append>false</append>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
-    <root level="DEBUG">
-        <appender-ref ref="FILE" />
-    </root>-->
 </configuration>

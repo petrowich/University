@@ -18,7 +18,7 @@ public class GroupCourseDTO extends AbstractDTO {
             example = "10001", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer authorId = null;
 
-    @Schema(description = "A lecturer full name", example = "Shamil Basayev",
+    @Schema(description = "A lecturer full name", example = "Giorgio Parisi",
             accessMode = Schema.AccessMode.READ_ONLY)
     private String authorFullName = null;
 

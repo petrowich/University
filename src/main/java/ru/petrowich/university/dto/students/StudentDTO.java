@@ -15,7 +15,7 @@ public class StudentDTO extends AbstractEntityDTO<Integer> {
     @Schema(description = "A student last name", example = "Oboev")
     private String lastName = null;
 
-    @Schema(description = "An email of the lecturer", example = "rulon.oboev@university.edu")
+    @Schema(description = "An email of the lecturer", example = "giorgio.parisi@university.edu")
     private String email = null;
 
     @Schema(description = "An additional notes about student", example = "bla bla bla")
@@ -24,7 +24,7 @@ public class StudentDTO extends AbstractEntityDTO<Integer> {
     @Schema(description = "Numeric internal identifier of the student group", example = "101")
     private Integer groupId = null;
 
-    @Schema(description = "A  name of the student group", example = "Shamil Basayev",
+    @Schema(description = "A  name of the student group", example = "Giorgio Parisi",
             accessMode = Schema.AccessMode.READ_ONLY)
     private String groupName = null;
 

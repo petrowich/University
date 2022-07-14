@@ -26,7 +26,7 @@
                             <input type="text" th:field="*{name}" class="form-control" id="groupName" placeholder="Group Name" required>
                             <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></span>
                         </div>
-                        <div class="form-group col-md-1">
+                        <div class="form-group col-md-2">
                             <label for="groupCapacity">Capacity</label>
                             <input type="number" min="5" max="30" th:field="*{capacity}" class="form-control" id="groupCapacity" placeholder="20" required>
                             <span th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}" class="text-danger"></span>

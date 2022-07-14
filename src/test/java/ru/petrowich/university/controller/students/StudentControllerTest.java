@@ -147,8 +147,8 @@ class StudentControllerTest {
         String expectedViewName = "students/students";
 
         mockMvc.perform(post("/students/student/update").flashAttr("student", expectedStudent).contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(view().name(expectedViewName));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/students/"));
 
         verify(mockStudentService, times(1)).update(expectedStudent);
     }
@@ -194,8 +194,8 @@ class StudentControllerTest {
         String expectedViewName = "students/students";
 
         mockMvc.perform(post("/students/student/add").flashAttr("students", expectedStudent).contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(view().name(expectedViewName));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/students/"));
 
         verify(mockStudentService, times(1)).add(expectedStudent);
     }

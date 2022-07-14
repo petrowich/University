@@ -98,7 +98,7 @@ public class GroupController {
 
         groupService.update(group);
 
-        return groups(model);
+        return "redirect:/students/groups/";
     }
 
     @GetMapping("/group/new")
@@ -111,7 +111,7 @@ public class GroupController {
     }
 
     @PostMapping("/group/add")
-    public String add(Group group, BindingResult result, Model model) {
+    public String add(Group group, BindingResult result) {
         LOGGER.info("add new group");
 
         if (result.hasErrors()) {
@@ -122,6 +122,6 @@ public class GroupController {
 
         groupService.add(group.setActive(true));
 
-        return groups(model);
+        return "redirect:/students/groups/";
     }
 }
